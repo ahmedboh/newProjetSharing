@@ -6,7 +6,8 @@ import { Alert } from '@material-ui/lab';
 import { useState } from 'react';
 
 
-const MessageInfo=()=>{
+const MessageInfo=(props)=>{
+    const msg=props.children
     const [open, setOpen] = useState(true)
     return(<div><Collapse in={open}>
         <Alert action={
@@ -21,11 +22,11 @@ const MessageInfo=()=>{
         </IconButton>}
         
         >
-        Votre demande d'intervention est enovoyée avec une succes !
+        {msg}
         </Alert>
         </Collapse>
         <Button disabled={open} variant="outlined" onClick={() => { setOpen(true);}}>
-            Re-open
+            ouvrir
         </Button> 
         </div>)
 

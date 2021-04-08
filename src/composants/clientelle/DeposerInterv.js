@@ -6,15 +6,14 @@ import Col from 'react-bootstrap/Col';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import MessageInfo from './MessageInfo'
+import MessageInfo from '../MessageInfo'
 import Icon from '@material-ui/core/Icon';
-import { useState } from 'react';
+import { useState ,useEffect} from 'react';
 import Axios from 'axios';
 
-function DeposerTicket (props){
+function DeposerInterv (props){
     //recuperation de client 
-    const {client,listeContrats}=props;
-
+    const {client,idClient,listeContrats}=props;
     const [contrat,setContrat]=useState(listeContrats[0])
     const [nature,setNature]=useState("Maintenance")
     const [priorite,setPriorite]=useState("Urgent")
@@ -22,7 +21,8 @@ function DeposerTicket (props){
     const [details,setDetails]=useState("")
     const [objetErreur,setObjetErreur]=useState(false)
     const [messageInfo, setMessageInfo] = useState(<div></div>)
-    
+    const [listeDdes, setListeDdes] = useState([])
+    const [demandeEnCours,setdemandeEnCours]= useState(false)
    
     
 
@@ -42,9 +42,9 @@ function DeposerTicket (props){
     // deposer le dde 
     const envoyer=()=>{
         const ob={
-            client,
-            date:new Date().toLocaleDateString(),
-            heure:new Date().toLocaleTimeString() ,
+            IDclient:idClient,
+            dateCreation:new Date().toLocaleDateString(),
+            heureCreation:new Date().toLocaleTimeString() ,
             contrat,
             nature,
             priorite,
@@ -52,24 +52,38 @@ function DeposerTicket (props){
             details
         }
         if(objet!==""){
-        Axios.post('http://localhost:3001/api/v1/ticket',ob ).then(()=>{
+        Axios.post('http://localhost:3001/api/v1/intervention',ob ).then(()=>{
             console.log("seccess");
             console.log(ob);
-            setMessageInfo(<MessageInfo/>)
+            setMessageInfo(<MessageInfo >L'ajout d'une nouvelle demande est passé avec succès </MessageInfo>)
             resetFroms();
         })
         }else{
           setObjetErreur(true)
+          console.log(listeDdes);
            
         }
         
         }
     
+        const listeDemandeParClient=()=>{
+            Axios.get(`http://localhost:3001/api/v1/intervention/getInterventionsClient/${client}`)
+            .then((res)=>{
+                setListeDdes(res.data.data);
+    
+            })
+            
+          
+        }
+        useEffect(() => {
+            listeDemandeParClient()
+          });
+
     return(
         
         <div className="container" style={{border:'2px rgb(0, 153, 204) solid',borderRadius:'50px',marginTop:'20px',padding:'20px'}}>
             <br/>
-        <h2  className="text-info" style={{textAlign:'center'}}>Diposer une nouvelle demande d'intevention </h2><br/><br/>
+        <h2  className="text-info" style={{textAlign:'center'}}>Déposer une nouvelle demande d'intervention </h2><br/><br/>
         <form>
 
         <Row> 
@@ -91,7 +105,8 @@ function DeposerTicket (props){
                 <Col sm={12}>
                     <Form.Control as="select" value={contrat} onChange={(event)=>{
                         setContrat(event.target.value)
-                    }} >
+                    }}
+                     >
                         {options}
                     </Form.Control>
                 </Col>
@@ -206,8 +221,9 @@ function DeposerTicket (props){
                             onClick={envoyer}
                             endIcon={<Icon>send</Icon>}
                         >
-                            Send
+                            Envoyer
                 </Button> 
+            
             </Col>
             </Row>        
             </form>
@@ -215,4 +231,4 @@ function DeposerTicket (props){
         
     )
 }
-export default DeposerTicket;
+export default DeposerInterv;

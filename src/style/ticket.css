@@ -6,8 +6,44 @@
     border-radius:20px;
     border:2px  rgb(0, 153, 204) solid
  }
+
+
+  
+.intervCompresse{
+   width: 18 wh;
+   border-radius:20px;
+   border-width:0.5px ;
+   transition:all 0.3s ease;   
+}
+.intervCompresse:hover{
+   background-color: cadetblue;
+   color :cornsilk;
+   border-width:2px ;
+   transform: scale(0.9);   
+   
+}
+.ouvrirTicket{
+   position: relative;
+   left:35%;
+   bottom: 12px;
+   font-weight: bold;
+   font-style: oblique;
+   color:  rgb(0, 153, 204);
+   background-color: white;
+   font-family: Verdana;
+   border-color: white;
+}
+.gridList {
+   transform: translateZ(0);
+   height: 100vh;
+   background-color: rgb(207, 199, 199);
+   border-top-left-radius: 20px;
+ }
+
  @media only screen and (max-width: 600px) {
     .ligneTicket{
         display: none;
      }
     }
+
+   

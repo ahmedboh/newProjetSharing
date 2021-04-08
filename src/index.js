@@ -1,14 +1,44 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import DeposerTicket from './compsonts/clientelle/DeposerTicket'
+import ListeIntervs from './composants/societe/ListeIntervs'
+import ZoneAffectaion from './composants/societe/ZoneAffectaion'
+import ListeIntervIntervenant from './composants/societe/ListeIntervIntervenant'
+import AjouterRapport from './composants/societe/AjouterRapport'
+import AjouClient from './composants/societe/AjouClient'
+import AjouMembSociete from './composants/societe/AjouMembSociete'
+import Sidebar from './composants/societe/Sidebar/Sidebar'
+import SignIn from './composants/clientelle/SignIn'
+import App from './composants/clientelle/App'
+
+import { Switch,Route,BrowserRouter as Router } from 'react-router-dom';
+import AjoutContrat from './composants/societe/AjoutContrat';
+
+
+
 
 const Index =()=> {
-  const [login]=useState('Tunisie Bank ') 
-  const [contrats]=useState(['contrat 1','contrat 2','contrat 3','contrat 4']) 
   
-    return <DeposerTicket client={login} listeContrats={contrats} />
+
+  
+    return (<div>
+             <Router>
+             {/* <Sidebar /> */}
+                <Switch>
+                  <Route exact path="/"  ><ListeIntervs/></Route>   
+                  <Route path="/liste" ><ListeIntervIntervenant/></Route>
+                  <Route path="/affecter/:id/:raisonSociale/:inter/:period" ><ZoneAffectaion/></Route>
+                  <Route path="/ajouterRapport/:id/:intervenant" ><AjouterRapport/></Route>
+                  <Route path="/AjouterClient" ><AjouClient/></Route>
+                  <Route path="/AjouterMembre" ><AjouMembSociete/></Route>
+                  <Route path="/SignInClient"  ><SignIn /></Route>
+                  <Route path="/AppClient"  ><App /></Route>
+                  <Route path="/ajouterContrat/:idClient"  ><AjoutContrat /></Route>
+                </Switch>
+              </Router>
+            </div>  
+              )
 }
 
 
