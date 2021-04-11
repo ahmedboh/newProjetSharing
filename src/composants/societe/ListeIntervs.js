@@ -68,7 +68,7 @@ const ListeIntervs=()=>{
 
 
     const listeDemande=(ob)=>{
-        Axios.post(`http://localhost:3001/api/v1/intervention`,ob)
+        Axios.post(`http://localhost:3001/api/v1/intervention/getAll`,ob)
         .then((res)=>{
             setListeDdes(res.data.data);
             charger(trirerParEtat(res.data.data))

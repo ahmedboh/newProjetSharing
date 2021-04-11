@@ -68,32 +68,42 @@ const AjouClient=()=> {
     }
 
     const envoyer=(event)=>{
-        const ob={
-            raisonSociale,
-            adresse,
-            tel,
-            fax,
-            email,
-            nRegistreCommerce,
-            codeTVA,
-            login,
-            motDePasse
-        }
-        if(raisonSociale!=="" && adresse!=="" && tel!=="" &&
-        email!=="" && nRegistreCommerce!=="" && codeTVA!=="" && 
-        login!=="" && motDePasse!==""&&fax!=="" ){
-        Axios.post('http://localhost:3001/api/v1/auth/signupClient',ob ).then( res => {
-            setMessageInfo(<MessageInfo >le nouveau membre de la société <b> {raisonSociale} </b>à ajouter avec succès </MessageInfo>);
-            setAjoutAutre(false)
-            setIdCl(res.data.client)
+      const ob={
+          raisonSociale,
+          adresse,
+          tel,
+          fax,
+          email,
+          nRegistreCommerce,
+          codeTVA,
+          login,
+          motDePasse
+      }
+      const ob1={
+        to:email,
+        subject:"Compte Sharing",
+        text:`Bonjour,\nFélicitation, votre compte Sharing a été créé. Voici les paramètres :\nEmail : ${email}\nMot de passe : ${motDePasse}\nCe compte Sharing vous permettra de vous peposer une demande d'intervention sur http://localhost:3000/ `
+      }
+      if(raisonSociale!=="" && adresse!=="" && tel!=="" &&
+      email!=="" && nRegistreCommerce!=="" && codeTVA!=="" && 
+      login!=="" && motDePasse!==""&&fax!=="" ){
+      Axios.post('http://localhost:3001/api/v1/auth/signupClient',ob ).then( res => {
+          setMessageInfo(<MessageInfo >le nouveau membre de la société <b> {raisonSociale} </b>à ajouter avec succès </MessageInfo>);
+          setAjoutAutre(false)
+          setIdCl(res.data.client)
+          console.log(res)
+          console.log(ob1);
+          Axios.post('http://localhost:3001/api/v1/mailing',ob1 ).then( res => {
             console.log(res)
-        })
-        }else{
-          afficherErreur()
+          })
+      })
+      }else{
+        afficherErreur()
 
-        }
-        event.preventDefault();
-    }
+      }
+      event.preventDefault();
+  }
+
    
   const ajouterAutre=()=>{
           document.getElementById("form").reset();
