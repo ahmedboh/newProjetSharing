@@ -13,23 +13,27 @@ import MessageInfo from '../MessageInfo'
 
 
 const ZoneAffectaion=(props)=>{
-        const{id,raisonSociale,inter,period}=useParams()
+        const{id,raisonSociale,inter,period,etat}=useParams()
         const [intervenants,setIntervenants]=useState([])
         const [intervenant,setIntervenant]=useState('')
         const [periode,setPeriode]=useState(24)
-        const [btnOrMsg,setBtnOrMsg]=useState(true)
-        
-
+        const [etatActuel,setEtatActuel]=useState('')
+        const [intervenantLabel,setIntervenantLabel]=useState('')
+       
         useEffect(() => {
-            Axios.get(`http://localhost:3001/api/v1/membSociete/parRole/${"In"}`)
+            Axios.get(`http://localhost:3001/api/v1/membSociete/getMembSocietesRole/${"In"}`)
             .then((res)=>{
                 setIntervenants(res.data.data);
             
-            })        
+            }) 
+            setEtatActuel(etat)        
             if (inter!=="None"){
-                setIntervenant(inter);
-                setPeriode(period)  
-                setBtnOrMsg(false)    
+                Axios.get(`http://localhost:3001/api/v1/membSociete/${inter}`)
+                .then((res)=>{
+                    setIntervenantLabel(res.data.data.nom+" "+res.data.data.prenom);
+                     })
+                setPeriode(period)   
+                  
             }
         
          },[])
@@ -42,14 +46,14 @@ const ZoneAffectaion=(props)=>{
             const ob={
                 IDintervenant:intervenant,
                 periodeTrai:periode,
-                etat:"En cours"
+                etat:"En cour"
             }
             
             console.log(ob)
             if(intervenant!==""){
             Axios.patch(`http://localhost:3001/api/v1/intervention/${id}`,ob ).then(()=>{
                 console.log("seccess");
-                console.log(ob);
+                setEtatActuel("En cour")                
             })
             }else{
               console.log("error");
@@ -58,10 +62,12 @@ const ZoneAffectaion=(props)=>{
             
         }    
         
-        const composant=!btnOrMsg
-        ?<MessageInfo >Cette demande a été affectuer a l'intervenant <b> {intervenant}</b>  </MessageInfo>
-        :<Button variant="contained"color="primary"style={{backgroundColor:'rgb(0, 153, 204)'}}startIcon={<SaveIcon />}onClick={Affecter}>Affecter</Button> 
-                      
+    
+        const composant=etatActuel==="Clôturée"
+        ?<MessageInfo >Cette demande a été affectuer a l'intervenant <b> {intervenantLabel}</b>  </MessageInfo>
+        :etatActuel==="En attente"
+        ?<Button variant="contained"color="primary"style={{backgroundColor:'rgb(0, 153, 204)'}}startIcon={<SaveIcon />}onClick={Affecter}>Affecter</Button> 
+        :<Button variant="contained"color="primary"style={{backgroundColor:'#ffc107'}}startIcon={<SaveIcon />}onClick={Affecter}>Reaffecter</Button>          
         
         return (<div className="container" style={{border:'2px rgb(0, 153, 204) solid',borderRadius:'50px',marginTop:'20px',padding:'20px'}}>
                 <Row>
@@ -79,18 +85,19 @@ const ZoneAffectaion=(props)=>{
                         </Form.Group>
                         
                         <Form.Group as={Row}  controlId="formHorizontalEmail">
-
+                        
                         <Autocomplete
                                 id="combo-box-demo"
                                 options={intervenants}
                                 getOptionLabel={(option) => {return (option.nom+" "+option.prenom)}}
                                 style={{ width: 300 }}
-                                disabled={!btnOrMsg}
+                                disabled={etatActuel==="Cloturée"}
                                 onChange={ (event, values) => {
                                     setIntervenant(values._id);
+                                    setIntervenantLabel("Intervenant")    
                                   }}
                             
-                                renderInput={(params) => <TextField {...params}  label={btnOrMsg?"Intervenant":intervenant} variant="outlined" />}
+                                renderInput={(params) => <TextField {...params}  label={etatActuel==="En attente"?"Intervenant":intervenantLabel} variant="outlined" />}
                         />
                         </Form.Group>
 
@@ -110,7 +117,7 @@ const ZoneAffectaion=(props)=>{
                                         onChange={(event)=>{
                                             setPeriode(event.target.value)
                                         }}
-
+                                        disabled={etatActuel==="Cloturée"}
                                          style={{ width: 100 }}
                                     /> 
                             </Form.Label>

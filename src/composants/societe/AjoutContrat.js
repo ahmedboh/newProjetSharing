@@ -11,11 +11,12 @@ import MessageInfo from '../MessageInfo'
 import { useState ,useEffect} from 'react';
 import Axios from 'axios';
 import SaveIcon from '@material-ui/icons/Save';
+import { Alert, AlertTitle } from '@material-ui/lab';
 
 
 
 const AjoutContrat=()=>{
-    const{idClient}=useParams()
+    const{idClient,raisonSocial}=useParams()
     const [type,setType]=useState("Garantie")
     const [visitesMainPreventive,setVisitesMainPreventive]=useState(0)
     const [visitesMainCurative,setVisitesMainCurative]=useState(0)
@@ -23,28 +24,68 @@ const AjoutContrat=()=>{
     const [contact,setContact]=useState("")
     const [telContact,setTelContact]=useState("")
     const [emailContact,setEmailContact]=useState("")
+    const [nbrContrat,setNbrContrat]=useState(0)
+    const [messageInfo, setMessageInfo] = useState(<div></div>);
+    const [erreur,setErreur]=useState(false);
+    
+    const  afficherErreur=()=>{
+        setErreur(true);
+        setTimeout(()=>{setErreur(false)},4000);
+      }
+
+    const ajouter=()=>{
+        const ob={
+            IDclient:idClient,
+            type,
+            visitesMainPreventive,
+            visitesMainCurative,
+            prixInterSupp,
+            contact,
+            telContact,
+            emailContact
+        }
+        if(type!=="" && visitesMainPreventive!=="" && visitesMainCurative!=="" &&
+        prixInterSupp!=="" && contact!=="" && telContact!=="" &&  emailContact!==""){
+        Axios.post('http://localhost:3001/api/v1/contrat',ob ).then( res => {
+            setMessageInfo(<MessageInfo >le nouveau contrat à ajouter avec succès </MessageInfo>);
+            console.log("seccues")
+            setNbrContrat(nbrContrat+1)
+            document.getElementById("form").reset();
+
+        })
+        }else{
+            afficherErreur()
+            console.log("ereur")
+            
+        }
 
 
+    }
+   
+    
     
     return(
-        <div> 
-          <form>
+        <div className='container' style={{marginBottom:'20px',padding:'20px'}}> 
+          <h1 align='center'>Ajout des contrats</h1>
+          <h2 >{raisonSocial}   <p style={{float:'right'}} >{nbrContrat} :Contrat(s)</p> </h2><hr/><br/>
+          <form id="form" >
             <Row style={{marginLeft:'15%'}}> 
             <Col sm={8}>
                 <Form.Group as={Row}  controlId="formHorizontalEmail">
                     <Form.Label column >
                     Type de contrat :
                     </Form.Label>
-                     <Col sm={12}>
+                     <Col sm={6}>
                     
                      <Form.Check
                             type="radio"
                             label="Garantie "
                             name="formHorizontalRadios"
                             id="formHorizontalRadios1"
+                            
                             value="Garantie"
                             onChange={(event)=>{
-                                setType(event.target.value)
+                                setType(event.target.value);setMessageInfo(<div></div>)
                             }}
                             checked={type==='Garantie'}
                     />
@@ -55,7 +96,7 @@ const AjoutContrat=()=>{
                         id="formHorizontalRadios2"
                         value="Contrat de maintenance"
                         onChange={(event)=>{
-                            setType(event.target.value)
+                            setType(event.target.value);setMessageInfo(<div></div>)
                          }}
                         checked={type==='Contrat de maintenance'}
                         />
@@ -64,13 +105,13 @@ const AjoutContrat=()=>{
                 </Form.Group>
 
                 <Form.Group as={Row} controlId="formHorizontalContrat">
-                    <Form.Label column >
+                    <Form.Label column  >
                         Nombre de visites de maintenance préventive par an
                     </Form.Label>
                     
                     <Col >
-                        <TextField required id="nVistePreventive" name="nVistePreventive" value={visitesMainPreventive} label="Nbre viste par anneé"
-                            type="number" fullWidth onChange={(event)=>{setVisitesMainPreventive(event.target.value)}} />
+                        <TextField required id="nVistePreventive" name="nVistePreventive"  label="Nombre viste par anneé"
+                            type="number" fullWidth onChange={(event)=>{setVisitesMainPreventive(event.target.value);setMessageInfo(<div></div>)}} />
                     </Col>
                 </Form.Group>
 
@@ -79,8 +120,8 @@ const AjoutContrat=()=>{
                         Nombre de visites de maintenance curative par an
                     </Form.Label>
                     <Col >
-                        <TextField required id="nVisteCurative" name="nVisteCurative" value={visitesMainCurative} label="Nbre viste par anneé"
-                            type="number" fullWidth onChange={(event)=>{setVisitesMainCurative(event.target.value)}} />
+                        <TextField required id="nVisteCurative" name="nVisteCurative"  label="Nombre viste par anneé"
+                            type="number" fullWidth onChange={(event)=>{setVisitesMainCurative(event.target.value);setMessageInfo(<div></div>)}} />
                     </Col>
                 </Form.Group>
                 
@@ -90,8 +131,8 @@ const AjoutContrat=()=>{
                     </Form.Label>
                     
                     <Col >
-                    <TextField required id="prixUnitaire" name="prixUnitaire" value={prixInterSupp} label="Prix"
-                            type="number" fullWidth onChange={(event)=>{setPrixInterSupp(event.target.value)}} />
+                    <TextField required id="prixUnitaire" name="prixUnitaire"  label="Prix"
+                            type="number" fullWidth onChange={(event)=>{setPrixInterSupp(event.target.value);setMessageInfo(<div></div>)}} />
                     </Col>
                 </Form.Group>
 
@@ -100,7 +141,7 @@ const AjoutContrat=()=>{
                          Contact
                     </Form.Label>
                     <Col >
-                         <TextField id="Contact" label="Contact"  value={contact} onChange={(event)=>{ setContact(event.target.value) }} />
+                         <TextField id="Contact" label="Contact"   onChange={(event)=>{ setContact(event.target.value);setMessageInfo(<div></div>) }} />
                     </Col>
                 </Form.Group>
 
@@ -110,7 +151,7 @@ const AjoutContrat=()=>{
                         N° téléphone contact
                     </Form.Label>
                     <Col >
-                       <TextField id="tel" label="Tel" type="tel" value={telContact} onChange={(event)=>{ setTelContact(event.target.value) }} />
+                       <TextField id="tel" label="Tel" type="tel"  onChange={(event)=>{ setTelContact(event.target.value) ;setMessageInfo(<div></div>)}} />
                     </Col>
                 </Form.Group>
 
@@ -126,36 +167,40 @@ const AjoutContrat=()=>{
                                 label="Adresse email"
                                 fullWidth
                                 type="email"
-                                value={emailContact}
-                                onChange={(event)=>{setEmailContact(event.target.value)}}
+                                
+                                onChange={(event)=>{setEmailContact(event.target.value);setMessageInfo(<div></div>)}}
                             />
                     </Col>
                 </Form.Group>
                 </Col>
-                </Row>
                     
-                <Row>
-                {/* <Col sm={8}>
-                {messageInfo}
-                </Col> */}
-                <Col sm={{span :50,offset:2}}>
-                    
+                <br/>
+                <Col sm={8}>
+                    <Link    to="/ajouterClient" ><Button
+                                variant="contained"
+                                color="secondary"
+                            >Terminer</Button></Link>
+                </Col> 
+                <Col >
                     <Button
                                 variant="contained"
                                 color="primary"
                                 style={{backgroundColor:'rgb(0, 153, 204)'}}
-                                //onClick={enregistrer}
+                                onClick={ajouter}
                                 endIcon={<SaveIcon />}
                             >
                                 Enregistrer
                     </Button> 
                 
                 </Col>
-                </Row>
+                <Alert severity="error" hidden={!erreur} >
+                    <AlertTitle style={{fontSize:"14px",paddingLeft:"10vw"}}>Veuillez remplir tous les champs</AlertTitle>
+                </Alert>
+                {messageInfo}
+             </Row>
                     
             </form>
-          <h2>{idClient} </h2>
-          <Link to="/ajouterClient" >terminer</Link>
+          
           </div>
 
     )

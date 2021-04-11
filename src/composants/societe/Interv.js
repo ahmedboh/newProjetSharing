@@ -37,12 +37,13 @@ const Interv = (props) => {
   };
 
     const cloturer =()=>{
-            if (contenu.dateDebut===""&& contenu.dateFin===""){
-               setMsg("Ajouter un rapport pour pouvoir cloturer la damande")                  
+            if (interv.dateDebut===""&& interv.dateFin===""){
+               setMsg("Ajouter un rapport pour pouvoir clôturer la damande")                  
             }else{
-               Axios.patch(`http://localhost:3001/api/v1/intervention/${idt}`,{etat:"Cloturée"} ).then(()=>{
+               Axios.patch(`http://localhost:3001/api/v1/intervention/${interv._id}`,{etat:"Clôturée",} ).then(()=>{
+                    setMsg("Demande est clôtureé")
                 }) 
-               setMsg("Demande est cloutureé")
+                setMsg("la clôturation n'est pas encore passee"+interv._id)
             }
 
             setOpen(true);
@@ -83,8 +84,8 @@ const Interv = (props) => {
             </Row>
             <br/><br/>
             <Row hidden={!traiter}>
-                <Col><Button variant="contained" onClick={cloturer} color="secondary" >Cloturer</Button></Col>
-                <Col><Link to={'/ajouterRapport/'+ idt+"/"+interv.IDintervenant} disabled={rapportexiste} ><Button variant="contained"  color="primary">Ajouter un rapport </Button></Link></Col>
+                <Col><Button variant="contained" onClick={cloturer} color="secondary" >Clôturer</Button></Col>
+                <Col><Link to={'/ajouterRapport/'+ idt+"/"+interv.IDintervenant} disabled={!(interv.dateDebut===""&& interv.dateFin==="")} ><Button disabled={!(interv.dateDebut===""&& interv.dateFin==="")} variant="contained"  color="primary">Ajouter un rapport </Button></Link></Col>
             </Row>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="success">

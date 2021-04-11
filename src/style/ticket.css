@@ -22,9 +22,9 @@
    transform: scale(0.9);   
    
 }
-.ouvrirTicket{
+.ouvrirInterv{
    position: relative;
-   left:35%;
+   left:25%;
    bottom: 12px;
    font-weight: bold;
    font-style: oblique;

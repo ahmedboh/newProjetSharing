@@ -14,6 +14,7 @@ import { useParams } from 'react-router';
 
 const AjouterRapport=()=>{
     const {id,intervenant}=useParams()
+    const [intervenantLabel,setIntervenantLabel]=useState('')
     function formatDate(date) {
         var d = new Date(date),
             month = '' + (d.getMonth() + 1),
@@ -28,6 +29,13 @@ const AjouterRapport=()=>{
         return [year, month, day].join('-');
     }
 
+    useEffect(() => {     
+             Axios.get(`http://localhost:3001/api/v1/membSociete/${intervenant}`)
+            .then((res)=>{
+                setIntervenantLabel(res.data.data.nom+" "+res.data.data.prenom);
+                 })
+   
+     },[])
     
      const [heureDebut,setHeureDebut]=useState("08:00")
      const [dateDebut,setDateDebut]=useState(formatDate(new Date()))
@@ -63,7 +71,7 @@ const AjouterRapport=()=>{
                 l'intervenant 
                 </Form.Label>
                 <Col sm={12}>
-                <Form.Control type="text" placeholder={intervenant} disabled />
+                <Form.Control type="text" placeholder={intervenantLabel} disabled />
                 </Col>
             </Form.Group>
 

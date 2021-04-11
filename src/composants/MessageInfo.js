@@ -8,9 +8,10 @@ import { useState } from 'react';
 
 const MessageInfo=(props)=>{
     const msg=props.children
+    const type=props.type ||"success"
     const [open, setOpen] = useState(true)
     return(<div><Collapse in={open}>
-        <Alert action={
+        <Alert  severity={type} action={
         <IconButton
             aria-label="close"
             color="inherit"

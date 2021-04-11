@@ -66,6 +66,7 @@ const AjouClient=()=> {
       setErreur(true);
       setTimeout(()=>{setErreur(false)},4000);
     }
+
     const envoyer=(event)=>{
         const ob={
             raisonSociale,
@@ -78,11 +79,6 @@ const AjouClient=()=> {
             login,
             motDePasse
         }
-        const ob1={
-          to:email,
-          subject:"Compte Sharing",
-          text:`Bonjour,\nFélicitation, votre compte Sharing a été créé. Voici les paramètres :\nEmail : ${email}\nMot de passe : ${motDePasse}\nCe compte Sharing vous permettra de vous peposer une demande d'intervention sur http://localhost:3000/ `
-        }
         if(raisonSociale!=="" && adresse!=="" && tel!=="" &&
         email!=="" && nRegistreCommerce!=="" && codeTVA!=="" && 
         login!=="" && motDePasse!==""&&fax!=="" ){
@@ -91,10 +87,6 @@ const AjouClient=()=> {
             setAjoutAutre(false)
             setIdCl(res.data.client)
             console.log(res)
-            console.log(ob1);
-            Axios.post('http://localhost:3001/api/v1/mailing',ob1 ).then( res => {
-              console.log(res)
-            })
         })
         }else{
           afficherErreur()
@@ -113,7 +105,7 @@ const AjouClient=()=> {
   let history = useHistory();
   
   const ajoutCon=()=>{
-    history.push("/ajouterContrat/"+idCl)
+    history.push("/ajouterContrat/"+idCl+"/"+raisonSociale)
   }
   return (
     <>
@@ -188,8 +180,7 @@ const AjouClient=()=> {
             name="codeTVA"
             label="Code TVA"
             fullWidth
-            onChange={(event)=>{setCodeTVA(event.target.value)}}
-          />
+            onChange={(event)=>{setCodeTVA(event.target.value)}}/>
         </Grid>
         <Grid item xs={12}>
           <TextField

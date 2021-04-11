@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignInMembre=(props)=> {
+const SignInMembre=()=> {
   const classes = useStyles();
   const [idUser,setIdUser]=useState("")
   const [tokenUser,setTokenUser]=useState("")
@@ -43,7 +43,6 @@ const SignInMembre=(props)=> {
   const [motDePasseErreur,setMotDePasseErreur]=useState(false)
   let history = useHistory();
   const envoyer=(event)=>{
-    //props.history.push('/deposer')
     const ob={
         login,
         motDePasse
@@ -55,7 +54,10 @@ const SignInMembre=(props)=> {
                 console.log(res.data);
                 setIdUser(res.data.client);
                 setTokenUser(res.data.token);
-                history.push("/appClient",{login,idClient:res.data.client})
+                localStorage.setItem('idClient', res.data.client);
+
+                history.push("/appClient/de")
+              
 
               })
               .catch(res=>{
