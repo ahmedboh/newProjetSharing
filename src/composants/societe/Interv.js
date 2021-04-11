@@ -24,7 +24,7 @@ const Interv = (props) => {
         }else{
             setInterv(contenu);
         }    
-    })
+    },[])
     
   
 

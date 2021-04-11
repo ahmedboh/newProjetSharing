@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 
   
 
-const AjouClient=()=> {
+const ModifierClient=()=> {
     const [raisonSociale,setRaisonSociale]=useState("");
     const [adresse,setAdresse]=useState("");
     const [tel,setTel]=useState("");
@@ -55,13 +55,28 @@ const AjouClient=()=> {
     const [login,setLogin]=useState("");
     const [motDePasse,setMotDePasse]=useState("");
     const [erreur,setErreur]=useState(false);
-    const [ajoutAutre,setAjoutAutre]=useState(true);
     const [messageInfo, setMessageInfo] = useState(<div></div>);
     const [idCl,setIdCl]=useState("");
 
     
     const classes = useStyles();
     
+    useEffect(() => {
+        Axios.get(`http://localhost:3001/api/v1/client/${history.location.state.idClient}`)
+            .then(res => {
+              setRaisonSociale(res.data.data.raisonSociale)
+              setAdresse(res.data.data.adresse)
+              setTel(res.data.data.tel)
+              setFax(res.data.data.fax)
+              setEmail(res.data.data.email)
+              setNRegistreCommerce(res.data.data.nRegistreCommerce)
+              setCodeTVA(res.data.data.codeTVA)
+              setLogin(res.data.data.login)
+              setMotDePasse(res.data.data.motDePasse)
+              setIdCl(res.data.data._id)
+        })
+    }, []);
+
     const  afficherErreur=()=>{
       setErreur(true);
       setTimeout(()=>{setErreur(false)},4000);
@@ -78,23 +93,12 @@ const AjouClient=()=> {
             login,
             motDePasse
         }
-        const ob1={
-          to:email,
-          subject:"Compte Sharing",
-          text:`Bonjour,\nFélicitation, votre compte Sharing a été créé. Voici les paramètres :\nEmail : ${email}\nMot de passe : ${motDePasse}\nCe compte Sharing vous permettra de vous peposer une demande d'intervention sur http://localhost:3000/ `
-        }
         if(raisonSociale!=="" && adresse!=="" && tel!=="" &&
         email!=="" && nRegistreCommerce!=="" && codeTVA!=="" && 
         login!=="" && motDePasse!==""&&fax!=="" ){
-        Axios.post('http://localhost:3001/api/v1/auth/signupClient',ob ).then( res => {
-            setMessageInfo(<MessageInfo >le nouveau membre de la société <b> {raisonSociale} </b>à ajouter avec succès </MessageInfo>);
-            setAjoutAutre(false)
-            setIdCl(res.data.client)
+        Axios.patch(`http://localhost:3001/api/v1/client/${idCl}`,ob ).then( res => {
+            setMessageInfo(<MessageInfo >le Client <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>);
             console.log(res)
-            console.log(ob1);
-            Axios.post('http://localhost:3001/api/v1/mailing',ob1 ).then( res => {
-              console.log(res)
-            })
         })
         }else{
           afficherErreur()
@@ -103,13 +107,6 @@ const AjouClient=()=> {
         event.preventDefault();
     }
    
-  const ajouterAutre=()=>{
-          document.getElementById("form").reset();
-          setAjoutAutre(true)
-          setMessageInfo(<div></div>);
-
-          
-  }  
   let history = useHistory();
   
   const ajoutCon=()=>{
@@ -120,7 +117,7 @@ const AjouClient=()=> {
       <AppBar position="absolute" xs={12} color="default" className={classes.appBar}>
         <Toolbar>
           <Typography variant="h6" color="inherit" noWrap>
-            Ajouter un nouveau client
+            Modifier le client {raisonSociale}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -135,6 +132,7 @@ const AjouClient=()=> {
             name="raisonSociale"
             label="Raison Sociale"
             fullWidth
+            value={raisonSociale}
             onChange={(event)=>{setRaisonSociale(event.target.value)}}
           />
         </Grid>
@@ -145,6 +143,7 @@ const AjouClient=()=> {
             name="adresse"
             label="Adresse"
             fullWidth
+            value={adresse}
             onChange={(event)=>{setAdresse(event.target.value)}}
           />
         </Grid>
@@ -156,6 +155,7 @@ const AjouClient=()=> {
             label="Tél"
             type="tel"
             fullWidth
+            value={tel}
             onChange={(event)=>{setTel(event.target.value)}}
           />
         </Grid>
@@ -167,6 +167,7 @@ const AjouClient=()=> {
             label="Fax"
             type="tel"
             fullWidth
+            value={fax}
             onChange={(event)=>{setFax(event.target.value)}}
           />
         </Grid>
@@ -178,6 +179,7 @@ const AjouClient=()=> {
             label="N° Registre du commerce"
             type="number"
             fullWidth
+            value={nRegistreCommerce}
             onChange={(event)=>{setNRegistreCommerce(event.target.value)}}
           />
         </Grid>
@@ -188,6 +190,7 @@ const AjouClient=()=> {
             name="codeTVA"
             label="Code TVA"
             fullWidth
+            value={codeTVA}
             onChange={(event)=>{setCodeTVA(event.target.value)}}
           />
         </Grid>
@@ -198,6 +201,7 @@ const AjouClient=()=> {
             name="email"
             label="Adresse email"
             fullWidth
+            value={email}
             onChange={(event)=>{setEmail(event.target.value)}}
           />
         </Grid>
@@ -208,6 +212,7 @@ const AjouClient=()=> {
             name="login"
             label="Login"
             fullWidth
+            value={login}
             onChange={(event)=>{setLogin(event.target.value)}}
           />
         </Grid>
@@ -218,6 +223,7 @@ const AjouClient=()=> {
             name="motDePasse"
             label="Mot de passe"
             fullWidth
+            value={motDePasse}
             onChange={(event)=>{setMotDePasse(event.target.value)}}
           />
         </Grid>
@@ -232,11 +238,10 @@ const AjouClient=()=> {
             variant="contained"
             className={classes.button}
             onClick={ajoutCon}
-            hidden={ajoutAutre}
             >
             Ajouter des contrats
       </Button>
-      {ajoutAutre?
+      
       <Button
             type="submit"
             fullWidth
@@ -244,19 +249,8 @@ const AjouClient=()=> {
             className={classes.button}
             onClick={envoyer}
             >
-            Ajouter
+            Modifier
       </Button>
-      :
-      <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            className={classes.button}
-            onClick={ajouterAutre}
-            >
-            Ajouter autre client
-      </Button>
-      }
       <br/>
       <Grid item xs={12}>
         {messageInfo}
@@ -268,4 +262,4 @@ const AjouClient=()=> {
   );
 }
 
-export default AjouClient;
+export default ModifierClient;
