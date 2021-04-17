@@ -102,18 +102,22 @@ const useStyles2 = makeStyles({
 
 export default function ListeMembSocietes() {
   const [rows , setRows ]=useState([]);
-  useEffect(() => {
+  const listeMemebre=()=>{
     Axios.get(`http://localhost:3001/api/v1/membSociete`)
         .then(res => {
           const membSocietes = res.data.data;
           setRows( membSocietes );
           console.log(rows);
     })
+  }
+  useEffect(() => {
+    listeMemebre()
   }, []);
+
   let history = useHistory();
   const classes = useStyles2();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
@@ -174,8 +178,8 @@ export default function ListeMembSocietes() {
                 Axios.delete(`http://localhost:3001/api/v1/membSociete/${row._id}`)
                   .then(res => {
                     console.log(res);
+                    listeMemebre();
                   });
-                window.location.reload();
               }}>
                 <DeleteIcon />
               </IconButton>  

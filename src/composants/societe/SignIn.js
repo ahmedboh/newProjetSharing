@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Axios from 'axios';
 import { Alert, AlertTitle } from '@material-ui/lab';
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignInMembre=()=> {
+const SignInMembre=(props)=> {
   const classes = useStyles();
   const [idUser,setIdUser]=useState("")
   const [tokenUser,setTokenUser]=useState("")
@@ -40,6 +41,7 @@ const SignInMembre=()=> {
   const [motDePasse,setMotDePasse]=useState("")
   const [loginErreur,setLoginErreur]=useState(false)
   const [motDePasseErreur,setMotDePasseErreur]=useState(false)
+  let history = useHistory();
 
   const envoyer=(event)=>{
     const ob={
@@ -49,10 +51,19 @@ const SignInMembre=()=> {
     if(login!==""){
         if(motDePasse!==""){
               Axios.post('http://localhost:3001/api/v1/auth/loginMembS',ob ).then(res => {
-                console.log(res.data);
-                setIdUser(res.data.membSociete);
-                setTokenUser(res.data.token);
+                
+                
+              Axios.get('http://localhost:3001/api/v1/membSociete/'+res.data.membSociete )
+                .then(res2 => {
+                  localStorage.setItem('userNom',res2.data.data.nom)
+                  localStorage.setItem('userPrenom',res2.data.data.prenom)
+                  localStorage.setItem('userRole',res2.data.data.role)
+                  localStorage.setItem('user',res.data.membSociete)
+                 })
+
+              
               })
+              history.push('/accueil')
         }else{
             setMotDePasseErreur(true)
         }
@@ -61,6 +72,7 @@ const SignInMembre=()=> {
     } 
     event.preventDefault(); 
   }
+  
 
   return (
     <Container component="main" maxWidth="xs">
@@ -70,7 +82,7 @@ const SignInMembre=()=> {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Je me connecte
+          Je me connecte22
         </Typography>
         <form className={classes.form}>
           <TextField
@@ -109,7 +121,6 @@ const SignInMembre=()=> {
                 <AlertTitle style={{fontSize:"14px"}}>S'il vous plait tapez votre mot de passe</AlertTitle>
             </Alert>
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             color="primary"

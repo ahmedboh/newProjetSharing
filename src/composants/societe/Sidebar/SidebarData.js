@@ -1,38 +1,77 @@
 import React from 'react';
 import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
-import * as IoIcons from 'react-icons/io';
+import * as FcIcons from 'react-icons/fc';
+import * as ImIcons from 'react-icons/im';
 import * as RiIcons from 'react-icons/ri';
 import * as CgIcons from 'react-icons/cg';
 
 export const SidebarData = [
     {
         title: 'ListeDemande',
-        path:'/',
-        icon: <FaIcons.FaListAlt />,
+        path: '#',
+        icon: <FaIcons.FaListAlt color="primary" />,
         iconClosed: <RiIcons.RiArrowDownSFill />,
         iconOpened: <RiIcons.RiArrowUpSFill />,
+        acces:['Ad','Ri','In'],
         subNav: [
             {
                 title: 'ToutesLesDemande',
-                path: '/ToutesLesTickets',
-                icon: <CgIcons.CgPlayListSearch />,
+                path: '/liste',
+                acces:['Ad','Ri','In'],
+                icon: <FaIcons.FaList />,
             },
             {
                 title: 'MesDemandes',
-                path: '/MesTickets',
-                icon: <CgIcons.CgPlayList/>,
+                path: '/maliste',
+                acces:['In'],
+                icon: <RiIcons.RiPlayList2Line/>,
             },
         ]
     },
     {
-        title: 'AjouterMembreSociete',
-        path: '/AjouterMembre',
-        icon: <AiIcons.AiOutlineUserAdd/>,
+        title: 'MembreSociete',
+        path: '#',
+        icon: <ImIcons.ImUserTie/>,
+        iconClosed: <RiIcons.RiArrowDownSFill />,
+        iconOpened: <RiIcons.RiArrowUpSFill />,
+        acces:['Ad'],
+        subNav: [
+            {
+                title: 'AjouterNouveau',
+                path: '/AjouterClient',
+                acces:['Ad'],
+                icon: <AiIcons.AiOutlineUserAdd/>,
+            },
+            {
+                title: 'ToutesLesMembres',
+                path: '/ListeMembSocietes',
+                acces:['Ad'],
+                icon: <CgIcons.CgUserList/>,
+            },
+        ]
     },
     {
-        title: 'AjouterClient',
-        path: '/AjouterClient',
-        icon: <AiIcons.AiOutlineUserAdd/>,
+        title: 'Client',
+        path: '#',
+        icon: <FaIcons.FaUsers/>,
+        iconClosed: <RiIcons.RiArrowDownSFill />,
+        iconOpened: <RiIcons.RiArrowUpSFill />,
+        acces:['Ad','Rc'],
+        subNav: [
+            {
+                title: 'AjouterNouveau',
+                path: '/AjouterClient',
+                acces:['Rc'],
+                icon: <AiIcons.AiOutlineUserAdd/>,
+            },
+            {
+                title: 'ToutesLesClient',
+                path: '/ListeClients',
+                acces:['Ad','Rc'],
+                icon: <CgIcons.CgUserList/>,
+            },
+        ]
     }
+    
 ];

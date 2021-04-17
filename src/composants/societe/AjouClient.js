@@ -15,6 +15,7 @@ import { useHistory } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: 'relative',
+        zIndex:0
       },
     layout: {
       width: 'auto',
@@ -115,7 +116,7 @@ const AjouClient=()=> {
   let history = useHistory();
   
   const ajoutCon=()=>{
-    history.push("/ajouterContrat/"+idCl+"/"+raisonSociale)
+    history.push("/ajouterContrat/"+idCl+"/"+raisonSociale,{page:'/AjouterClient'})
   }
   return (
     <>

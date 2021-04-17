@@ -10,29 +10,39 @@ import SaveIcon from '@material-ui/icons/Save';
 import Axios from 'axios';
 import { useState ,useEffect} from 'react';
 import MessageInfo from '../MessageInfo'
+import { useHistory } from "react-router-dom";
 
 
 const ZoneAffectaion=(props)=>{
-        const{id,raisonSociale,inter,period,etat}=useParams()
+        let history = useHistory();
         const [intervenants,setIntervenants]=useState([])
         const [intervenant,setIntervenant]=useState('')
         const [periode,setPeriode]=useState(24)
         const [etatActuel,setEtatActuel]=useState('')
         const [intervenantLabel,setIntervenantLabel]=useState('')
-       
+        const [interv,setInterv]=useState(history.location.state.interv)
+        const [contrat,setContrat]=useState()
+        
+
+         
+        
         useEffect(() => {
             Axios.get(`http://localhost:3001/api/v1/membSociete/getMembSocietesRole/${"In"}`)
             .then((res)=>{
                 setIntervenants(res.data.data);
             
             }) 
-            setEtatActuel(etat)        
-            if (inter!=="None"){
-                Axios.get(`http://localhost:3001/api/v1/membSociete/${inter}`)
+            Axios.get("http://localhost:3001/api/v1/contrat/"+interv.contrat)
+            .then((res)=>{
+                setContrat(res.data.data);
+            })
+            setEtatActuel(interv.etat)       
+            if (interv.IDintervenant!==""){
+                Axios.get(`http://localhost:3001/api/v1/membSociete/${interv.IDintervenant}`)
                 .then((res)=>{
                     setIntervenantLabel(res.data.data.nom+" "+res.data.data.prenom);
                      })
-                setPeriode(period)   
+                setPeriode(interv.periodeTrai)   
                   
             }
         
@@ -41,17 +51,17 @@ const ZoneAffectaion=(props)=>{
 
          
     
-        const Affecter=()=>{
+        const Affecter=(role)=>{
            
             const ob={
-                IDintervenant:intervenant,
+                IDintervenant:role==='Ri'?intervenant:localStorage.getItem('user'),
                 periodeTrai:periode,
                 etat:"En cour"
             }
             
             console.log(ob)
-            if(intervenant!==""){
-            Axios.patch(`http://localhost:3001/api/v1/intervention/${id}`,ob ).then(()=>{
+            if(intervenant!==""||role!=='Ri'){
+            Axios.patch(`http://localhost:3001/api/v1/intervention/${interv._id}`,ob ).then(()=>{
                 console.log("seccess");
                 setEtatActuel("En cour")                
             })
@@ -66,16 +76,17 @@ const ZoneAffectaion=(props)=>{
         const composant=etatActuel==="Clôturée"
         ?<MessageInfo >Cette demande a été affectuer a l'intervenant <b> {intervenantLabel}</b>  </MessageInfo>
         :etatActuel==="En attente"
-        ?<Button variant="contained"color="primary"style={{backgroundColor:'rgb(0, 153, 204)'}}startIcon={<SaveIcon />}onClick={Affecter}>Affecter</Button> 
-        :<Button variant="contained"color="primary"style={{backgroundColor:'#ffc107'}}startIcon={<SaveIcon />}onClick={Affecter}>Reaffecter</Button>          
+        ?<Button variant="contained"color="primary"style={{backgroundColor:'rgb(0, 153, 204)'}}startIcon={<SaveIcon />}onClick={()=>{Affecter('Ri')}}>Affecter</Button> 
+        :<Button variant="contained"color="primary"style={{backgroundColor:'#ffc107'}}startIcon={<SaveIcon />}onClick={()=>{Affecter('Ri')}}>Reaffecter</Button>          
         
         return (<div className="container" style={{border:'2px rgb(0, 153, 204) solid',borderRadius:'50px',marginTop:'20px',padding:'20px'}}>
-                <Row>
-                <Col sm={6} >
+                <Row >
+                <Col sm={[localStorage.getItem('userRole')].indexOf('Ri')===-1?12:6} >
                     <h2  className="text-info" style={{textAlign:'center'}}>La Demande D'intervention </h2><br/><br/>
-                    <Interv idt={id} traiter={false} raisonSociale={raisonSociale}/>
+                    <Interv contenu={interv} contrat={history.location.state.contrat} traiter={false} raisonSociale={history.location.state.raisonSociale}/>
+                    <Button variant="contained"color="primary" hidden={etatActuel!=="En attente" ||[localStorage.getItem('userRole')].indexOf('In')===-1 } style={{backgroundColor:'rgb(0, 153, 204)',left:"40%"}} startIcon={<SaveIcon />}endIcon={<SaveIcon />}onClick={()=>{Affecter('In')}}>Prendre en charge</Button> 
                 </Col>  
-                <Col sm={6} >
+                <Col sm={6} hidden={[localStorage.getItem('userRole')].indexOf('Ri')===-1}>
                     <h2  className="text-info" style={{textAlign:'left'}}>Zone D'affectation </h2><br/><br/>
                     <Form>
                         <Form.Group as={Row}  controlId="formHorizontalEmail">
@@ -91,7 +102,7 @@ const ZoneAffectaion=(props)=>{
                                 options={intervenants}
                                 getOptionLabel={(option) => {return (option.nom+" "+option.prenom)}}
                                 style={{ width: 300 }}
-                                disabled={etatActuel==="Cloturée"}
+                                disabled={etatActuel==="Clôturée"}
                                 onChange={ (event, values) => {
                                     setIntervenant(values._id);
                                     setIntervenantLabel("Intervenant")    
@@ -117,7 +128,7 @@ const ZoneAffectaion=(props)=>{
                                         onChange={(event)=>{
                                             setPeriode(event.target.value)
                                         }}
-                                        disabled={etatActuel==="Cloturée"}
+                                        disabled={etatActuel==="Clôturée"}
                                          style={{ width: 100 }}
                                     /> 
                             </Form.Label>

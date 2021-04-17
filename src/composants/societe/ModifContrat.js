@@ -16,8 +16,7 @@ import { useHistory } from "react-router-dom";
 
 
 
-const AjoutContrat=()=>{
-    const{idClient,raisonSocial}=useParams()
+const ModifContrat=()=>{
     const [type,setType]=useState("Garantie")
     const [visitesMainPreventive,setVisitesMainPreventive]=useState(0)
     const [visitesMainCurative,setVisitesMainCurative]=useState(0)
@@ -25,7 +24,6 @@ const AjoutContrat=()=>{
     const [contact,setContact]=useState("")
     const [telContact,setTelContact]=useState("")
     const [emailContact,setEmailContact]=useState("")
-    const [nbrContrat,setNbrContrat]=useState(0)
     const [messageInfo, setMessageInfo] = useState(<div></div>);
     const [erreur,setErreur]=useState(false);
     let history = useHistory();
@@ -36,15 +34,20 @@ const AjoutContrat=()=>{
         setTimeout(()=>{setErreur(false)},4000);
       }
     useEffect(() => {
-        Axios.get(`http://localhost:3001/api/v1/contrat/getContratsClient/${idClient}`)
-        .then(res => {
-          setNbrContrat(res.data.data.length)
-          })
-    }, [idClient])
-    const ajouter=()=>{
-
+          Axios.get(`http://localhost:3001/api/v1/contrat/${history.location.state.idContrat}`)
+          .then(res => {
+            setType(res.data.data.type)
+            setVisitesMainPreventive(res.data.data.visitesMainPreventive)
+            setVisitesMainCurative(res.data.data.visitesMainCurative)
+            setPrixInterSupp(res.data.data.prixInterSupp)
+            setContact(res.data.data.contact)
+            setTelContact(res.data.data.telContact)
+            setEmailContact(res.data.data.emailContact)
+      })
+     }
+    , [])
+    const modifier=()=>{
         const ob={
-            IDclient:idClient,
             type,
             visitesMainPreventive,
             visitesMainCurative,
@@ -55,11 +58,9 @@ const AjoutContrat=()=>{
         }
         if(type!=="" && visitesMainPreventive!=="" && visitesMainCurative!=="" &&
         prixInterSupp!=="" && contact!=="" && telContact!=="" &&  emailContact!==""){
-        Axios.post('http://localhost:3001/api/v1/contrat',ob ).then( res => {
-            setMessageInfo(<MessageInfo >le nouveau contrat à ajouter avec succès </MessageInfo>);
+        Axios.patch(`http://localhost:3001/api/v1/contrat/${history.location.state.idContrat}`,ob ).then( res => {
+            setMessageInfo(<MessageInfo >La modification est passée avec succès </MessageInfo>);
             console.log("seccues")
-            setNbrContrat(nbrContrat+1)
-            document.getElementById("form").reset();
 
         })
         }else{
@@ -75,8 +76,7 @@ const AjoutContrat=()=>{
     
     return(
         <div className='container' style={{marginBottom:'20px',padding:'20px'}}> 
-          <h1 align='center'>Ajout des contrats</h1>
-          <h2 >{raisonSocial}   <p style={{float:'right'}} >{nbrContrat} :Contrat(s)</p> </h2><hr/><br/>
+          <h1 > Modifier Contrat   <p style={{float:'right'}} >bank</p> </h1><hr/><br/>
           <form id="form" >
             <Row style={{marginLeft:'15%'}}> 
             <Col sm={8}>
@@ -119,7 +119,7 @@ const AjoutContrat=()=>{
                     </Form.Label>
                     
                     <Col >
-                        <TextField required id="nVistePreventive" name="nVistePreventive"  label="Nombre viste par anneé"
+                        <TextField required id="nVistePreventive" name="nVistePreventive"  label="Nombre viste par anneé" value={visitesMainPreventive}
                             type="number" fullWidth onChange={(event)=>{setVisitesMainPreventive(event.target.value);setMessageInfo(<div></div>)}} />
                     </Col>
                 </Form.Group>
@@ -129,7 +129,7 @@ const AjoutContrat=()=>{
                         Nombre de visites de maintenance curative par an
                     </Form.Label>
                     <Col >
-                        <TextField required id="nVisteCurative" name="nVisteCurative"  label="Nombre viste par anneé"
+                        <TextField required id="nVisteCurative" name="nVisteCurative"  label="Nombre viste par anneé" value={visitesMainCurative}
                             type="number" fullWidth onChange={(event)=>{setVisitesMainCurative(event.target.value);setMessageInfo(<div></div>)}} />
                     </Col>
                 </Form.Group>
@@ -140,7 +140,7 @@ const AjoutContrat=()=>{
                     </Form.Label>
                     
                     <Col >
-                    <TextField required id="prixUnitaire" name="prixUnitaire"  label="Prix"
+                    <TextField required id="prixUnitaire" name="prixUnitaire"  label="Prix" value={prixInterSupp}
                             type="number" fullWidth onChange={(event)=>{setPrixInterSupp(event.target.value);setMessageInfo(<div></div>)}} />
                     </Col>
                 </Form.Group>
@@ -150,7 +150,7 @@ const AjoutContrat=()=>{
                          Contact
                     </Form.Label>
                     <Col >
-                         <TextField id="Contact" label="Contact"   onChange={(event)=>{ setContact(event.target.value);setMessageInfo(<div></div>) }} />
+                         <TextField id="Contact" label="Contact" value={contact}   onChange={(event)=>{ setContact(event.target.value);setMessageInfo(<div></div>) }} />
                     </Col>
                 </Form.Group>
 
@@ -160,7 +160,7 @@ const AjoutContrat=()=>{
                         N° téléphone contact
                     </Form.Label>
                     <Col >
-                       <TextField id="tel" label="Tel" type="tel"  onChange={(event)=>{ setTelContact(event.target.value) ;setMessageInfo(<div></div>)}} />
+                       <TextField id="tel" label="Tel" type="tel"   value={telContact}onChange={(event)=>{ setTelContact(event.target.value) ;setMessageInfo(<div></div>)}} />
                     </Col>
                 </Form.Group>
 
@@ -176,7 +176,7 @@ const AjoutContrat=()=>{
                                 label="Adresse email"
                                 fullWidth
                                 type="email"
-                                
+                                value={emailContact}
                                 onChange={(event)=>{setEmailContact(event.target.value);setMessageInfo(<div></div>)}}
                             />
                     </Col>
@@ -196,11 +196,11 @@ const AjoutContrat=()=>{
                     <Button
                                 variant="contained"
                                 color="primary"
-                                style={{backgroundColor:'rgb(0, 153, 204)'}}
-                                onClick={ajouter}
+                                style={{backgroundColor:'#ffea00'}}
+                                onClick={modifier}
                                 endIcon={<SaveIcon />}
                             >
-                                Enregistrer
+                                Modifier
                     </Button> 
                 
                 </Col>
@@ -217,4 +217,4 @@ const AjoutContrat=()=>{
     )
 }
 
-export default AjoutContrat;
+export default ModifContrat;

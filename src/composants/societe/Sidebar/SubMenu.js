@@ -40,15 +40,30 @@ font-size: 18px;
 }
 `;
 
-const SubMenu = ({ item }) => {
+const SubMenu = (props) => {
+    const { item,fn,role} = props
+    
     const [subnav, setSubnav] = useState(false);
     const showSubnav = () => setSubnav(!subnav);
+    const showItem=(listeval,item)=>{
+        let verif = false
+         listeval.forEach(val => {
+             if (item.indexOf(val)>-1){
+                verif=true;
+             }
+                  
+         } 
+         );
+         return verif 
+    }
+    //console.log(showItem([1,2,7],[7,0,5])) 
+    
     return (
         <>
-        <SidebarLink to={item.path} onClick={item.subNav && showSubnav}>
-            <div>
+        <SidebarLink to={item.path} hidden={!showItem([role,'Ad','Ri','Rc'],item.acces) } onClick={()=>{!item.subNav?fn() :showSubnav() }}>
+            <div  >
                 {item.icon}
-                <SidebarLabel>{item.title}</SidebarLabel>
+                <SidebarLabel  >{item.title}</SidebarLabel>
             </div>
             <div>
                 {item.subNav && subnav ? item.iconOpened : item.subNav ? item.iconClosed : null }
@@ -56,9 +71,9 @@ const SubMenu = ({ item }) => {
         </SidebarLink>
         {subnav && item.subNav.map((item, index) => {
             return (
-            <DropdownLink to={item.path} key={index}>
+            <DropdownLink to={item.path} hidden={!showItem([role,'Ad','Ri','Rc'],item.acces) } onClick={()=>{fn();showSubnav() }}   key={index}>
                 {item.icon}
-                <SidebarLabel>{item.title}</SidebarLabel>
+                <SidebarLabel  >{item.title}</SidebarLabel>
             </DropdownLink>
             )
         })}

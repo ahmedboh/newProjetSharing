@@ -3,11 +3,14 @@ import React,{ useState ,useEffect} from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import '../../style/ticket.css';
 import Axios from 'axios';
-
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import IconButton from '@material-ui/core/IconButton';
+import BackspaceIcon from '@material-ui/icons/Backspace';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import  Button  from 'react-bootstrap/Button';
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+
 function CircularProgressWithLabel(props) {
  const circulaire= props.etat==='En attente'
   ? <CircularProgress color="secondary"  />
@@ -68,11 +71,12 @@ function CircularStatic(props){
 
 
 const IntervCompresse=(props)=>{
-    const {contenu,styleP,ouvrir,naviguer}=props 
+    const {contenu,styleP,ouvrir,naviguer,supprimerDemande}=props 
   
     const [btn,setBtn]= useState(true)
     const [raisonSociale,setRaisonSociale]=useState("");
     const [contrat,setContrat]=useState("contrat");
+    let history = useHistory();
     
 
     
@@ -87,25 +91,27 @@ const IntervCompresse=(props)=>{
             
                 if (contr._id === contenu.contrat) setContrat("contrat n° "+(index+1))
             }) 
-            })
-      
-            
-            
+            })      
 
     },[contenu.IDclient])
+    const affecter =()=>{
+      history.push("/affecter",{interv:contenu,raisonSociale,contrat})
+    }
     return( 
     <Card border={styleP[0]}  onMouseOver={()=>{setBtn(false)}} onMouseLeave={()=>{setBtn(true)}} className="intervCompresse" >
         <b><Card.Header  className={styleP[1]}>{raisonSociale} <CircularStatic status={contenu.etat} />  </Card.Header></b>
         <Card.Body>
         <center>
-        <Card.Title ><h6>{contenu.dateCreation} | {contenu.heureCreation}</h6></Card.Title>
+        <Card.Title ><h6>{contenu.dateCreation} | {contenu.heureCreation} &nbsp;&nbsp; </h6> </Card.Title>
+        {!naviguer &&<IconButton color="secondary" hidden={([localStorage.getItem('userRole'),'Ad'].indexOf('Ad')===-1)}  style={{position:'absolute',top:'50px',right:'-10px' }}  onClick={()=>{supprimerDemande(contenu._id)}}  aria-label="delete"  ><DeleteSweepIcon  hidden={btn}  fontSize='large' /> </IconButton>}
         </center>
         <Card.Text>
             {contenu.nature} <br/>
             {contrat}    
             {!naviguer
-            ?<Link  to={'/affecter/'+contenu._id+'/'+raisonSociale+'/'+(contenu.IDintervenant===''?"None":contenu.IDintervenant)+'/'+contenu.periodeTrai+"/"+contenu.etat}> <Button hidden={btn}  className="ouvrirInterv btn-sm">  OUVRIR</Button></Link> 
-            : <Button hidden={btn} onClick={()=>{ouvrir(contenu,raisonSociale)}} id={contenu._id} className="ouvrirInterv btn-sm">  OUVRIR</Button>     
+            //?<Link  to={'/affecter/'+contenu._id+'/'+raisonSociale+'/'+(contenu.IDintervenant===''?"None":contenu.IDintervenant)+'/'+contenu.periodeTrai+"/"+contenu.etat}> <Button hidden={btn}  className="ouvrirInterv btn-sm">  OUVRIR</Button></Link> 
+            ?  <Button hidden={btn} onClick={affecter} className="ouvrirInterv btn-sm">  OUVRIR</Button>
+            : <Button hidden={btn} onClick={()=>{ouvrir(contenu,raisonSociale,contrat)}}  className="ouvrirInterv btn-sm">  OUVRIR</Button>     
             }<br/>
         </Card.Text>
         

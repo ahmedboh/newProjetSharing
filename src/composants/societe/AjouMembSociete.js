@@ -18,6 +18,7 @@ import MessageInfo from '../MessageInfo';
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: 'relative',
+        zIndex:0
       },
     layout: {
       width: 'auto',
@@ -83,7 +84,7 @@ const AjouMembSociete=()=> {
   return (
     <>
       <AppBar position="absolute" xs={12} color="default" className={classes.appBar}>
-        <Toolbar>
+        <Toolbar >
           <Typography variant="h6" color="inherit" noWrap>
             Ajouter un nouveau membre de la société
           </Typography>

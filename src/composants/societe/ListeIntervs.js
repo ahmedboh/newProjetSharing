@@ -25,6 +25,7 @@ const ListeIntervs=()=>{
     
     
     
+
     const trirerParPriorite = tab =>{
         var tabCritique=[]
         var tabUrgent=[]
@@ -76,7 +77,17 @@ const ListeIntervs=()=>{
         })
         
       
-    } 
+    }
+    
+    const supprimerDemande=(id)=>{
+        Axios.delete(`http://localhost:3001/api/v1/intervention/`+id)
+        .then((res)=>{
+           console.log(res)
+           listeDemande({filters:Filters})
+        })
+    
+           
+    }
     useEffect(() => {
         listeDemande({filters:Filters})
     
@@ -95,7 +106,7 @@ const ListeIntervs=()=>{
          setFilters(newFilters)
     }
     
-    const charger=(listeDd)=> setFormRow( listeDd.map((dde,index)=>{return(<Grid key={index} item   lg={3} md={4} xs={12} > <IntervCompresse naviguer={false} contenu={dde}  styleP={stylePr(dde.priorite)}/></Grid>)}))   
+    const charger=(listeDd)=> setFormRow( listeDd.map((dde,index)=>{return(<Grid key={index} item   lg={3} md={4} xs={12} > <IntervCompresse naviguer={false} contenu={dde} supprimerDemande={supprimerDemande} styleP={stylePr(dde.priorite)}/></Grid>)}))   
     
     return(<div style={{padding:'2%',backgroundColor:'#e0e0e0',margin:'5%',borderRadius:'50px',border:'1px rgb(0, 153, 204) solid'}}>
         

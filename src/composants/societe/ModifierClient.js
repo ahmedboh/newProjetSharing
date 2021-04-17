@@ -57,7 +57,7 @@ const ModifierClient=()=> {
     const [erreur,setErreur]=useState(false);
     const [messageInfo, setMessageInfo] = useState(<div></div>);
     const [idCl,setIdCl]=useState("");
-
+    let history = useHistory();
     
     const classes = useStyles();
     
@@ -107,7 +107,7 @@ const ModifierClient=()=> {
         event.preventDefault();
     }
    
-  let history = useHistory();
+
   
   const ajoutCon=()=>{
     history.push("/ajouterContrat/"+idCl)

@@ -25,10 +25,10 @@ const ListeIntervIntervenant=()=>{
 
     
     
-    const ouvrirInterv=(interv,raisonSociale)=>{
+    const ouvrirInterv=(interv,raisonSociale,contrat)=>{
         setIntervActuel(true)
           console.log(interv)
-          setIntervDetaille(<Interv contenu={interv} raisonSociale={raisonSociale} traiter={true} />)
+          setIntervDetaille(<Interv contenu={interv} contrat={contrat} raisonSociale={raisonSociale} traiter={true} />)
     }
 
     const stylePr=(priorite)=>{
