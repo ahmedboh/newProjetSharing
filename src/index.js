@@ -24,16 +24,19 @@ import SignInM from './composants/societe/SignIn';
 import Accueil from './composants/societe/Accueil';
 
 
-import Navbar from './composants/societe/Navbar'
-
+import Navbar from './composants/clientelle/Navbar'
+ 
 const Index =()=> {
 
     const [connect,setConnect]=useState(true)
+    const [connectCl,setConnectCl]=useState(true)
+
 
    
     
     setInterval(()=>{
       setConnect(localStorage.getItem('user')===null?true:false);
+      setConnectCl(localStorage.getItem('idClient')===null?true:false);
   }, 1000);
     
   
@@ -41,10 +44,14 @@ const Index =()=> {
              <Router>
                <span hidden={connect} >
              <Sidebar fn={setConnect} /> </span>
-             {/* <Navbar/> */}
+             <span hidden={connectCl} >
+             <Navbar fn={setConnectCl} />
+             </span>
                 <Switch>
                   <Route exact path="/"  ><SignInM  /></Route>
-                  <Route  path="/accueil"  ><Accueil  /></Route>
+                  <Route path="/SignInClient"  ><SignIn /></Route>
+                  {!connect&&
+                  <><Route  path="/accueil"  ><Accueil  /></Route>
                   <Route  path="/liste"  ><ListeIntervs/></Route>   
                   <Route path="/maliste" ><ListeIntervIntervenant/></Route>
                   <Route path="/affecter" ><ZoneAffectaion/></Route>
@@ -54,12 +61,13 @@ const Index =()=> {
                   <Route path="/SignInClient"  ><SignIn /></Route>
                   <Route path="/ajouterContrat/:idClient/:raisonSocial"  ><AjoutContrat /></Route>
                   <Route path="/modifierContrat"  ><ModifContrat /></Route>
-                  <Route path="/appClient/de"  ><DeposerInterv    /></Route>
                   <Route path="/ListeClients"><ListeClients/></Route>
                   <Route path="/listeContrat"><ListeContrart/></Route>
                   <Route path="/ListeMembSocietes"><ListeMembSocietes/></Route>
                   <Route path="/ModifierClient"><ModifierClient/></Route>
-                  <Route path="/ModifierMembSociete"><ModifierMembSociete/></Route>
+                  <Route path="/ModifierMembSociete"><ModifierMembSociete/></Route></>
+                  }
+                  {!connectCl&&<Route path="/appClient/de"  ><DeposerInterv    /></Route>}
                 </Switch>
               </Router>
             </div>  
@@ -67,6 +75,32 @@ const Index =()=> {
 }
 
 
+const IndexClient =()=> {
+
+  const [connectCl,setConnectCl]=useState(true)
+
+
+ 
+  
+  setInterval(()=>{
+    setConnectCl(localStorage.getItem('idClient')===null?true:false);
+}, 1000);
+  
+
+  return (<div>
+           <Router>
+           <span hidden={connectCl} >
+           <Navbar fn={setConnectCl} />
+           </span>
+              <Switch>
+                <Route exact path="/"  ><SignIn  /></Route>
+                <Route path="/appClient/de"  ><DeposerInterv    /></Route>
+              
+              </Switch>
+            </Router>
+          </div>  
+            )
+}
 ReactDOM.render(
   <React.StrictMode>
    <Index></Index>

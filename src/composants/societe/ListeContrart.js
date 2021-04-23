@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import Axios from 'axios';
-import PropTypes from 'prop-types';
-import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,96 +11,18 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import LastPageIcon from '@material-ui/icons/LastPage';
 import DeleteIcon from '@material-ui/icons/Delete';
-import RestorePageIcon from '@material-ui/icons/RestorePage';
 import { useHistory } from "react-router-dom";
 import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import {TablePaginationActions ,StyledTableCell,useStyles2} from './TablePaginationActions'
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import UpdateIcon from '@material-ui/icons/Update';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
-const useStyles1 = makeStyles((theme) => ({
-  root: {
-    flexShrink: 0,
-    marginLeft: theme.spacing(2.5),
-  },
-}));
-const StyledTableCell = withStyles((theme) => ({
-    head: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    body: {
-      fontSize: 14,
-    },
-  }))(TableCell);
-
-function TablePaginationActions(props) {
-  const classes = useStyles1();
-  const theme = useTheme();
-  const { count, page, rowsPerPage, onChangePage } = props;
-
-  const handleFirstPageButtonClick = (event) => {
-    onChangePage(event, 0);
-  };
-
-  const handleBackButtonClick = (event) => {
-    onChangePage(event, page - 1);
-  };
-
-  const handleNextButtonClick = (event) => {
-    onChangePage(event, page + 1);
-  };
-
-  const handleLastPageButtonClick = (event) => {
-    onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
-  
-  return (
-    <div className={classes.root}>
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
-      >
-        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-      </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-      </IconButton>
-    </div>
-  );
-}
-
-TablePaginationActions.propTypes = {
-  count: PropTypes.number.isRequired,
-  onChangePage: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
-};
-
-const useStyles2 = makeStyles({
-  table: {
-    minWidth: 500,
-  },
-});
-
-export default function ListeContrat() {
+const ListeContrat=()=>{
     const [rows , setRows ]=useState([]);
     const classes = useStyles2();
     const [page, setPage] = useState(0);
@@ -140,65 +61,24 @@ export default function ListeContrat() {
     },
   });
 
-  function Row(props) {
-    const { row } = props;
-    const [open, setOpen] = useState(false);
-    const classes = useRowStyles();
-    return (
-      <>
-        <TableRow className={classes.root}>
-          <TableCell component="th" scope="row" align="center">
-            {row.type}
-          </TableCell>
-          <TableCell style={{ width: 160 }} align="center">
-            {row.visitesMainPreventive}
-          </TableCell>
-          <TableCell style={{ width: 160 }} align="center">
-            {row.visitesMainCurative}
-          </TableCell>
-          <TableCell style={{ width: 160 }} align="center">
-            {row.prixInterSupp}
-          </TableCell>
-          <TableCell style={{ width: 160 }} align="center">
-            {row.contact}
-          </TableCell>
-          <TableCell style={{ width: 160 }} align="center">
-            {row.telContact} 
-          </TableCell>
-          <TableCell style={{ width: 160 }} align="center">
-          {row.telContact}
-          </TableCell>
-          <TableCell style={{ width: 160 }} align="center">
-          {row.emailContact}
-          </TableCell>
-          <TableCell style={{ width: 160 }} align="center">
-          <IconButton component="span"onClick={() => {
-            history.push("/modifierContrat",{idContrat:row._id,page:'/listeContrat',idClient:history.location.state.idClient})
-          }}>
-            <RestorePageIcon />
-          </IconButton>      
-          <IconButton color="secondary" component="span" onClick={() => {
-            Axios.delete(`http://localhost:3001/api/v1/contrat/${row._id}`)
-            .then(res => {
-                listeContrat()
-            });
-          }}>
-            <DeleteIcon />
-          </IconButton>  
-          </TableCell>
-        </TableRow>
-      </>
-    );
-  }
+  
   
   return (
-    <TableContainer component={Paper}>
+    <>
+    <AppBar  xs={12} color="default" style={{position: 'relative',zIndex:0,marginBottom:20}}>
+        <Toolbar >
+          <Typography variant="h6" style={{paddingLeft:'40%'}} color="inherit" noWrap>
+           <b>{history.location.state.raisonSociale}</b> : Liste de contrats 
+          </Typography>
+        </Toolbar>
+      </AppBar>
+    <TableContainer  component={Paper}>
       <Table className={classes.table} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
             <StyledTableCell align="center">Type de contrat </StyledTableCell>
-            <StyledTableCell align="center">Nombre de visites de maintenance préventive par an</StyledTableCell>
-            <StyledTableCell align="center">Nombre de visites de maintenance curative par an</StyledTableCell>
+            <StyledTableCell align="center">Visites de maintenance préventive</StyledTableCell>
+            <StyledTableCell align="center">Visites de maintenance curative</StyledTableCell>
             <StyledTableCell align="center">Prix unitaire des interventions supplémentaires</StyledTableCell>
             <StyledTableCell align="center">Contact</StyledTableCell>
             <StyledTableCell align="center">Liste des contrats</StyledTableCell>
@@ -212,7 +92,47 @@ export default function ListeContrat() {
             ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : rows
           ).map((row) => (
-            <Row key={row.name} row={row} />
+            <TableRow key={row._id} className={classes.root}>
+                <TableCell component="th" scope="row" align="center">
+                  {row.type}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="center">
+                  {row.visitesMainPreventive}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="center">
+                  {row.visitesMainCurative}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="center">
+                  {row.prixInterSupp}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="center">
+                  {row.contact}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="center">
+                  {row.telContact} 
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="center">
+                {row.telContact}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="center">
+                {row.emailContact}
+                </TableCell>
+                <TableCell style={{ width: 160 }} align="center">
+                <IconButton component="span"onClick={() => {
+                  history.push("/modifierContrat",{idContrat:row._id,page:'/listeContrat',idClient:history.location.state.idClient,raisonSociale:history.location.state.raisonSociale})
+                }}>
+                  <UpdateIcon />
+                </IconButton>      
+                <IconButton color="secondary" component="span" onClick={() => {
+                  Axios.delete(`http://localhost:3001/api/v1/contrat/${row._id}`)
+                  .then(res => {
+                      listeContrat()
+                  });
+                }}>
+                  <DeleteIcon />
+                </IconButton>  
+                </TableCell>
+              </TableRow>
           ))}
 
           {emptyRows > 0 && (
@@ -222,13 +142,10 @@ export default function ListeContrat() {
           )}
         </TableBody>
         <TableFooter>
-          <TableRow style={{position:'absolute',width:'100%'}}>
-          <Button variant="outlined" color="secondary"  style={{width: '300px', position:'relative',left:'10px' ,top :'5px'}} size="medium" onClick={()=>{
-              history.push('/ListeClients')
-          }}>Retourner à liste </Button>
+          <TableRow >
+          
             
             <TablePagination
-               style={{ position:'relative',left:'80%' ,top :'-50px'}}
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
               colSpan={6}
               count={rows.length}
@@ -242,12 +159,33 @@ export default function ListeContrat() {
               onChangeRowsPerPage={handleChangeRowsPerPage}
               ActionsComponent={TablePaginationActions}
             />
-          <Button variant="outlined" color="primary"  style={{ width: '300px', position:'absolute',right:'10px' ,top :'5px' }}  size="medium"onClick={()=>{
-                history.push("/ajouterContrat/"+history.location.state.idClient+"/"+history.location.state.raisonSociale,{page:'/listeContrat'})
-          }}>Ajouter un nouveau </Button>
           </TableRow>
         </TableFooter>
       </Table>
     </TableContainer>
+    <Row style={{margin:"10px"}}>
+    <Col> 
+    <Button variant="outlined"
+            color="secondary"  
+            style={{width: '300px'}} 
+            size="medium" 
+            onClick={()=>{
+              history.push('/ListeClients')
+           }}
+          >Retourner à liste </Button></Col>
+      <Col sm={6}></Col>  
+     <Col>  
+     <Button  variant="outlined" 
+              color="primary"
+              style={{ width: '300px'}}  
+              size="medium"
+              onClick={()=>{
+                history.push("/ajouterContrat/"+history.location.state.idClient+"/"+history.location.state.raisonSociale,{page:'/listeContrat',idClient:history.location.state.idClient})
+              }}
+             >Ajouter un nouveau </Button> </Col>
+    </Row>        
+    </>
   );
 }
+
+export default  ListeContrat;

@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Axios from 'axios';
-import PropTypes from 'prop-types';
-import { makeStyles, useTheme, withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,95 +10,15 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import LastPageIcon from '@material-ui/icons/LastPage';
 import DeleteIcon from '@material-ui/icons/Delete';
-import RestorePageIcon from '@material-ui/icons/RestorePage';
 import { useHistory } from "react-router-dom";
+import {TablePaginationActions ,StyledTableCell,useStyles2} from './TablePaginationActions'
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import UpdateIcon from '@material-ui/icons/Update';
 
-const useStyles1 = makeStyles((theme) => ({
-  root: {
-    flexShrink: 0,
-    marginLeft: theme.spacing(2.5),
-  },
-}));
-const StyledTableCell = withStyles((theme) => ({
-    head: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    body: {
-      fontSize: 14,
-    },
-  }))(TableCell);
-
-function TablePaginationActions(props) {
-  const classes = useStyles1();
-  const theme = useTheme();
-  const { count, page, rowsPerPage, onChangePage } = props;
-
-  const handleFirstPageButtonClick = (event) => {
-    onChangePage(event, 0);
-  };
-
-  const handleBackButtonClick = (event) => {
-    onChangePage(event, page - 1);
-  };
-
-  const handleNextButtonClick = (event) => {
-    onChangePage(event, page + 1);
-  };
-
-  const handleLastPageButtonClick = (event) => {
-    onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-  };
-  
-  return (
-    <div className={classes.root}>
-      <IconButton
-        onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
-        aria-label="first page"
-      >
-        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-      </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="next page"
-      >
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-      </IconButton>
-      <IconButton
-        onClick={handleLastPageButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-        aria-label="last page"
-      >
-        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-      </IconButton>
-    </div>
-  );
-}
-
-TablePaginationActions.propTypes = {
-  count: PropTypes.number.isRequired,
-  onChangePage: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
-};
-
-const useStyles2 = makeStyles({
-  table: {
-    minWidth: 500,
-  },
-});
-
-export default function ListeMembSocietes() {
+const  ListeMembSocietes=()=> {
   const [rows , setRows ]=useState([]);
   const listeMemebre=()=>{
     Axios.get(`http://localhost:3001/api/v1/membSociete`)
@@ -131,6 +49,14 @@ export default function ListeMembSocietes() {
   };
   
   return (
+    <>
+    <AppBar  xs={12} color="default" style={{position: 'relative',zIndex:0,marginBottom:20}}>
+        <Toolbar >
+          <Typography variant="h6" style={{paddingLeft:'40%'}} color="inherit" noWrap>
+            Liste de membre de societè 
+          </Typography>
+        </Toolbar>
+      </AppBar>
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="custom pagination table">
         <TableHead>
@@ -149,7 +75,7 @@ export default function ListeMembSocietes() {
             ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : rows
           ).map((row) => (
-            <TableRow className={classes.root}>
+            <TableRow key={row._id} className={classes.root}>
             <TableCell component="th" scope="row" align="center">
               {row.nom}
             </TableCell>
@@ -169,12 +95,11 @@ export default function ListeMembSocietes() {
               <IconButton color="primary" component="span" onClick={() => {
                 history.push("/ModifierMembSociete",{idMembSociete:row._id})
               }}>
-                <RestorePageIcon />
+                <UpdateIcon />
               </IconButton>  
             </TableCell>
             <TableCell style={{ width: 160 }} align="center">
               <IconButton color="secondary" component="span" onClick={() => {
-                console.log(row._id);
                 Axios.delete(`http://localhost:3001/api/v1/membSociete/${row._id}`)
                   .then(res => {
                     console.log(res);
@@ -197,12 +122,12 @@ export default function ListeMembSocietes() {
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-              colSpan={6}
+              colSpan={4}
               count={rows.length}
               rowsPerPage={rowsPerPage}
               page={page}
               SelectProps={{
-                inputProps: { 'aria-label': 'rows per page' },
+                inputProps: { 'aria-label': 'ligne par page' },
                 native: true,
               }}
               onChangePage={handleChangePage}
@@ -213,5 +138,7 @@ export default function ListeMembSocietes() {
         </TableFooter>
       </Table>
     </TableContainer>
+    </>
   );
 }
+export default ListeMembSocietes;

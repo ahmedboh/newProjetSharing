@@ -15,7 +15,8 @@ import FormLabel from '@material-ui/core/FormLabel';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import MessageInfo from '../MessageInfo';
 import { useHistory } from "react-router-dom";
-
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: 'relative',
@@ -56,6 +57,7 @@ const ModifierMembSociete=()=> {
     const [erreur,setErreur]=useState(false)
     const [messageInfo, setMessageInfo] = useState(<div></div>)
     const [idMS,setIdMS]=useState("");
+    const [showLabelMp,setShowLabelMp]=useState(true);
     let history = useHistory();
 
     useEffect(() => {
@@ -65,8 +67,6 @@ const ModifierMembSociete=()=> {
               setPrenom(res.data.data.prenom)
               setEmail(res.data.data.email)
               setRole(res.data.data.role)
-              setLogin(res.data.data.login)
-              setMotDePasse(res.data.data.motDePasse)
               setIdMS(res.data.data._id)
         })
     }, []);
@@ -76,19 +76,26 @@ const ModifierMembSociete=()=> {
       setErreur(true);
       setTimeout(()=>{setErreur(false)},4000);
     }
-    const envoyer=(event)=>{
-        const ob={
+    const envoyer=(event,r)=>{
+      const ob= r==="motdepasse"  
+      ?{
+        motDePasse
+      } 
+      :{
             nom,
             prenom,
             email,
             login,
-            motDePasse,
             role
         }
-        if(nom!=="" && prenom!=="" && email!=="" && login!=="" && motDePasse!=="" && role!=="" ){
+        if((nom!=="" && prenom!=="" && email!=="" && login!=="" && role!==""&& r!=='motdepasse')||(motDePasse!==""&&r!=='motdepasse') ){
         Axios.patch(`http://localhost:3001/api/v1/membSociete/${idMS}`,ob ).then( res => {
             setMessageInfo(<MessageInfo>le membre de la société <b> {nom} {prenom} </b>à été modifier avec succes !</MessageInfo> );
             console.log(res)
+            if (r==="motdepasse") {
+              setMotDePasse("")
+              setShowLabelMp(true)
+            }
         })
         }else{
           afficherErreur();
@@ -153,17 +160,6 @@ const ModifierMembSociete=()=> {
           />
         </Grid>
         <Grid item xs={12}>
-          <TextField
-            required
-            id="motDePasse"
-            name="motDePasse"
-            label="Mot de passe"
-            fullWidth
-            value={motDePasse}
-            onChange={(event)=>{setMotDePasse(event.target.value)}}
-          />
-        </Grid>
-        <Grid item xs={12}>
             <FormLabel component="legend">Rôle</FormLabel>
             <RadioGroup aria-label="gender" name="Rôle" value={role} onChange={(event)=>{setRole(event.target.value)}}>
                 <FormControlLabel value="Ad" control={<Radio />} label="Administrateur" />
@@ -186,6 +182,59 @@ const ModifierMembSociete=()=> {
             >
             Modifier
       </Button>
+      <Row hidden={showLabelMp}>
+            <Col style={{paddingLeft:'30px',paddingTop:'20px'}}>
+          <TextField
+            id="motDePasse"
+            name="motDePasse"
+            label="Nouveau mot de passe"
+            fullWidth 
+            value={motDePasse}
+            onChange={(event)=>{setMotDePasse(event.target.value)}}
+          />
+          </Col>
+          </Row>
+          <Row hidden={!showLabelMp}>
+           <Col>  
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            className={classes.button}
+            onClick={event=>{setShowLabelMp(!showLabelMp);event.preventDefault();}}
+            >
+              
+            Changer mot de passe
+          </Button>
+          </Col>
+          </Row>
+
+          <Row  hidden={showLabelMp}>
+          <Col>  
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            className={classes.button}
+            onClick={event=>{setShowLabelMp(!showLabelMp);event.preventDefault();}}
+            >
+              
+            Annuler
+          </Button>
+          </Col>
+          <Col>  
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            className={classes.button}
+            onClick={e=>{envoyer(e,'motdepasse')}}
+            >
+              
+            Enregister 
+          </Button>
+          </Col>
+          </Row>
       <Grid item xs={12}>
         {messageInfo}
       </Grid> 

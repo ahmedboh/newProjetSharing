@@ -1,8 +1,6 @@
 import { useParams } from 'react-router';
-import { Link } from "react-router-dom";
 import TextField from '@material-ui/core/TextField';
 import  'bootstrap/dist/css/bootstrap.min.css';
-import '../../style/ticket.css'
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -186,7 +184,7 @@ const AjoutContrat=()=>{
                 <br/>
                 <Col sm={8}>
                     <Button
-                       onClick={()=>history.push(history.location.state.page,{idClient:history.location.state.idClient})}
+                       onClick={()=>history.push(history.location.state.page,{idClient:history.location.state.idClient,raisonSociale:raisonSocial})}
                         variant="contained"
                         color="secondary"
                     >Terminer

@@ -108,12 +108,12 @@ const ListeIntervs=()=>{
     
     const charger=(listeDd)=> setFormRow( listeDd.map((dde,index)=>{return(<Grid key={index} item   lg={3} md={4} xs={12} > <IntervCompresse naviguer={false} contenu={dde} supprimerDemande={supprimerDemande} styleP={stylePr(dde.priorite)}/></Grid>)}))   
     
-    return(<div style={{padding:'2%',backgroundColor:'#e0e0e0',margin:'5%',borderRadius:'50px',border:'1px rgb(0, 153, 204) solid'}}>
-        
-        {/* <Collapse defaultActiveKey={['0']} style={{color:'blue' ,backgroundColor:'white'}} > */}
-        <Collapse defaultActiveKey={['0']}  >
-        <Panel header="FILTRAGE" key="1">
-        <Row>
+    return(<><br/><br/><br/>
+       <div className="container">
+     <Collapse defaultActiveKey={['0']}  style={{color:'darkblue' ,backgroundColor:'#e0e0e0'}} >
+        <Panel header="FILTRAGE" key="1" >
+        <br/>   
+        <Row style={{paddingLeft:20}}>
         <Col lg={6}>    
         <CheckAutoComplete type="clients"   handleFilters={handleFilters}></CheckAutoComplete>
         </Col>
@@ -122,7 +122,7 @@ const ListeIntervs=()=>{
         </Col>
         </Row>
         <hr/>
-        <Row>
+        <Row style={{paddingLeft:20}}>
         <Col lg={6}>    
         <CheckBoxType   handleFilters={handleFilters}></CheckBoxType>
         </Col>
@@ -131,7 +131,11 @@ const ListeIntervs=()=>{
         </Col>
         </Row>
         </Panel>
-        </Collapse>
+        </Collapse></div>
+    <div style={{padding:'2%',backgroundColor:'#e0e0e0',margin:'5%',borderRadius:'50px',border:'1px rgb(0, 153, 204) solid'}}>
+        
+        {/* <Collapse defaultActiveKey={['0']} style={{color:'blue' ,backgroundColor:'white'}} > */}
+        
         <br/><br/><br/>
         <Grid container spacing={1}>
             <Grid container item xs={12} spacing={2}>
@@ -144,6 +148,6 @@ const ListeIntervs=()=>{
         </Grid>
         
 
-    </div>)     
+    </div></>)     
 }
 export default ListeIntervs;

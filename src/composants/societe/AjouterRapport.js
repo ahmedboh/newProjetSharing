@@ -1,6 +1,6 @@
 import TextField from '@material-ui/core/TextField';
 import  'bootstrap/dist/css/bootstrap.min.css';
-import '../../style/ticket.css'
+import '../../style/interv.css'
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';

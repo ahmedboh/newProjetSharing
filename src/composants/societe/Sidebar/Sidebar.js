@@ -48,10 +48,14 @@ const SidebarWrap = styled.div`
 width: 100%;
 `;
 const Sidebar = () => {
+    let history = useHistory();
+    //if (localStorage.getItem('user')===null) history.push('/')
+   
     const [sidebar, setSidebar] = useState(false)
     const showSidebar = () => setSidebar(!sidebar)
-    let history = useHistory();
+   
 
+    
     const deconn=()=>{
         localStorage.removeItem('user')
         localStorage.removeItem('userNom')

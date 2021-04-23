@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +12,7 @@ import Container from '@material-ui/core/Container';
 import Axios from 'axios';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useHistory } from "react-router-dom";
+
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -33,16 +34,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignInMembre=(props)=> {
+  const SignInMembre=(props)=> {
   const classes = useStyles();
-  const [idUser,setIdUser]=useState("")
-  const [tokenUser,setTokenUser]=useState("")
   const [login,setLogin]=useState("")
   const [motDePasse,setMotDePasse]=useState("")
   const [loginErreur,setLoginErreur]=useState(false)
   const [motDePasseErreur,setMotDePasseErreur]=useState(false)
   let history = useHistory();
-
+  
+  useEffect(() => {
+    //console.log(window.location)
+    if (localStorage.getItem('idClient')!==null) localStorage.clear();
+    if (localStorage.getItem('user')!==null) history.push('/accueil');
+ }, [])
   const envoyer=(event)=>{
     const ob={
         login,
@@ -59,11 +63,12 @@ const SignInMembre=(props)=> {
                   localStorage.setItem('userPrenom',res2.data.data.prenom)
                   localStorage.setItem('userRole',res2.data.data.role)
                   localStorage.setItem('user',res.data.membSociete)
+                  history.push('/accueil')
                  })
 
               
               })
-              history.push('/accueil')
+              
         }else{
             setMotDePasseErreur(true)
         }
@@ -82,7 +87,7 @@ const SignInMembre=(props)=> {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Je me connecte22
+          Je me connecte
         </Typography>
         <form className={classes.form}>
           <TextField
@@ -104,8 +109,7 @@ const SignInMembre=(props)=> {
           </Alert>
           <TextField
             variant="outlined"
-            margin="normal"
-            
+            margin="normal" 
             fullWidth
             name="password"
             label="Mot de passe"
@@ -125,8 +129,7 @@ const SignInMembre=(props)=> {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={envoyer}
-          >
+            onClick={envoyer}>
             Connecter
           </Button>
           <Grid container>

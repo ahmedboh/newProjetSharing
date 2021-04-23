@@ -11,6 +11,8 @@ import Button from '@material-ui/core/Button';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import MessageInfo from '../MessageInfo';
 import { useHistory } from "react-router-dom";
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -57,6 +59,8 @@ const ModifierClient=()=> {
     const [erreur,setErreur]=useState(false);
     const [messageInfo, setMessageInfo] = useState(<div></div>);
     const [idCl,setIdCl]=useState("");
+    const [showLabelMp,setShowLabelMp]=useState(true);
+
     let history = useHistory();
     
     const classes = useStyles();
@@ -72,7 +76,6 @@ const ModifierClient=()=> {
               setNRegistreCommerce(res.data.data.nRegistreCommerce)
               setCodeTVA(res.data.data.codeTVA)
               setLogin(res.data.data.login)
-              setMotDePasse(res.data.data.motDePasse)
               setIdCl(res.data.data._id)
         })
     }, []);
@@ -81,24 +84,30 @@ const ModifierClient=()=> {
       setErreur(true);
       setTimeout(()=>{setErreur(false)},4000);
     }
-    const envoyer=(event)=>{
-        const ob={
-            raisonSociale,
-            adresse,
-            tel,
-            fax,
-            email,
-            nRegistreCommerce,
-            codeTVA,
-            login,
-            motDePasse
-        }
-        if(raisonSociale!=="" && adresse!=="" && tel!=="" &&
+    const envoyer=(event,r)=>{
+      const ob= r==="motdepasse"  
+      ?{
+        motDePasse
+      } 
+      : {
+        raisonSociale,
+        adresse,
+        tel,
+        fax,
+        email,
+        nRegistreCommerce,
+        codeTVA,
+        login
+      }
+        if((raisonSociale!=="" && adresse!=="" && tel!=="" &&
         email!=="" && nRegistreCommerce!=="" && codeTVA!=="" && 
-        login!=="" && motDePasse!==""&&fax!=="" ){
+        login!=="" &&fax!=="" &&r!=="motdepasse")||(motDePasse!==""&&r==="motdepasse") ){
         Axios.patch(`http://localhost:3001/api/v1/client/${idCl}`,ob ).then( res => {
-            setMessageInfo(<MessageInfo >le Client <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>);
-            console.log(res)
+            setMessageInfo(r!=="motdepasse"?<MessageInfo >le Client <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>:<MessageInfo >le mot de passe de  <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>);
+            if (r==="motdepasse") {
+              setMotDePasse("")
+              setShowLabelMp(true)
+            }
         })
         }else{
           afficherErreur()
@@ -216,32 +225,11 @@ const ModifierClient=()=> {
             onChange={(event)=>{setLogin(event.target.value)}}
           />
         </Grid>
-        <Grid item xs={12}>
-          <TextField
-            required
-            id="motDePasse"
-            name="motDePasse"
-            label="Mot de passe"
-            fullWidth
-            value={motDePasse}
-            onChange={(event)=>{setMotDePasse(event.target.value)}}
-          />
-        </Grid>
-      
       </Grid><br/>
       <Alert severity="error" hidden={!erreur} >
         <AlertTitle style={{fontSize:"14px",paddingLeft:"10vw"}}>Veuillez remplir tous les champs</AlertTitle>
       </Alert>
-      <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            className={classes.button}
-            onClick={ajoutCon}
-            >
-            Ajouter des contrats
-      </Button>
-      
+
       <Button
             type="submit"
             fullWidth
@@ -251,6 +239,60 @@ const ModifierClient=()=> {
             >
             Modifier
       </Button>
+    
+          <Row hidden={showLabelMp}>
+            <Col style={{paddingLeft:'30px',paddingTop:'20px'}}>
+          <TextField
+            id="motDePasse"
+            name="motDePasse"
+            label="Nouveau mot de passe"
+            fullWidth 
+            value={motDePasse}
+            onChange={(event)=>{setMotDePasse(event.target.value)}}
+          />
+          </Col>
+          </Row>
+          <Row hidden={!showLabelMp}>
+           <Col>  
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            className={classes.button}
+            onClick={event=>{setShowLabelMp(!showLabelMp);event.preventDefault();}}
+            >
+              
+            Changer mot de passe
+          </Button>
+          </Col>
+          </Row>
+
+          <Row  hidden={showLabelMp}>
+          <Col>  
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            className={classes.button}
+            onClick={event=>{setShowLabelMp(!showLabelMp);event.preventDefault();}}
+            >
+              
+            Annuler
+          </Button>
+          </Col>
+          <Col>  
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            className={classes.button}
+            onClick={e=>{envoyer(e,'motdepasse')}}
+            >
+              
+            Enregister 
+          </Button>
+          </Col>
+          </Row>
       <br/>
       <Grid item xs={12}>
         {messageInfo}

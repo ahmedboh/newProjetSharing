@@ -2,7 +2,7 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import '../../style/ticket.css';
+import '../../style/interv.css';
 import { useState ,useEffect} from 'react';
 import Axios from 'axios';
 import IntervCompresse from './IntervCompresse';

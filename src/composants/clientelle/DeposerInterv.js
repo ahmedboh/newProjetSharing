@@ -1,5 +1,5 @@
 import  'bootstrap/dist/css/bootstrap.min.css';
-import '../../style/ticket.css'
+import '../../style/interv.css'
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -12,8 +12,6 @@ import { useState ,useEffect} from 'react';
 import Axios from 'axios';
 
 function DeposerInterv (props){
-    //recuperation de client 
-    //const {idClient}=props;
     const [contrat,setContrat]=useState(-1)
     const [nature,setNature]=useState("Maintenance")
     const [priorite,setPriorite]=useState("Urgent")
@@ -201,7 +199,7 @@ function DeposerInterv (props){
                         
             </Col>
             <Col sm={1}>
-             <div className="ligneTicket" ></div>
+             <div className="ligneInterv" ></div>
             </Col>
 
             <Col sm={5}>

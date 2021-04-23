@@ -81,12 +81,12 @@ const ZoneAffectaion=(props)=>{
         
         return (<div className="container" style={{border:'2px rgb(0, 153, 204) solid',borderRadius:'50px',marginTop:'20px',padding:'20px'}}>
                 <Row >
-                <Col sm={[localStorage.getItem('userRole')].indexOf('Ri')===-1?12:6} >
+                <Col sm={![localStorage.getItem('userRole')].indexOf('Ri')===-1?12:6} >
                     <h2  className="text-info" style={{textAlign:'center'}}>La Demande D'intervention </h2><br/><br/>
                     <Interv contenu={interv} contrat={history.location.state.contrat} traiter={false} raisonSociale={history.location.state.raisonSociale}/>
                     <Button variant="contained"color="primary" hidden={etatActuel!=="En attente" ||[localStorage.getItem('userRole')].indexOf('In')===-1 } style={{backgroundColor:'rgb(0, 153, 204)',left:"40%"}} startIcon={<SaveIcon />}endIcon={<SaveIcon />}onClick={()=>{Affecter('In')}}>Prendre en charge</Button> 
                 </Col>  
-                <Col sm={6} hidden={[localStorage.getItem('userRole')].indexOf('Ri')===-1}>
+                <Col sm={6} hidden={![localStorage.getItem('userRole')].indexOf('Ri')===-1}>
                     <h2  className="text-info" style={{textAlign:'left'}}>Zone D'affectation </h2><br/><br/>
                     <Form>
                         <Form.Group as={Row}  controlId="formHorizontalEmail">

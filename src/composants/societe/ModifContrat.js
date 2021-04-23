@@ -1,8 +1,6 @@
-import { useParams } from 'react-router';
-import { Link } from "react-router-dom";
+
 import TextField from '@material-ui/core/TextField';
 import  'bootstrap/dist/css/bootstrap.min.css';
-import '../../style/ticket.css'
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -76,7 +74,7 @@ const ModifContrat=()=>{
     
     return(
         <div className='container' style={{marginBottom:'20px',padding:'20px'}}> 
-          <h1 > Modifier Contrat   <p style={{float:'right'}} >bank</p> </h1><hr/><br/>
+          <h1 > Modifier Contrat   <p style={{float:'right'}} >{history.location.state.raisonSociale}</p> </h1><hr/><br/>
           <form id="form" >
             <Row style={{marginLeft:'15%'}}> 
             <Col sm={8}>
@@ -186,7 +184,7 @@ const ModifContrat=()=>{
                 <br/>
                 <Col sm={8}>
                     <Button
-                       onClick={()=>history.push(history.location.state.page,{idClient:history.location.state.idClient})}
+                       onClick={()=>history.push(history.location.state.page,{idClient:history.location.state.idClient,raisonSociale:history.location.state.raisonSociale})}
                         variant="contained"
                         color="secondary"
                     >Terminer

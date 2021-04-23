@@ -1,7 +1,7 @@
 import Card from 'react-bootstrap/Card';
 import React,{ useState ,useEffect} from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import '../../style/ticket.css';
+import '../../style/interv.css';
 import Axios from 'axios';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import IconButton from '@material-ui/core/IconButton';

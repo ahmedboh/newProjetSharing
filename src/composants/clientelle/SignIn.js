@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -49,13 +49,15 @@ const SignInMembre=()=> {
     }
     if(login!==""){
         if(motDePasse!==""){
+              
               Axios.post('http://localhost:3001/api/v1/auth/loginClient',ob )
               .then(res => {
                 console.log(res.data);
                 setIdUser(res.data.client);
                 setTokenUser(res.data.token);
+                
                 localStorage.setItem('idClient', res.data.client);
-
+                
                 history.push("/appClient/de")
               
 
@@ -71,7 +73,9 @@ const SignInMembre=()=> {
     } 
     event.preventDefault();
   }
-
+  useEffect(() => {
+    if (localStorage.getItem('user')!==null) localStorage.clear();
+  }, [])
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
