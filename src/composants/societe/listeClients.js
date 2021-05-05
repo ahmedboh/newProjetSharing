@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Axios from 'axios';
 import { makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -23,6 +23,11 @@ import {TablePaginationActions ,StyledTableCell,useStyles2} from './TablePaginat
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import UpdateIcon from '@material-ui/icons/Update';
+import ReactToExcel from 'react-html-table-to-excel';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
 
 const ListeClients=()=> {
     const [rows , setRows ]=useState([]);
@@ -62,6 +67,14 @@ let history = useHistory();
     },
   });
 
+  const [open1, setOpen1] = React.useState(false);
+  const handleClickOpen = () => {
+    setOpen1(true);
+  };
+  const handleClose = () => {
+    setOpen1(false);
+  };
+
   function Row(props) {
     const { row } = props;
     const [open, setOpen] = useState(false);
@@ -69,12 +82,12 @@ let history = useHistory();
     return (
       <>
         <TableRow className={classes.root}>
-          <TableCell>
+          <TableCell style={{ width: 10 }}>
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
               {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
           </TableCell>
-          <TableCell component="th" scope="row" align="center">
+          <TableCell style={{ width: 160 }} align="center">
             {row.raisonSociale}
           </TableCell>
           <TableCell style={{ width: 160 }} align="center">
@@ -89,30 +102,44 @@ let history = useHistory();
           <TableCell style={{ width: 160 }} align="center">
             {row.email}
           </TableCell>
-          <TableCell style={{ width: 160 }} align="center">
+          <TableCell style={{ width: 200 }} align="center">
           <IconButton color="primary" component="span" onClick={() => {
             history.push("/listeContrat",{idClient:row._id,raisonSociale:row.raisonSociale})
           }}>
             <ListAltIcon />
           </IconButton>
-          </TableCell>
-          <TableCell style={{ width: 160 }} align="center">
+          
           <IconButton component="span"onClick={() => {
             history.push("/ModifierClient",{idClient:row._id})
           }}>
             <UpdateIcon />
           </IconButton>  
-          </TableCell>
-          <TableCell style={{ width: 160 }} align="center">
-          <IconButton color="secondary" component="span" onClick={() => {
-            console.log(row._id);
-            Axios.delete(`http://localhost:3001/api/v1/client/${row._id}`)
-            .then(res => {
-              listecl()
-            });
-          }}>
+          
+          <IconButton color="secondary" component="span" onClick={handleClickOpen}>
             <DeleteIcon />
-          </IconButton>  
+          </IconButton>
+          <Dialog
+                open={open1}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description" >
+                <DialogTitle id="alert-dialog-title">{`Vous voulez supprimer l'utilisateur ${row.raisonSociale}?`}</DialogTitle>
+                <DialogActions>
+                  <Button onClick={handleClose} color="secondary">
+                    annuler
+                  </Button>
+                  <Button onClick={() => {
+                    Axios.delete(`http://localhost:3001/api/v1/client/${row._id}`)
+                    .then(res => {
+                      console.log(res);
+                      listecl()
+                    });
+                    handleClose();
+                  }} color="primary" autoFocus>
+                    confirmer
+                  </Button>
+                </DialogActions>
+          </Dialog>  
           </TableCell>
         </TableRow>
         <TableRow>
@@ -158,7 +185,7 @@ let history = useHistory();
         </Toolbar>
       </AppBar>
     <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="custom pagination table">
+      <Table className={classes.table} aria-label="custom pagination table" id="table">
         <TableHead>
           <TableRow>
             <StyledTableCell />
@@ -167,9 +194,7 @@ let history = useHistory();
             <StyledTableCell align="center">Télèphone</StyledTableCell>
             <StyledTableCell align="center">Fax</StyledTableCell>
             <StyledTableCell align="center">Email</StyledTableCell>
-            <StyledTableCell align="center">Liste des contrats</StyledTableCell>
-            <StyledTableCell align="center">Modifier</StyledTableCell>
-            <StyledTableCell align="center">supprimer</StyledTableCell>
+            <StyledTableCell align="center">Actions</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -206,6 +231,13 @@ let history = useHistory();
         </TableFooter>
       </Table>
     </TableContainer>
+    <ReactToExcel
+      className="btn"
+      table="table"
+      filename="listeClients"
+      sheet="sheet 1"
+      buttonText="Export excel"
+    />
     </>
   );
 }

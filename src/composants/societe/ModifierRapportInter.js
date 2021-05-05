@@ -1,6 +1,4 @@
 import TextField from '@material-ui/core/TextField';
-import  'bootstrap/dist/css/bootstrap.min.css';
-import '../../style/interv.css'
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -9,90 +7,60 @@ import MessageInfo from '../MessageInfo'
 import { useState ,useEffect} from 'react';
 import Axios from 'axios';
 import SaveIcon from '@material-ui/icons/Save';
-import { useParams } from 'react-router';
+import { useHistory } from "react-router-dom";
+import IconButton from '@material-ui/core/IconButton';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
+import CancelIcon from '@material-ui/icons/Cancel';
 
-
-const AjouterRapport=()=>{
-    const {id,intervenant}=useParams()
+const ModifierRapportInter=()=>{
     const [intervenantLabel,setIntervenantLabel]=useState('')
-    function formatDate(date) {
-        var d = new Date(date),
-            month = '' + (d.getMonth() + 1),
-            day = '' + d.getDate(),
-            year = d.getFullYear();
-    
-        if (month.length < 2) 
-            month = '0' + month;
-        if (day.length < 2) 
-            day = '0' + day;
-    
-        return [year, month, day].join('-');
-    }
-
-    useEffect(() => {     
-             Axios.get(`http://localhost:3001/api/v1/membSociete/${intervenant}`)
-            .then((res)=>{
-                setIntervenantLabel(res.data.data.nom+" "+res.data.data.prenom);
-                 })
-   
-     },[])
-    
-     const [heureDebut,setHeureDebut]=useState("08:00")
-     const [dateDebut,setDateDebut]=useState(formatDate(new Date()))
-     const [heureFin,setHeureFin]=useState("11:00")
-     const [dateFin,setDateFin]=useState(formatDate(new Date()))
-     const [attachement,setAttachement]=useState()
-     const [messageInfo, setMessageInfo] = useState(<div></div>)
-    
+    const [heureDebut,setHeureDebut]=useState("")
+    const [dateDebut,setDateDebut]=useState("")
+    const [heureFin,setHeureFin]=useState("")
+    const [dateFin,setDateFin]=useState("")
+    const [attachement,setAttachement]=useState()
+    const [messageInfo, setMessageInfo] = useState(<div></div>)
+    let history = useHistory();
+    useEffect(() => { 
+        Axios.get(`http://localhost:3001/api/v1/rapportInter/${history.location.state.idRapportInter}`)
+            .then(res => {
+                setDateDebut(res.data.data.dateDebut)
+                setHeureDebut(res.data.data.heureDebut)
+                setDateFin(res.data.data.dateFin)
+                setHeureFin(res.data.data.heureFin)
+                setAttachement(res.data.data.nomAttachement)
+                Axios.get(`http://localhost:3001/api/v1/membSociete/${res.data.data.IDintervenant}`)
+                .then((res)=>{
+                    setIntervenantLabel(res.data.data.nom+" "+res.data.data.prenom);
+                })
+        })    
+    },[])
+    const fileAttacher=attachement===undefined
+        ?<CancelIcon />
+        :<IconButton color="primary" component="span" onClick={() => {
+          history.push("/LirePDF",{idRapport:history.location.state.idRapportInter})
+        }}>
+          <AttachFileIcon />
+        </IconButton>
     const enregistrer=()=>{
         const formData = new FormData();
-            formData.append('IDTicket',id);
-            formData.append('IDintervenant',intervenant);
-            formData.append('dateCreation',new Date().toLocaleDateString());
-            formData.append('heureCreation',new Date().toLocaleTimeString());
             formData.append('dateDebut',dateDebut);
             formData.append('heureDebut',heureDebut);
             formData.append('dateFin',dateFin);
             formData.append('heureFin',heureFin);
             formData.append('attachement',attachement);
-        
-       let ob={
-                IDTicket:id,
-                IDintervenant:intervenant,
-                dateCreation:new Date().toLocaleDateString(),
-                heureCreation:new Date().toLocaleTimeString(),
-                dateDebut,
-                heureDebut,
-                dateFin,
-                heureFin,
-                attachement
-             }
-        Axios.get(`http://localhost:3001/api/v1/rapportInter/getRapportIntersTicket/${id}`)
-        .then(res => {
-            console.log(res.data.data.length);   
-            if (res.data.data.length === 0) {
-              Axios.get(`http://localhost:3001/api/v1/affectation/getAffectationsIntervenantTicket/${id}/${intervenant}`)
-              .then(res => {
-                console.log(res.data.data.length); 
-                if(res.data.data.length !== 0){
-                  if(res.data.data[0].annule === false){
-                    Axios.post(`http://localhost:3001/api/v1/rapportInter`,formData ).then(res =>{
-                      console.log(res);
-                      setMessageInfo(<MessageInfo >L'ajout d'un nouvel rapport est passeé avec seccess </MessageInfo>)
-                    })
-                  }
-                }
-              })
-            }else{
-                setMessageInfo(<MessageInfo >le rapport de cette intervention existe vous ne pouvez pas ajouter un autre rapport</MessageInfo>)
-            }
-        })
+
+            Axios.patch(`http://localhost:3001/api/v1/rapportInter/${history.location.state.idRapportInter}`,formData ).then(res =>{
+                console.log(res);
+                setMessageInfo(<MessageInfo >Le rapport est modifié avec seccess</MessageInfo>)
+            })
     }
+
      return(
          
         <div className="container" style={{border:'2px rgb(0, 153, 204) solid',borderRadius:'50px',marginTop:'20px',padding:'20px'}}>
             <br/>
-        <h2  className="text-info" style={{textAlign:'center'}}>Ajouter un nouvel rapport  </h2><br/><br/>
+        <h2  className="text-info" style={{textAlign:'center'}}>Modifier rapport d'intervention</h2><br/><br/>
         <form>
         <Row style={{marginLeft:'15%'}}> 
 
@@ -155,8 +123,8 @@ const AjouterRapport=()=>{
                 </Form.Label>
                 <Col >
                 <input type="file"
-                accept="application/pdf"   
                 onChange={event => { setAttachement( event.target.files[0] ); }}/>
+                {fileAttacher}
                 </Col>
             </Form.Group>
             </Col>
@@ -175,7 +143,7 @@ const AjouterRapport=()=>{
                             onClick={enregistrer}
                             endIcon={<SaveIcon />}
                         >
-                            Enregistrer
+                            Modifier
                 </Button> 
             
             </Col>
@@ -185,4 +153,4 @@ const AjouterRapport=()=>{
         </div>)
 }
 
-export default AjouterRapport;
+export default ModifierRapportInter;

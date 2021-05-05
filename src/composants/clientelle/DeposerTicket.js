@@ -11,7 +11,7 @@ import Icon from '@material-ui/core/Icon';
 import { useState ,useEffect} from 'react';
 import Axios from 'axios';
 
-function DeposerInterv (props){
+function DeposerTicket (props){
     const [contrat,setContrat]=useState(-1)
     const [nature,setNature]=useState("Maintenance")
     const [priorite,setPriorite]=useState("Urgent")
@@ -21,7 +21,7 @@ function DeposerInterv (props){
     const [messageInfo, setMessageInfo] = useState()
     const [raisonSociale,setRaisonSociale]= useState("")
     const [listeContrats,setListeContrats]=useState([])
-    
+    const [image,setImage]=useState()    
 
     
     //  prepartin la liste de contrat 
@@ -39,22 +39,31 @@ function DeposerInterv (props){
     const envoyer=()=>{
         
         if(objet!=="" && contrat>-1){
-            const ob={
-                 IDclient:localStorage.getItem('idClient'),
-                 dateCreation:new Date().toLocaleDateString(),
-                 heureCreation:new Date().toLocaleTimeString() ,
-                 contrat: listeContrats[contrat]._id,
-                 nature,
-                 priorite,
-                 objet,
-                 details
-             }
-        Axios.post('http://localhost:3001/api/v1/intervention',ob ).then(()=>{
-            console.log("seccess");
-            console.log(ob);
-            setMessageInfo(<MessageInfo >L'ajout d'une nouvelle demande est passé avec succès </MessageInfo>)
-            resetFroms();
-        })
+            const formData = new FormData();
+            formData.append('IDclient',localStorage.getItem('idClient'));
+            formData.append('dateCreation',new Date().toLocaleDateString());
+            formData.append('heureCreation',new Date().toLocaleTimeString());
+            formData.append('contrat', listeContrats[contrat]._id);
+            formData.append('nature',nature);
+            formData.append('priorite',priorite);
+            formData.append('objet',objet);
+            formData.append('details',details);
+            formData.append('image',image);
+        
+            const ob1={
+                to:"sharingticket@gmail.com",
+                subject:"Un nouvel ticket",
+                text:`Bonjour,\nLe client ${raisonSociale} à déposer un nouvel ticket qu'il à les détails suivante:\nNature : ${nature}\nPriorite : ${priorite}\nObjet : ${objet}\nDetails : ${details}\nVeuillez traiter cette ticket sur la plateforme SharingTicket: http://localhost:3000/ `
+            }
+            Axios.post('http://localhost:3001/api/v1/ticket',formData).then(res => {
+                console.log("seccess");
+                console.log(res);
+                setMessageInfo(<MessageInfo >L'ajout d'une nouvelle demande est passé avec succès </MessageInfo>)
+                resetFroms()
+                Axios.post('http://localhost:3001/api/v1/mailing',ob1 ).then( res => {
+                    console.log(res)
+                })
+            })
         }else{
           setObjetErreur(true)
           console.log("err");
@@ -67,7 +76,7 @@ function DeposerInterv (props){
             setMessageInfo()
            
             index>-1 &&
-            Axios.get(`http://localhost:3001/api/v1/intervention/getInterventionsContrat/${listeContrats[index]._id}`)
+            Axios.get(`http://localhost:3001/api/v1/ticket/getTicketsContrat/${listeContrats[index]._id}`)
             .then((res)=>{
                 res.data.data.forEach(dde => {  
                     if (dde.etat !== "Clôturée") setMessageInfo(<MessageInfo type="info" >vous avez une demmande {dde.etat} sur ce contrat <br/> {listeContrats.length>1 && "Changer un autre contre pour pouvoir la posibiltée ."+<br/>+" Ou " } Esseyez dans un autre temps pour la déposer.    </MessageInfo>)
@@ -232,6 +241,10 @@ function DeposerInterv (props){
                 value={details}
                 variant="outlined"
             />
+            <br/><br/>
+            <input type="file" onChange={event => { 
+                    setImage( event.target.files[0] ); 
+                  }} />
             </Col>
             </Row>
             <Row>
@@ -258,4 +271,4 @@ function DeposerInterv (props){
         
     )
 }
-export default DeposerInterv;
+export default DeposerTicket;

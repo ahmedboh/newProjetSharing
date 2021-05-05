@@ -8,14 +8,20 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 
 const Interv = (props) => {
-    const { traiter,raisonSociale,contenu,contrat} = props
+    const { traiter,raisonSociale,contenu,contrat,IDintervenant} = props
     const [msg, setMsg] = useState("")
     const [open, setOpen] = useState(false);
+    const [rapportExiste, setRapportExiste] = useState(false);
     
-    useEffect(() => {       
+    useEffect(() => {  
+        Axios.get(`http://localhost:3001/api/v1/rapportInter/getRapportIntersTicket/${contenu._id}`)
+        .then(res => {
+            console.log(res.data.data.length);   
+            if (res.data.data.length !== 0) {  
+                setRapportExiste(true);
+            }   
+        })
     },[])
-    
-  
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -25,18 +31,17 @@ const Interv = (props) => {
     setOpen(false);
   };
 
-    const cloturer =()=>{
-            if (contenu.dateDebut===""&& contenu.dateFin===""){
-               setMsg("Ajouter un rapport pour pouvoir clôturer la damande")                  
-            }else{
-               Axios.patch(`http://localhost:3001/api/v1/intervention/${contenu._id}`,{etat:"Clôturée",} ).then(()=>{
-                    setMsg("Demande est clôtureé")
-                }) 
-                setMsg("la clôturation n'est pas encore passee"+contenu._id)
-            }
-
-            setOpen(true);
+const cloturer =()=>{
+    if (rapportExiste){
+        Axios.patch(`http://localhost:3001/api/v1/ticket/${contenu._id}`,{etat:"Clôturée",} ).then(()=>{
+            setMsg("Demande est clôtureé")
+        }) 
+        setMsg("la clôturation n'est pas encore passee"+contenu._id)                  
+    }else{
+        setMsg("Ajouter un rapport pour pouvoir clôturer la damande")
     }
+    setOpen(true);
+}
     return (
         <div className="container" >
 
@@ -74,7 +79,7 @@ const Interv = (props) => {
             <br/><br/>
             <Row hidden={!traiter}>
                 <Col><Button variant="contained" onClick={cloturer} color="secondary" >Clôturer</Button></Col>
-                <Col><Link to={'/ajouterRapport/'+ contenu._id+"/"+contenu.IDintervenant} disabled={!(contenu.dateDebut===""&& contenu.dateFin==="")} ><Button disabled={!(contenu.dateDebut===""&& contenu.dateFin==="")} variant="contained"  color="primary">Ajouter un rapport </Button></Link></Col>
+                <Col><Link to={'/ajouterRapport/'+ contenu._id+"/"+IDintervenant} disabled={!rapportExiste} ><Button disabled={rapportExiste} variant="contained"  color="primary">Ajouter un rapport </Button></Link></Col>
             </Row>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="success">

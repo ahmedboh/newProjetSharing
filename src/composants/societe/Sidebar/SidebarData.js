@@ -39,7 +39,7 @@ export const SidebarData = [
         subNav: [
             {
                 title: 'AjouterNouveau',
-                path: '/AjouterClient',
+                path: '/AjouterMembre',
                 acces:['Ad'],
                 icon: <AiIcons.AiOutlineUserAdd/>,
             },

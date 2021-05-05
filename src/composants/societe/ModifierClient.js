@@ -101,17 +101,18 @@ const ModifierClient=()=> {
       }
         if((raisonSociale!=="" && adresse!=="" && tel!=="" &&
         email!=="" && nRegistreCommerce!=="" && codeTVA!=="" && 
-        login!=="" &&fax!=="" &&r!=="motdepasse")||(motDePasse!==""&&r==="motdepasse") ){
+        login!=="" &&fax!=="" && r!=="motdepasse") ){
         Axios.patch(`http://localhost:3001/api/v1/client/${idCl}`,ob ).then( res => {
-            setMessageInfo(r!=="motdepasse"?<MessageInfo >le Client <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>:<MessageInfo >le mot de passe de  <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>);
-            if (r==="motdepasse") {
-              setMotDePasse("")
-              setShowLabelMp(true)
-            }
+            setMessageInfo(<MessageInfo >le Client <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>);
+        })
+        }else if(motDePasse!=="" && r==="motdepasse"){
+          Axios.patch(`http://localhost:3001/api/v1/client/updateMotDePasse/${idCl}`,ob ).then( res => {
+            setMessageInfo(<MessageInfo >le mot de passe de  <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>);
+            setMotDePasse("");
+            setShowLabelMp(true);
         })
         }else{
           afficherErreur()
-
         }
         event.preventDefault();
     }

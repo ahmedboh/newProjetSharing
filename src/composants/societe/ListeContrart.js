@@ -21,9 +21,11 @@ import Toolbar from '@material-ui/core/Toolbar';
 import UpdateIcon from '@material-ui/icons/Update';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 const ListeContrat=()=>{
     const [rows , setRows ]=useState([]);
+    const [client, setClient] = useState("");
     const classes = useStyles2();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -31,18 +33,26 @@ const ListeContrat=()=>{
     let history = useHistory();
 
     const listeContrat=()=>{
+      if(localStorage.getItem('idClient')===null){
+        setClient(history.location.state.raisonSociale);
+          
       Axios.get(`http://localhost:3001/api/v1/contrat/getContratsClient/${history.location.state.idClient}`)
       .then(res => {
         const clients = res.data.data;
         setRows( clients );
         })
+      }else{
+        setClient(localStorage.getItem('raisonSocialeClient'));
+      Axios.get(`http://localhost:3001/api/v1/contrat/getContratsClient/${localStorage.getItem('idClient')}`)
+      .then(res => {
+        const clients = res.data.data;
+        setRows( clients );
+        })
+      }
     }
     useEffect(() => {
         listeContrat()
     }, []);
-
-
-  
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -53,22 +63,12 @@ const ListeContrat=()=>{
     setPage(0);
   };
 
-  const useRowStyles = makeStyles({
-    root: {
-      '& > *': {
-        borderBottom: 'unset',
-      },
-    },
-  });
-
-  
-  
   return (
     <>
     <AppBar  xs={12} color="default" style={{position: 'relative',zIndex:0,marginBottom:20}}>
         <Toolbar >
           <Typography variant="h6" style={{paddingLeft:'40%'}} color="inherit" noWrap>
-           <b>{history.location.state.raisonSociale}</b> : Liste de contrats 
+           <b>{client}</b> : Liste des contrats 
           </Typography>
         </Toolbar>
       </AppBar>
@@ -118,19 +118,23 @@ const ListeContrat=()=>{
                 {row.emailContact}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="center">
-                <IconButton component="span"onClick={() => {
-                  history.push("/modifierContrat",{idContrat:row._id,page:'/listeContrat',idClient:history.location.state.idClient,raisonSociale:history.location.state.raisonSociale})
-                }}>
-                  <UpdateIcon />
-                </IconButton>      
-                <IconButton color="secondary" component="span" onClick={() => {
-                  Axios.delete(`http://localhost:3001/api/v1/contrat/${row._id}`)
-                  .then(res => {
-                      listeContrat()
-                  });
-                }}>
-                  <DeleteIcon />
-                </IconButton>  
+                  {localStorage.getItem('idClient')!==null
+                  ?<DescriptionIcon />
+                  :<>
+                    <IconButton component="span"onClick={() => {
+                      history.push("/modifierContrat",{idContrat:row._id,page:'/listeContrat',idClient:history.location.state.idClient,raisonSociale:history.location.state.raisonSociale})
+                    }}>
+                      <UpdateIcon />
+                    </IconButton>      
+                    <IconButton color="secondary" component="span" onClick={() => {
+                      Axios.delete(`http://localhost:3001/api/v1/contrat/${row._id}`)
+                      .then(res => {
+                        listeContrat()
+                      });
+                    }}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </>}
                 </TableCell>
               </TableRow>
           ))}
@@ -144,7 +148,6 @@ const ListeContrat=()=>{
         <TableFooter>
           <TableRow >
           
-            
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
               colSpan={6}
@@ -163,7 +166,8 @@ const ListeContrat=()=>{
         </TableFooter>
       </Table>
     </TableContainer>
-    <Row style={{margin:"10px"}}>
+    {localStorage.getItem('idClient')===null              
+    ?<Row style={{margin:"10px"}}>
     <Col> 
     <Button variant="outlined"
             color="secondary"  
@@ -183,7 +187,8 @@ const ListeContrat=()=>{
                 history.push("/ajouterContrat/"+history.location.state.idClient+"/"+history.location.state.raisonSociale,{page:'/listeContrat',idClient:history.location.state.idClient})
               }}
              >Ajouter un nouveau </Button> </Col>
-    </Row>        
+    </Row>
+    :<></>}     
     </>
   );
 }

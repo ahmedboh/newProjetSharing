@@ -83,7 +83,7 @@ const AjouClient=()=> {
       const ob1={
         to:email,
         subject:"Compte Sharing",
-        text:`Bonjour,\nFélicitation, votre compte Sharing a été créé. Voici les paramètres :\nEmail : ${email}\nMot de passe : ${motDePasse}\nCe compte Sharing vous permettra de vous peposer une demande d'intervention sur http://localhost:3000/ `
+        text:`Bonjour,\nFélicitation, votre compte Sharing a été créé. Voici les paramètres :\nEmail : ${email}\nMot de passe : ${motDePasse}\nCe compte Sharing vous permettra de vous déposer une demande d'intervention sur http://localhost:3000/ `
       }
       if(raisonSociale!=="" && adresse!=="" && tel!=="" &&
       email!=="" && nRegistreCommerce!=="" && codeTVA!=="" && 

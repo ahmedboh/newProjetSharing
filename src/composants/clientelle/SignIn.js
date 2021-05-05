@@ -55,12 +55,12 @@ const SignInMembre=()=> {
                 console.log(res.data);
                 setIdUser(res.data.client);
                 setTokenUser(res.data.token);
-                
                 localStorage.setItem('idClient', res.data.client);
-                
+                Axios.get('http://localhost:3001/api/v1/client/'+res.data.client )
+                .then(res => {
+                  localStorage.setItem('raisonSocialeClient', res.data.data.raisonSociale);
+                });
                 history.push("/appClient/de")
-              
-
               })
               .catch(res=>{
                 console.log(res);

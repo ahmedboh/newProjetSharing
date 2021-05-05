@@ -66,6 +66,7 @@ const ModifierMembSociete=()=> {
               setNom(res.data.data.nom)
               setPrenom(res.data.data.prenom)
               setEmail(res.data.data.email)
+              setLogin(res.data.data.login)
               setRole(res.data.data.role)
               setIdMS(res.data.data._id)
         })
@@ -88,15 +89,18 @@ const ModifierMembSociete=()=> {
             login,
             role
         }
-        if((nom!=="" && prenom!=="" && email!=="" && login!=="" && role!==""&& r!=='motdepasse')||(motDePasse!==""&&r!=='motdepasse') ){
+        if(nom!=="" && prenom!=="" && email!=="" && login!=="" && role!=="" && r!=='motdepasse'){
         Axios.patch(`http://localhost:3001/api/v1/membSociete/${idMS}`,ob ).then( res => {
-            setMessageInfo(<MessageInfo>le membre de la société <b> {nom} {prenom} </b>à été modifier avec succes !</MessageInfo> );
-            console.log(res)
+            setMessageInfo(<MessageInfo>le membre de la société <b> {nom} {prenom} </b>à été modifier avec succes !</MessageInfo>);
+        })
+        }else if(motDePasse!=="" && r==='motdepasse'){
+          Axios.patch(`http://localhost:3001/api/v1/membSociete/updateMotDePasse/${idMS}`,ob ).then( res => {
+            setMessageInfo(<MessageInfo >le mot de passe de <b> {nom} {prenom} </b>à été modifier avec succès </MessageInfo>);
             if (r==="motdepasse") {
               setMotDePasse("")
               setShowLabelMp(true)
             }
-        })
+          })
         }else{
           afficherErreur();
         }

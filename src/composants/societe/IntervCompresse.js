@@ -71,7 +71,7 @@ function CircularStatic(props){
 
 
 const IntervCompresse=(props)=>{
-    const {contenu,styleP,ouvrir,naviguer,supprimerDemande}=props 
+    const {contenu,styleP,ouvrir,naviguer,supprimerDemande,IDintervenant}=props 
   
     const [btn,setBtn]= useState(true)
     const [raisonSociale,setRaisonSociale]=useState("");
@@ -111,7 +111,7 @@ const IntervCompresse=(props)=>{
             {!naviguer
             //?<Link  to={'/affecter/'+contenu._id+'/'+raisonSociale+'/'+(contenu.IDintervenant===''?"None":contenu.IDintervenant)+'/'+contenu.periodeTrai+"/"+contenu.etat}> <Button hidden={btn}  className="ouvrirInterv btn-sm">  OUVRIR</Button></Link> 
             ?  <Button hidden={btn} onClick={affecter} className="ouvrirInterv btn-sm">  OUVRIR</Button>
-            : <Button hidden={btn} onClick={()=>{ouvrir(contenu,raisonSociale,contrat)}}  className="ouvrirInterv btn-sm">  OUVRIR</Button>     
+            : <Button hidden={btn} onClick={()=>{ouvrir(contenu,raisonSociale,contrat,IDintervenant)}}  className="ouvrirInterv btn-sm">  OUVRIR</Button>     
             }<br/>
         </Card.Text>
         

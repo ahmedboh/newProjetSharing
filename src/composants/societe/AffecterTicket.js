@@ -13,7 +13,7 @@ import MessageInfo from '../MessageInfo'
 import { useHistory } from "react-router-dom";
 
 
-const ZoneAffectaion=(props)=>{
+const AffecterTicket=(props)=>{
         let history = useHistory();
         const [intervenants,setIntervenants]=useState([])
         const [intervenant,setIntervenant]=useState('')
@@ -21,63 +21,92 @@ const ZoneAffectaion=(props)=>{
         const [etatActuel,setEtatActuel]=useState('')
         const [intervenantLabel,setIntervenantLabel]=useState('')
         const [interv,setInterv]=useState(history.location.state.interv)
-        const [contrat,setContrat]=useState()
-        
-
+        const [client,setClient]=useState()
          
-        
         useEffect(() => {
             Axios.get(`http://localhost:3001/api/v1/membSociete/getMembSocietesRole/${"In"}`)
             .then((res)=>{
                 setIntervenants(res.data.data);
-            
             }) 
-            Axios.get("http://localhost:3001/api/v1/contrat/"+interv.contrat)
+            Axios.get("http://localhost:3001/api/v1/client/"+interv.IDclient)
             .then((res)=>{
-                setContrat(res.data.data);
+                setClient(res.data.data);
             })
-            setEtatActuel(interv.etat)       
-            if (interv.IDintervenant!==""){
-                Axios.get(`http://localhost:3001/api/v1/membSociete/${interv.IDintervenant}`)
+            setEtatActuel(interv.etat)  
+            Axios.get(`http://localhost:3001/api/v1/affectation/getAffectationsTicket/${interv._id}`).then( res => {  
+              if (res.data.data.length !== 0){
+                Axios.get(`http://localhost:3001/api/v1/membSociete/${res.data.data[0].IDintervenant}`)
                 .then((res)=>{
                     setIntervenantLabel(res.data.data.nom+" "+res.data.data.prenom);
-                     })
-                setPeriode(interv.periodeTrai)   
-                  
-            }
-        
+                }) 
+                setPeriode(res.data.data[0].dureeTraitement);  
+              }
+            })
          },[])
         
-
-         
-    
-        const Affecter=(role)=>{
-           
+        const Affecter=(role,action)=>{
             const ob={
+                IDTicket:interv._id,
+                IDMembSociete:localStorage.getItem('user'),
                 IDintervenant:role==='Ri'?intervenant:localStorage.getItem('user'),
-                periodeTrai:periode,
-                etat:"En cour"
+                dateAffectation:new Date().toLocaleDateString(),
+                heureAffectation:new Date().toLocaleTimeString(),
+                dureeTraitement:periode,
             }
-            
+            const ob1={
+                to:client.email,
+                subject:"Votre ticket est affecté",
+                text:`Bonjour,\nVotre ticket déposé le ${interv.dateCreation} à ${interv.heureCreation} est affecter à l'intervenant ${intervenantLabel} avec une durée de traitment ${periode}\nVeuillez consulter votre ticket sur la plateforme SharingTicket: http://localhost:3000/ `
+            }
             console.log(ob)
-            if(intervenant!==""||role!=='Ri'){
-            Axios.patch(`http://localhost:3001/api/v1/intervention/${interv._id}`,ob ).then(()=>{
-                console.log("seccess");
-                setEtatActuel("En cour")                
-            })
+            if((intervenant!==""||role!=='Ri')&&(action==="aff")){
+              Axios.get(`http://localhost:3001/api/v1/affectation/getAffectationsTicket/${interv._id}`).then( res => {
+              console.log(res.data.data.length);
+                if(res.data.data.length === 0){
+                  Axios.post(`http://localhost:3001/api/v1/affectation`,ob).then( res => {
+                    console.log(res);
+                    Axios.patch(`http://localhost:3001/api/v1/ticket/${interv._id}`,{etat:"En cour"} ).then( res => {
+                      console.log(res);
+                      setEtatActuel("En cour");
+                      Axios.post('http://localhost:3001/api/v1/mailing',ob1 ).then( res => {
+                        console.log(res)
+                      })               
+                    })                
+                  })
+                }
+              })
+            }else if((intervenant!==""||role!=='Ri')&&(action==="reaff")){
+                Axios.get(`http://localhost:3001/api/v1/affectation/getAffectationsTicket/${interv._id}`).then( res => {
+                    console.log(res.data.data.length);
+                    if (res.data.data.length !== 0){
+                        Axios.patch(`http://localhost:3001/api/v1/affectation/${res.data.data[0]._id}`,{annule:true}).then( res => {
+                            console.log(res.data.data);  
+                        })    
+                        Axios.get(`http://localhost:3001/api/v1/affectation/getAffectationsIntervenantTicket/${interv._id}/${ob.IDintervenant}`).then( res => {  
+                            console.log(res.data.data.length)
+                            if (res.data.data.length !== 0){
+                                Axios.patch(`http://localhost:3001/api/v1/affectation/${res.data.data[0]._id}`,{annule:false}).then( res => {
+                                    console.log(res);  
+                                })
+                            }else{
+                                Axios.post(`http://localhost:3001/api/v1/affectation`,ob).then( res => {
+                                    console.log(res);
+                                })
+                            }
+                        })      
+                    }
+                })               
             }else{
-              console.log("error");
-               
-            }
-            
+              console.log("error"); 
+            } 
         }    
         
     
         const composant=etatActuel==="Clôturée"
         ?<MessageInfo >Cette demande a été affectuer a l'intervenant <b> {intervenantLabel}</b>  </MessageInfo>
         :etatActuel==="En attente"
-        ?<Button variant="contained"color="primary"style={{backgroundColor:'rgb(0, 153, 204)'}}startIcon={<SaveIcon />}onClick={()=>{Affecter('Ri')}}>Affecter</Button> 
-        :<Button variant="contained"color="primary"style={{backgroundColor:'#ffc107'}}startIcon={<SaveIcon />}onClick={()=>{Affecter('Ri')}}>Reaffecter</Button>          
+        ?<Button variant="contained"color="primary"style={{backgroundColor:'rgb(0, 153, 204)'}}startIcon={<SaveIcon />}onClick={()=>{Affecter('Ri','aff')}}>Affecter</Button> 
+        :<Button variant="contained"color="primary"style={{backgroundColor:'#ffc107'}}startIcon={<SaveIcon />}onClick={()=>{Affecter('Ri','reaff')}}>Reaffecter</Button>          
         
         return (<div className="container" style={{border:'2px rgb(0, 153, 204) solid',borderRadius:'50px',marginTop:'20px',padding:'20px'}}>
                 <Row >
@@ -105,7 +134,7 @@ const ZoneAffectaion=(props)=>{
                                 disabled={etatActuel==="Clôturée"}
                                 onChange={ (event, values) => {
                                     setIntervenant(values._id);
-                                    setIntervenantLabel("Intervenant")    
+                                    setIntervenantLabel(values.nom+" "+values.prenom)    
                                   }}
                             
                                 renderInput={(params) => <TextField {...params}  label={etatActuel==="En attente"?"Intervenant":intervenantLabel} variant="outlined" />}
@@ -131,6 +160,7 @@ const ZoneAffectaion=(props)=>{
                                         disabled={etatActuel==="Clôturée"}
                                          style={{ width: 100 }}
                                     /> 
+                                    Heure(s)
                             </Form.Label>
                         </Form.Group>    
 
@@ -150,4 +180,4 @@ const ZoneAffectaion=(props)=>{
             </div>)
 
 }
-export default ZoneAffectaion; 
+export default AffecterTicket; 
