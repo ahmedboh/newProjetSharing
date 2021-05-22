@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Axios from 'axios';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -28,13 +28,10 @@ import Loader from './../Loader';
 const  ListeRapportsInterventions=()=> {
   const [rows , setRows ]=useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const listeRapports=()=>{
-    Axios.post(`http://localhost:3001/api/v1/rapportInter/getAll`)
-        .then(res => {
-          const rapports = res.data.data;
-          setRows( rapports );
-          setIsLoading(false);
-    })
+  const listeRapports=async()=>{
+   const res =await Axios.post(`rapportInter/getAll`)
+    setRows( res.data.data );
+    setIsLoading(false);
   }
   useEffect(() => {
     listeRapports()
@@ -59,29 +56,33 @@ const  ListeRapportsInterventions=()=> {
     const [clientDemandeur , setClientDemandeur]=useState([]);
     const [intervenant , setIntervenant]=useState([]);
     const classes = useStyles2();
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
   };
-    const getClientDemandeur = () => {
-      Axios.get(`http://localhost:3001/api/v1/client/${row.IDTicket.IDclient}`)
-          .then(res => {
-            setClientDemandeur( res.data.data.raisonSociale );
-      })
+    const getClientDemandeur =async () => {
+      const res =await Axios.get(`client/${row.IDTicket.IDclient}`)
+      setClientDemandeur( res.data.data.raisonSociale );
     }
-    const getIntervenant = () => {
-      Axios.get(`http://localhost:3001/api/v1/membSociete/${row.IDintervenant}`)
-          .then(res => {
-            setIntervenant( res.data.data.nom +" "+res.data.data.prenom );
-      })
+    const getIntervenant = async() => {
+     const res=await Axios.get(`membSociete/${row.IDintervenant}`)
+     setIntervenant( res.data.data.nom +" "+res.data.data.prenom );
     }
+    
+    const suprimerRapport = async(id) => {
+      const res=await Axios.delete(`rapportInter/${id}`)
+      listeRapports()
+      handleClose();
+    }
+
     useEffect(() => {
       getClientDemandeur();
       getIntervenant();
     }, []);
+
     const attachement=row.nomAttachement===undefined
         ?<CancelIcon />
         :<IconButton color="primary" component="span" onClick={() => {
@@ -133,14 +134,7 @@ const  ListeRapportsInterventions=()=> {
                   <Button onClick={handleClose} color="secondary">
                     annuler
                   </Button>
-                  <Button onClick={() => {
-                    Axios.delete(`http://localhost:3001/api/v1/rapportInter/${row._id}`)
-                    .then(res => {
-                      console.log(res);
-                      listeRapports();
-                    });
-                    handleClose();
-                  }} color="primary" autoFocus>
+                  <Button onClick={() => { suprimerRapport(row._id)}} color="primary" autoFocus>
                     confirmer
                   </Button>
                 </DialogActions>
@@ -181,6 +175,7 @@ const  ListeRapportsInterventions=()=> {
             ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : rows
           ).map((row) => (
+            row.IDTicket&&
             <Row key={row._id} row={row} />
           ))}
 

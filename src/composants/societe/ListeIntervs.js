@@ -9,20 +9,19 @@ import CheckAutoComplete from './filtrage/CheckAutoComplete'
 
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Checkbox, Collapse } from 'antd';
+import {  Collapse } from 'antd';
 const { Panel } = Collapse
 
-const ListeIntervs=()=>{
+const ListeIntervs=(props)=>{
+    const{user}=props
     const [FormRow, setFormRow] = useState([])
     const [listeDdes, setListeDdes] = useState([])
     const [Filters, setFilters] = useState({
         'nature':[],
         'priorite':[],
         'etat':[],
-        'dateCreation':[],
-        'contrat':[]
+        'dateCreation':[]
     })
-    
     
     
 
@@ -68,34 +67,22 @@ const ListeIntervs=()=>{
       
 
 
-    const listeDemande=(ob)=>{
-        Axios.post(`http://localhost:3001/api/v1/ticket/getAll`,ob)
-        .then((res)=>{
-            setListeDdes(res.data.data);
-            charger(trirerParEtat(res.data.data))
-
-        })
-        
-      
+    const listeDemande=async(ob)=>{
+        const res =await Axios.post(`ticket/getAll`,ob)
+        setListeDdes(res.data.data);
+        charger(trirerParEtat(res.data.data))
     }
     
-    const supprimerDemande=(id)=>{
-        Axios.delete(`http://localhost:3001/api/v1/ticket/`+id)
-        .then((res)=>{
-           console.log(res)
-           listeDemande({filters:Filters})
-        })
-    
-           
+    const supprimerDemande=async(id)=>{
+        const res =await Axios.delete(`ticket/`+id)
+        listeDemande({filters:Filters})      
     }
     useEffect(() => {
         listeDemande({filters:Filters})
-    
-    },[]);
+    },[user]);
    
 
     const handleFilters = (filters, category) => {
-
         const newFilters = { ...Filters }
 
         newFilters[category] = filters
@@ -106,7 +93,7 @@ const ListeIntervs=()=>{
          setFilters(newFilters)
     }
     
-    const charger=(listeDd)=> setFormRow( listeDd.map((dde,index)=>{return(<Grid key={index} item   lg={3} md={4} xs={12} > <IntervCompresse naviguer={false} contenu={dde} supprimerDemande={supprimerDemande} styleP={stylePr(dde.priorite)}/></Grid>)}))   
+    const charger=(listeDd)=> setFormRow( listeDd.map((dde,index)=>{return(<Grid key={index} item   lg={3} md={4} xs={12} > <IntervCompresse naviguer={false} contenu={dde} user={user} supprimerDemande={supprimerDemande} styleP={stylePr(dde.priorite)}/></Grid>)}))   
     
     return(<><br/><br/><br/>
        <div className="container">

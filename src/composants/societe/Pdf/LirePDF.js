@@ -16,12 +16,13 @@ const LirePDF = () => {
   const [nomPdf , setNomPdf]=useState();
   
   let history = useHistory();
+  const getAttachement= async()=>{
+    const res =await Axios.get(`rapportInter/attachement/${history.location.state.idRapport}`)
+    setPdf(res.data.data);
+    setNomPdf(res.data.nomFichier);
+  }
   useEffect(() => {
-      Axios.get(`http://localhost:3001/api/v1/rapportInter/attachement/${history.location.state.idRapport}`)
-      .then(res => {
-          setPdf(res.data.data);
-          setNomPdf(res.data.nomFichier);
-      })
+    getAttachement()
   }, []);
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);

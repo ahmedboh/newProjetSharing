@@ -31,20 +31,21 @@ const ModifContrat=()=>{
         setErreur(true);
         setTimeout(()=>{setErreur(false)},4000);
       }
+    const getContrat =async()=>{
+       const res=await Axios.get(`contrat/${history.location.state.idContrat}`)
+       setType(res.data.data.type)
+       setVisitesMainPreventive(res.data.data.visitesMainPreventive)
+       setVisitesMainCurative(res.data.data.visitesMainCurative)
+       setPrixInterSupp(res.data.data.prixInterSupp)
+       setContact(res.data.data.contact)
+       setTelContact(res.data.data.telContact)
+       setEmailContact(res.data.data.emailContact)
+    }
     useEffect(() => {
-          Axios.get(`http://localhost:3001/api/v1/contrat/${history.location.state.idContrat}`)
-          .then(res => {
-            setType(res.data.data.type)
-            setVisitesMainPreventive(res.data.data.visitesMainPreventive)
-            setVisitesMainCurative(res.data.data.visitesMainCurative)
-            setPrixInterSupp(res.data.data.prixInterSupp)
-            setContact(res.data.data.contact)
-            setTelContact(res.data.data.telContact)
-            setEmailContact(res.data.data.emailContact)
-      })
+        getContrat()   
      }
     , [])
-    const modifier=()=>{
+    const modifier=async()=>{
         const ob={
             type,
             visitesMainPreventive,
@@ -56,11 +57,8 @@ const ModifContrat=()=>{
         }
         if(type!=="" && visitesMainPreventive!=="" && visitesMainCurative!=="" &&
         prixInterSupp!=="" && contact!=="" && telContact!=="" &&  emailContact!==""){
-        Axios.patch(`http://localhost:3001/api/v1/contrat/${history.location.state.idContrat}`,ob ).then( res => {
-            setMessageInfo(<MessageInfo >La modification est passée avec succès </MessageInfo>);
-            console.log("seccues")
-
-        })
+        const res=await Axios.patch(`contrat/${history.location.state.idContrat}`,ob )
+        setMessageInfo(<MessageInfo >La modification est passée avec succès </MessageInfo>);
         }else{
             afficherErreur()
             console.log("ereur")

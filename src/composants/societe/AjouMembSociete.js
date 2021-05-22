@@ -9,11 +9,11 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
+import FormGroup from '@material-ui/core/FormGroup';
 import FormLabel from '@material-ui/core/FormLabel';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import MessageInfo from '../MessageInfo';
+import Switch from '@material-ui/core/Switch';
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -53,16 +53,30 @@ const AjouMembSociete=()=> {
     const [email,setEmail]=useState("");
     const [login,setLogin]=useState("")
     const [motDePasse,setMotDePasse]=useState("");
-    const [role,setRole]=useState("");
+    const [role,setRole]=useState([]);
     const [erreur,setErreur]=useState(false)
     const [messageInfo, setMessageInfo] = useState(<div></div>)
+    const [stateSwitch,setStateSwitch]=useState({Ad:false,Rc:false,Ri:false,In:false,Ins:false})
 
+    
     const classes = useStyles();
     const  afficherErreur=()=>{
       setErreur(true);
-      setTimeout(()=>{setErreur(false)},4000);
+      setTimeout(()=>{setErreur(false);},4000);
     }
-    const envoyer=(event)=>{
+    
+    const ajouterRole=async(event)=>{
+       setStateSwitch({ ...stateSwitch, [event.target.value]: event.target.checked });
+       let tabR=await role
+       tabR.indexOf(event.target.value)===-1
+       ?tabR.push(event.target.value)
+       :tabR.splice(tabR.indexOf(event.target.value),1)
+      setRole(tabR)
+      tabR=[]
+    }
+    
+    const envoyer=async(event)=>{
+      event.preventDefault()
         const ob={
             nom,
             prenom,
@@ -71,15 +85,16 @@ const AjouMembSociete=()=> {
             motDePasse,
             role
         }
-        if(nom!=="" && prenom!=="" && email!=="" && login!=="" && motDePasse!=="" && role!=="" ){
-        Axios.post('http://localhost:3001/api/v1/auth/signupMembS',ob ).then( res => {
-            setMessageInfo(<MessageInfo>le nouveau membre de la société <b> {nom} {prenom} </b>à ajouter avec succes !</MessageInfo> );
-            document.getElementById("form").reset();
-        })
+        console.log(ob)
+        if(nom!=="" && prenom!=="" && email!=="" && login!=="" && motDePasse!=="" && role.length>0 ){
+          const res=await Axios.post('auth/signupMembS',ob )
+          setMessageInfo(<MessageInfo>le nouveau membre de la société <b> {nom} {prenom} </b>à ajouter avec succes !</MessageInfo> )
+          document.getElementById("form").reset()
+          setStateSwitch({Ad:false,Rc:false,Ri:false,In:false,Ins:false})
+          
         }else{
           afficherErreur();
         }
-        event.preventDefault();
     }
   return (
     <>
@@ -146,12 +161,13 @@ const AjouMembSociete=()=> {
         </Grid>
         <Grid item xs={12}>
             <FormLabel component="legend">Rôle</FormLabel>
-            <RadioGroup aria-label="gender" name="Rôle" onChange={(event)=>{setRole(event.target.value)}}>
-                <FormControlLabel value="Ad" control={<Radio />} label="Administrateur" />
-                <FormControlLabel value="Rc" control={<Radio />} label="Responsable de création des fiches clients" />
-                <FormControlLabel value="Ri" control={<Radio />} label="Responsable affectation des demandes interventions" />
-                <FormControlLabel value="In" control={<Radio />} label="Simple intervenant" />
-            </RadioGroup>
+            <FormGroup onChange={ajouterRole}  >
+                <FormControlLabel value="Ad"  control={<Switch name='role' color="primary" checked={stateSwitch.Ad}    />} label="Administrateur" />
+                <FormControlLabel value="Rc" control={<Switch name='role' color="primary"    checked={stateSwitch.Rc}   />} label="Responsable de création des fiches clients" />
+                <FormControlLabel value="Ri" control={<Switch  name='role' color="primary" checked={stateSwitch.Ri}  />} label="Responsable affectation des demandes interventions" />
+                <FormControlLabel value="Ins" control={<Switch name='role' color="primary"   checked={stateSwitch.Ins}    />} label="Intervenant Supérieur" />
+                <FormControlLabel value="In" control={<Switch name='role' color="primary"  checked={stateSwitch.In}   />} label="Intervenant Simple" />
+            </FormGroup>
         </Grid>
       </Grid >
       <br/>

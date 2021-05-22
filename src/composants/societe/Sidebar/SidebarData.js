@@ -1,10 +1,11 @@
 import React from 'react';
 import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
-import * as FcIcons from 'react-icons/fc';
+import * as BSIcons from 'react-icons/bs';
 import * as ImIcons from 'react-icons/im';
 import * as RiIcons from 'react-icons/ri';
 import * as CgIcons from 'react-icons/cg';
+
 
 export const SidebarData = [
     {
@@ -26,6 +27,18 @@ export const SidebarData = [
                 path: '/maliste',
                 acces:['In'],
                 icon: <RiIcons.RiPlayList2Line/>,
+            },
+            {
+                title: 'listeRapports',
+                path: '/ListeRapportsInterventions',
+                acces:['In','Ad'],
+                icon: <BSIcons.BsBookmarks/>,
+            },
+            {
+                title: 'MeslisteRapports',
+                path: '/ListeRapportsIntervenant',
+                acces:['In','Ad'],
+                icon: <BSIcons.BsBookmarkCheck/>,
             },
         ]
     },
@@ -73,5 +86,6 @@ export const SidebarData = [
             },
         ]
     }
+    
     
 ];

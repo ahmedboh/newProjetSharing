@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import { useState,useEffect } from 'react';
 import styled from 'styled-components';
 import {Link} from 'react-router-dom';
 import * as FaIcons from 'react-icons/fa';
@@ -47,23 +47,28 @@ z-index: 10;
 const SidebarWrap = styled.div`
 width: 100%;
 `;
-const Sidebar = () => {
+const Sidebar = (props) => {
+    const{user,decon,fn}=props
     let history = useHistory();
-    //if (localStorage.getItem('user')===null) history.push('/')
-   
+
     const [sidebar, setSidebar] = useState(false)
     const showSidebar = () => setSidebar(!sidebar)
    
 
     
     const deconn=()=>{
-        localStorage.removeItem('user')
-        localStorage.removeItem('userNom')
-        localStorage.removeItem('userPrenom')
-        localStorage.removeItem('userRole')
+        localStorage.removeItem('connectMb')
+        localStorage.removeItem('token')
+        fn(false)
         setSidebar(false)
-        history.push('/')
+        history.push('/SharingSignIn')
     }
+    useEffect(() => {
+        console.log("11")
+      }, [])
+    useEffect(() => {
+      decon&&deconn()
+    }, [decon])
     return (
         <>
         <IconContext.Provider  value={{ color: '#fff'}}>
@@ -72,7 +77,7 @@ const Sidebar = () => {
                     <FaIcons.FaBars onClick={showSidebar} />
                 </NavIcon>
                 <span style={{position:'absolute',right:'15px',color:"white",textTransform:'uppercase',fontFamily:'cursive'}}>
-                 {localStorage.getItem('user')===null?" ":localStorage.getItem('user')!==null && localStorage.getItem('userPrenom')+" "+localStorage.getItem('userNom')}   &nbsp;&nbsp;&nbsp;&nbsp;  
+                 {user?user.prenom===undefined?" ":user.prenom+" "+user.nom:""}   &nbsp;&nbsp;&nbsp;&nbsp;  
                 <Button variant="contained"  onClick={deconn} color="secondary" size="medium" >Log-OUT</Button>
                 </span>
             </Nav>
@@ -83,7 +88,7 @@ const Sidebar = () => {
                     </NavIcon>
                     {
                     SidebarData.map((item, index) => {
-                        return <SubMenu item={item} fn={showSidebar} key={index} role={localStorage.getItem('userRole')}  />;
+                        return <SubMenu item={item} fn={showSidebar} key={index} role={user&&user.role}  />;
                     })}
                 </SidebarWrap>
             </SidebarNav>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -47,7 +47,8 @@ const SubMenu = (props) => {
     const showSubnav = () => setSubnav(!subnav);
     const showItem=(listeval,item)=>{
         let verif = false
-         listeval.forEach(val => {
+
+         listeval&&listeval.forEach(val => {
              if (item.indexOf(val)>-1){
                 verif=true;
              }
@@ -56,11 +57,11 @@ const SubMenu = (props) => {
          );
          return verif 
     }
-    //console.log(showItem([1,2,7],[7,0,5])) 
+    
     
     return (
         <>
-        <SidebarLink to={item.path} hidden={!showItem([role,'Ad','Ri','Rc'],item.acces) } onClick={()=>{!item.subNav?fn() :showSubnav() }}>
+        <SidebarLink to={item.path} hidden={!showItem(role,item.acces) } onClick={()=>{!item.subNav?fn() :showSubnav() }}>
             <div  >
                 {item.icon}
                 <SidebarLabel  >{item.title}</SidebarLabel>
@@ -71,7 +72,7 @@ const SubMenu = (props) => {
         </SidebarLink>
         {subnav && item.subNav.map((item, index) => {
             return (
-            <DropdownLink to={item.path} hidden={!showItem([role,'Ad','Ri','Rc'],item.acces) } onClick={()=>{fn();showSubnav() }}   key={index}>
+            <DropdownLink to={item.path} hidden={!showItem(role,item.acces) } onClick={()=>{fn();showSubnav() }}   key={index}>
                 {item.icon}
                 <SidebarLabel  >{item.title}</SidebarLabel>
             </DropdownLink>

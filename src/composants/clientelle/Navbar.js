@@ -4,7 +4,8 @@ import '../../style/navbar.css';
 import Button from '@material-ui/core/Button';
 import { useHistory } from "react-router-dom";
 
-const Navbar=()=> {
+const Navbar=(props)=> {
+  const {decon,fn}=props
   const [click, setClick] = useState(false);
   const [button, setButton] = useState(true);
   let history = useHistory();
@@ -19,14 +20,18 @@ const Navbar=()=> {
       setButton(true);
     }
   };
-
+  useEffect(() => {
+    decon&&deconn()
+  }, [decon])
   useEffect(() => {
     showButton();
   }, []);
 
   window.addEventListener('resize', showButton);
   const deconn=()=>{
-    localStorage.removeItem('idClient')
+    localStorage.removeItem('connectCl')
+    localStorage.removeItem('token')
+    fn(false)
     history.push('/')
 }
   return (
@@ -48,7 +53,7 @@ const Navbar=()=> {
             </li>
             <li className='nav-item'>
               <Link
-                to='/appClient/de'
+                to='deposer'
                 className='nav-links'
                 onClick={closeMobileMenu}
               >
@@ -64,7 +69,16 @@ const Navbar=()=> {
                 HISTORIQUE
               </Link>
             </li>
-            
+            <li className='nav-item'>
+              <Link
+                to='listeContrat'
+                className='nav-links'
+                onClick={closeMobileMenu}
+              >
+                CONTRATS
+              </Link>
+            </li>
+          
           </ul>
           <Button variant="contained" onClick={deconn} color="secondary" size="medium" >Log-OUT</Button>
         </div>

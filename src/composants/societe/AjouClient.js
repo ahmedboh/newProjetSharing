@@ -68,7 +68,7 @@ const AjouClient=()=> {
       setTimeout(()=>{setErreur(false)},4000);
     }
 
-    const envoyer=(event)=>{
+    const envoyer=async(event)=>{
       const ob={
           raisonSociale,
           adresse,
@@ -88,16 +88,13 @@ const AjouClient=()=> {
       if(raisonSociale!=="" && adresse!=="" && tel!=="" &&
       email!=="" && nRegistreCommerce!=="" && codeTVA!=="" && 
       login!=="" && motDePasse!==""&&fax!=="" ){
-      Axios.post('http://localhost:3001/api/v1/auth/signupClient',ob ).then( res => {
-          setMessageInfo(<MessageInfo >le nouveau membre de la société <b> {raisonSociale} </b>à ajouter avec succès </MessageInfo>);
-          setAjoutAutre(false)
-          setIdCl(res.data.client)
-          console.log(res)
-          console.log(ob1);
-          Axios.post('http://localhost:3001/api/v1/mailing',ob1 ).then( res => {
-            console.log(res)
-          })
-      })
+      const res= await Axios.post('auth/signupClient',ob )  
+      if(res.status===200){
+        setMessageInfo(<MessageInfo >le nouveau membre de la société <b> {raisonSociale} </b>à ajouter avec succès </MessageInfo>);
+        setAjoutAutre(false)
+        setIdCl(res.data.client)
+        const res2=await Axios.post('mailing',ob1 )
+      }
       }else{
         afficherErreur()
 

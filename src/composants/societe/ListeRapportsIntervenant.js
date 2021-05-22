@@ -21,16 +21,15 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import Loader from './../Loader';
 import ReactToExcel from 'react-html-table-to-excel';
 
-const  ListeRapportsIntervenant=()=> {
+const  ListeRapportsIntervenant=(props)=> {
+  const {user}=props
   const [rows , setRows ]=useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const listeRapports=()=>{
-    Axios.get(`http://localhost:3001/api/v1/rapportInter/getRapportIntersIntervenant/${localStorage.getItem('user')}`)
-        .then(res => {
-          const rapports = res.data.data;
-          setRows( rapports );
-          setIsLoading(false);
-    })
+  
+  const listeRapports=async()=>{
+    const res = await Axios.get(`rapportInter/getRapportIntersIntervenant/${user._id}`)
+    setRows( res.data.data );
+    setIsLoading(false);
   }
   useEffect(() => {
     listeRapports()
@@ -54,11 +53,9 @@ const  ListeRapportsIntervenant=()=> {
     const { row } = props;
     const [clientDemandeur , setClientDemandeur]=useState([]);
     const classes = useStyles2();
-    const getClientDemandeur = () => {
-      Axios.get(`http://localhost:3001/api/v1/client/${row.IDTicket.IDclient}`)
-          .then(res => {
-            setClientDemandeur( res.data.data.raisonSociale );
-      })
+    const getClientDemandeur = async() => {
+      const res = await Axios.get(`client/${row.IDTicket.IDclient}`)
+      setClientDemandeur( res.data.data.raisonSociale );
     }
     useEffect(() => {
       getClientDemandeur()
@@ -136,6 +133,7 @@ const  ListeRapportsIntervenant=()=> {
             ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : rows
           ).map((row) => (
+            row.IDTicket&&
             <Row key={row._id} row={row} />
           ))}
 

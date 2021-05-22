@@ -9,47 +9,26 @@ const CheckAutoComplete=(props)=>{
 
     const [variables,setVariables]=useState([])
 
-       
-        useEffect(() => {
-            if(props.type==='intervenants'){
+        const getIntervannats =async ()=>{
+            const res= await Axios.get(`membSociete/getMembSocietesRole/${"In"}`)
+            setVariables(res.data.data);
+         }
 
-            Axios.get(`http://localhost:3001/api/v1/membSociete/getMembSocietesRole/${"In"}`)
-            .then((res)=>{
-                setVariables(res.data.data);
-            })    
-            }else{
-                Axios.get(`http://localhost:3001/api/v1/client`)
-                .then((res)=>{
-                     setVariables(res.data.data);
-            
-            })
-            }
+         const getClients =async ()=>{
+            const res= await Axios.get(`client`)
+            setVariables(res.data.data);
+         }
+        useEffect(() => {
+        props.type==='intervenants'?getIntervannats():getClients()   
          },[])
         
 
-         const conserverVariable = (value) => {
+         const conserverVariable = async(value) => {
             if(props.type==='intervenants'){
-             if (value!==null ) props.handleFilters(value._id,'IDintervenant')  
-             else  props.handleFilters([],'IDintervenant')
+            props.handleFilters(value!==null?value._id:'','IDintervenant') 
             }else{
-             if (value!==null ){
-                Axios.get(`http://localhost:3001/api/v1/contrat/getContratsClient/${value._id}`)
-                .then((res)=>{
-                    let contrats=[]
-                    res.data.data.forEach(element => {
-                      contrats.push(element._id)
-                    });
-                    if(contrats.length>0)
-                    props.handleFilters(contrats,'contrat')
-                    else
-                    props.handleFilters(["none"],'contrat')
-
-            })
-                
-             }   
-             else  props.handleFilters([],'contrat')
+            props.handleFilters(value!==null?value._id:[],'IDclient') 
             }
-        
         }
 
  return(<div>

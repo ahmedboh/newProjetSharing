@@ -17,6 +17,7 @@ import Col from 'react-bootstrap/Col';
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: 'relative',
+        zIndex:0
       },
     layout: {
       width: 'auto',
@@ -64,27 +65,27 @@ const ModifierClient=()=> {
     let history = useHistory();
     
     const classes = useStyles();
-    
+    const getClient=async()=>{
+     const res =await Axios.get(`client/${history.location.state.idClient}`)
+     setRaisonSociale(res.data.data.raisonSociale)
+     setAdresse(res.data.data.adresse)
+     setTel(res.data.data.tel)
+     setFax(res.data.data.fax)
+     setEmail(res.data.data.email)
+     setNRegistreCommerce(res.data.data.nRegistreCommerce)
+     setCodeTVA(res.data.data.codeTVA)
+     setLogin(res.data.data.login)
+     setIdCl(res.data.data._id)
+    }
     useEffect(() => {
-        Axios.get(`http://localhost:3001/api/v1/client/${history.location.state.idClient}`)
-            .then(res => {
-              setRaisonSociale(res.data.data.raisonSociale)
-              setAdresse(res.data.data.adresse)
-              setTel(res.data.data.tel)
-              setFax(res.data.data.fax)
-              setEmail(res.data.data.email)
-              setNRegistreCommerce(res.data.data.nRegistreCommerce)
-              setCodeTVA(res.data.data.codeTVA)
-              setLogin(res.data.data.login)
-              setIdCl(res.data.data._id)
-        })
+      getClient()
     }, []);
 
     const  afficherErreur=()=>{
       setErreur(true);
       setTimeout(()=>{setErreur(false)},4000);
     }
-    const envoyer=(event,r)=>{
+    const envoyer=async(event,r)=>{
       const ob= r==="motdepasse"  
       ?{
         motDePasse
@@ -102,15 +103,13 @@ const ModifierClient=()=> {
         if((raisonSociale!=="" && adresse!=="" && tel!=="" &&
         email!=="" && nRegistreCommerce!=="" && codeTVA!=="" && 
         login!=="" &&fax!=="" && r!=="motdepasse") ){
-        Axios.patch(`http://localhost:3001/api/v1/client/${idCl}`,ob ).then( res => {
-            setMessageInfo(<MessageInfo >le Client <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>);
-        })
+        const res=await Axios.patch(`client/${idCl}`,ob )
+        setMessageInfo(<MessageInfo >le Client <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>);
         }else if(motDePasse!=="" && r==="motdepasse"){
-          Axios.patch(`http://localhost:3001/api/v1/client/updateMotDePasse/${idCl}`,ob ).then( res => {
-            setMessageInfo(<MessageInfo >le mot de passe de  <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>);
-            setMotDePasse("");
-            setShowLabelMp(true);
-        })
+        const res=await  Axios.patch(`client/updateMotDePasse/${idCl}`,ob )
+        setMessageInfo(<MessageInfo >le mot de passe de  <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>);
+        setMotDePasse("");
+        setShowLabelMp(true);
         }else{
           afficherErreur()
         }

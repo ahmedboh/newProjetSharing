@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import Axios from 'axios';
-import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -23,7 +22,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import DescriptionIcon from '@material-ui/icons/Description';
 
-const ListeContrat=()=>{
+const ListeContrat=(props)=>{
+    const {user}=props
     const [rows , setRows ]=useState([]);
     const [client, setClient] = useState("");
     const classes = useStyles2();
@@ -32,27 +32,25 @@ const ListeContrat=()=>{
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
     let history = useHistory();
 
-    const listeContrat=()=>{
-      if(localStorage.getItem('idClient')===null){
+    const listeContrat=async()=>{
+      if(user===undefined){
         setClient(history.location.state.raisonSociale);
           
-      Axios.get(`http://localhost:3001/api/v1/contrat/getContratsClient/${history.location.state.idClient}`)
-      .then(res => {
-        const clients = res.data.data;
-        setRows( clients );
-        })
+      const res = await Axios.get(`contrat/getContratsClient/${history.location.state.idClient}`)
+      setRows( res.data.data );
       }else{
-        setClient(localStorage.getItem('raisonSocialeClient'));
-      Axios.get(`http://localhost:3001/api/v1/contrat/getContratsClient/${localStorage.getItem('idClient')}`)
-      .then(res => {
-        const clients = res.data.data;
-        setRows( clients );
-        })
+      setClient(user.raisonSociale);
+      const res =await Axios.get(`contrat/getContratsClient/${user._id}`)
+      setRows( res.data.data );
       }
     }
+    const suprimerContrat = async(id) => {
+      const res=await Axios.delete(`contrat/${id}`)
+      listeContrat()
+    }
     useEffect(() => {
-        listeContrat()
-    }, []);
+      user!=={}&&listeContrat()
+    }, [user]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -118,7 +116,7 @@ const ListeContrat=()=>{
                 {row.emailContact}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="center">
-                  {localStorage.getItem('idClient')!==null
+                  {user!==undefined
                   ?<DescriptionIcon />
                   :<>
                     <IconButton component="span"onClick={() => {
@@ -126,12 +124,7 @@ const ListeContrat=()=>{
                     }}>
                       <UpdateIcon />
                     </IconButton>      
-                    <IconButton color="secondary" component="span" onClick={() => {
-                      Axios.delete(`http://localhost:3001/api/v1/contrat/${row._id}`)
-                      .then(res => {
-                        listeContrat()
-                      });
-                    }}>
+                    <IconButton color="secondary" component="span" onClick={() => { suprimerContrat(row._id)}}>
                       <DeleteIcon />
                     </IconButton>
                   </>}
@@ -166,7 +159,7 @@ const ListeContrat=()=>{
         </TableFooter>
       </Table>
     </TableContainer>
-    {localStorage.getItem('idClient')===null              
+    {user===undefined              
     ?<Row style={{margin:"10px"}}>
     <Col> 
     <Button variant="outlined"

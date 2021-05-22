@@ -9,19 +9,20 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import MessageInfo from '../MessageInfo'
 import Icon from '@material-ui/core/Icon';
 import { useState ,useEffect} from 'react';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import Axios from 'axios';
 
 function DeposerTicket (props){
-    const [contrat,setContrat]=useState(-1)
+    const {user}=props
     const [nature,setNature]=useState("Maintenance")
     const [priorite,setPriorite]=useState("Urgent")
     const [objet,setObjet]=useState("")
     const [details,setDetails]=useState("")
     const [objetErreur,setObjetErreur]=useState(false)
     const [messageInfo, setMessageInfo] = useState()
-    const [raisonSociale,setRaisonSociale]= useState("")
-    const [listeContrats,setListeContrats]=useState([])
-    const [image,setImage]=useState()    
+    const [image,setImage]=useState()
+    const [imageErreur,setImageErreur]=useState('')    
+
 
     
     //  prepartin la liste de contrat 
@@ -30,20 +31,18 @@ function DeposerTicket (props){
     const resetFroms=()=>{
         setObjet("");
         setDetails("");
-        setContrat(listeContrats[0]);
         setNature("Maintenance");
         setPriorite("Urgent");
     }
     
     // deposer le dde 
-    const envoyer=()=>{
+    const envoyer=async()=>{
         
-        if(objet!=="" && contrat>-1){
+        if(objet!==""){
             const formData = new FormData();
-            formData.append('IDclient',localStorage.getItem('idClient'));
+            formData.append('IDclient',user._id);
             formData.append('dateCreation',new Date().toLocaleDateString());
             formData.append('heureCreation',new Date().toLocaleTimeString());
-            formData.append('contrat', listeContrats[contrat]._id);
             formData.append('nature',nature);
             formData.append('priorite',priorite);
             formData.append('objet',objet);
@@ -53,17 +52,13 @@ function DeposerTicket (props){
             const ob1={
                 to:"sharingticket@gmail.com",
                 subject:"Un nouvel ticket",
-                text:`Bonjour,\nLe client ${raisonSociale} à déposer un nouvel ticket qu'il à les détails suivante:\nNature : ${nature}\nPriorite : ${priorite}\nObjet : ${objet}\nDetails : ${details}\nVeuillez traiter cette ticket sur la plateforme SharingTicket: http://localhost:3000/ `
+                text:`Bonjour,\nLe client ${user.raisonSociale} à déposer un nouvel ticket qu'il à les détails suivante:\nNature : ${nature}\nPriorite : ${priorite}\nObjet : ${objet}\nDetails : ${details}\nVeuillez traiter cette ticket sur la plateforme SharingTicket: http://localhost:3000/ `
             }
-            Axios.post('http://localhost:3001/api/v1/ticket',formData).then(res => {
-                console.log("seccess");
-                console.log(res);
-                setMessageInfo(<MessageInfo >L'ajout d'une nouvelle demande est passé avec succès </MessageInfo>)
-                resetFroms()
-                Axios.post('http://localhost:3001/api/v1/mailing',ob1 ).then( res => {
-                    console.log(res)
-                })
-            })
+           const res=await Axios.post('ticket',formData)
+           setMessageInfo(<MessageInfo >L'ajout d'une nouvelle demande est passé avec succès </MessageInfo>)
+           resetFroms()
+           const res2=await Axios.post('http://localhost:3001/api/v1/mailing',ob1 )
+                    
         }else{
           setObjetErreur(true)
           console.log("err");
@@ -72,44 +67,22 @@ function DeposerTicket (props){
         
         }
     
-        const listeDemandeParContrat=(index)=>{
-            setMessageInfo()
-           
-            index>-1 &&
-            Axios.get(`http://localhost:3001/api/v1/ticket/getTicketsContrat/${listeContrats[index]._id}`)
-            .then((res)=>{
-                res.data.data.forEach(dde => {  
-                    if (dde.etat !== "Clôturée") setMessageInfo(<MessageInfo type="info" >vous avez une demmande {dde.etat} sur ce contrat <br/> {listeContrats.length>1 && "Changer un autre contre pour pouvoir la posibiltée ."+<br/>+" Ou " } Esseyez dans un autre temps pour la déposer.    </MessageInfo>)
-                })
-            })
-        }
         
-        
-
-        const getRaisonSocialClient=(id)=>{
-            Axios.get(`http://localhost:3001/api/v1/client/`+id)
-            .then((res)=>{
-                console.log("10"+res.data.data.raisonSociale)
-                setRaisonSociale(res.data.data.raisonSociale);
-            })  
-        }
-        
-        const getlisteContrats=(client)=>{
-            Axios.get(`http://localhost:3001/api/v1/contrat/getContratsClient/${client}`)
-            .then((res)=>{
-                setListeContrats(res.data.data);
-                if(res.data.data.length===0)  setMessageInfo(<MessageInfo type="warning" >vous n'avez pas aucun contrat pour ajouter vos demandes.<br/> S'il vous plaît  contacter  l'adminastration de sharing  pour résoudre ce probleme </MessageInfo>);
-            })  
+        function validateImage(value){
+            setImageErreur('') 
+            var idxDot = value.name.lastIndexOf(".") + 1;
+            var extFile = value.name.substr(idxDot, value.name.length).toLowerCase();
+            if (extFile=="jpg" || extFile=="jpeg" || extFile=="png"){
+               setImage(value)
+            }else{
+                setImage()
+                setImageErreur("S'il vous chosir une fichier de type image");
+            }   
         }
 
         
-        useEffect(() => {
-            getlisteContrats(localStorage.getItem('idClient'))
-
-            getRaisonSocialClient(localStorage.getItem('idClient'))
-          },[]);
+     
     
-    const options=listeContrats.length>0 && listeContrats.map((contrat,index)=>{return <option value={index} key={contrat._id}>Contrat n°{index+1}</option>});
           
     return(
         
@@ -125,27 +98,10 @@ function DeposerTicket (props){
                 Client Demandeur 
                 </Form.Label>
                 <Col sm={12}>
-                <Form.Control type="text" placeholder={raisonSociale} disabled />
+                <Form.Control type="text" placeholder={user.raisonSociale} disabled />
                 </Col>
-            </Form.Group>
+            </Form.Group><br/>
 
-            <Form.Group as={Row} controlId="formHorizontalContrat">
-                <Form.Label column sm={2}>
-                Contrat
-                </Form.Label>
-                
-                <Col sm={12}>
-                    <Form.Control as="select" value={contrat}   onChange={(event)=>{
-                        setContrat(event.target.value);listeDemandeParContrat(event.target.value);setObjetErreur(false)
-                    }}
-                     >  <option value={-1}>-------------</option>
-                        {options}
-                    </Form.Control>
-                    <Alert severity="error" hidden={!(objetErreur&&contrat===-1)} >
-                        <AlertTitle style={{fontSize:"14px"}}>S'il vous plait choisissez un contrat</AlertTitle>
-                    </Alert>
-                </Col>
-            </Form.Group>
 
             <Form.Group as={Row} controlId="formHorizontaNature">
                 <Form.Label column >
@@ -161,7 +117,7 @@ function DeposerTicket (props){
                 </Col>
 
             </Form.Group>
-            
+            <br/><br/>
             
                 <Form.Group as={Row}>
                 <Form.Label as="legend" column sm={6}>
@@ -242,9 +198,25 @@ function DeposerTicket (props){
                 variant="outlined"
             />
             <br/><br/>
-            <input type="file" onChange={event => { 
-                    setImage( event.target.files[0] ); 
+            <input type="file"  id="imageTiket" hidden accept="image/*" onChange={event => { 
+                    validateImage( event.target.files[0] ) 
                   }} />
+                  
+             <Row>
+                    <Col sm={6}>   Ajouter une photho  </Col>  
+                    
+                    <Col sm={6}>
+                        <label htmlFor="imageTiket">
+                            <Button variant="contained" color={image?'primary':'inherit'} component="span">
+                                <PhotoCamera />
+                            </Button> {image && image.name}
+                        </label>
+                    </Col>     
+            </Row>
+            <Alert severity="error" hidden={!imageErreur} >
+                 <AlertTitle style={{fontSize:"14px"}}>{imageErreur}</AlertTitle>
+            </Alert>
+
             </Col>
             </Row>
             <Row>

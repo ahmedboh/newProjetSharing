@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Axios from 'axios';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -26,13 +26,16 @@ import Loader from './../Loader';
 const  ListeMembSocietes=()=> {
   const [rows , setRows ]=useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const listeMemebre=()=>{
-    Axios.get(`http://localhost:3001/api/v1/membSociete`)
-        .then(res => {
-          const membSocietes = res.data.data;
-          setRows( membSocietes );
-          setIsLoading(false);
-    })
+  
+  const listeMemebre=async()=>{
+    const res =await Axios.get(`membSociete`)
+    setRows(res.data.data);
+    setIsLoading(false);
+  }
+  const suprimerMembre = async(id) => {
+    const res=await Axios.delete(`membSociete/${id}`)
+    listeMemebre()
+    handleClose();
   }
   useEffect(() => {
     listeMemebre()
@@ -54,7 +57,7 @@ const  ListeMembSocietes=()=> {
     setPage(0);
   };
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -97,7 +100,7 @@ const  ListeMembSocietes=()=> {
               {row.prenom}
             </TableCell>
             <TableCell style={{ width: 160 }} align="center">
-              {row.role}
+              {row.role.map((r,index)=>(row.role.length===index+1?r: r+'/') )}
             </TableCell>
             <TableCell style={{ width: 160 }} align="center">
               {row.email}
@@ -124,14 +127,7 @@ const  ListeMembSocietes=()=> {
                   <Button onClick={handleClose} color="secondary">
                     annuler
                   </Button>
-                  <Button onClick={() => {
-                    Axios.delete(`http://localhost:3001/api/v1/membSociete/${row._id}`)
-                    .then(res => {
-                      console.log(res);
-                      listeMemebre();
-                    });
-                    handleClose();
-                  }} color="primary" autoFocus>
+                  <Button onClick={() => {suprimerMembre(row._id)}} color="primary" autoFocus>
                     confirmer
                   </Button>
                 </DialogActions>

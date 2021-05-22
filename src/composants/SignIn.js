@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react';
+import React, { useState,useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,7 +12,6 @@ import Container from '@material-ui/core/Container';
 import Axios from 'axios';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { useHistory } from "react-router-dom";
-
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -34,51 +33,55 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-  const SignInMembre=(props)=> {
+const SignInClient=(props)=> {
+  const{fnc,fn,type}=props
   const classes = useStyles();
   const [login,setLogin]=useState("")
   const [motDePasse,setMotDePasse]=useState("")
-  const [loginErreur,setLoginErreur]=useState(false)
-  const [motDePasseErreur,setMotDePasseErreur]=useState(false)
+  const [loginErreur,setLoginErreur]=useState("")
+  const [motDePasseErreur,setMotDePasseErreur]=useState("")
+
   let history = useHistory();
   
-  useEffect(() => {
-    //console.log(window.location)
-    if (localStorage.getItem('idClient')!==null) localStorage.clear();
-    if (localStorage.getItem('user')!==null) history.push('/accueil');
- }, [])
-  const envoyer=(event)=>{
+  const envoyer = async (event)=>{
+    event.preventDefault();
     const ob={
         login,
         motDePasse
     }
     if(login!==""){
         if(motDePasse!==""){
-              Axios.post('http://localhost:3001/api/v1/auth/loginMembS',ob ).then(res => {
-                
-                
-              Axios.get('http://localhost:3001/api/v1/membSociete/'+res.data.membSociete )
-                .then(res2 => {
-                  localStorage.setItem('userNom',res2.data.data.nom)
-                  localStorage.setItem('userPrenom',res2.data.data.prenom)
-                  localStorage.setItem('userRole',res2.data.data.role)
-                  localStorage.setItem('user',res.data.membSociete)
-                  history.push('/accueil')
-                 })
-
               
-              })
-              
+              const res= await Axios.post(type==='c'?'auth/loginClient':'auth/loginMembS',ob )
+              if(res.status===200){
+              localStorage.setItem(type==='c'?'connectCl':"connectMb",true)
+              localStorage.setItem('token',res.data.token)
+              history.push(type==='c'?"/deposer":"/accueil")
+              fnc(false)
+              fn(true)  
+              }else{
+                res.data.errors.login
+                ?setLoginErreur(res.data.errors.login)
+                :setMotDePasseErreur(res.data.errors.motDePasse) 
+              }
         }else{
-            setMotDePasseErreur(true)
+            setMotDePasseErreur("S'il vous plait tapez votre mot de passe")
         }
     }else{
-      setLoginErreur(true)  
+      setLoginErreur("S'il vous plait tapez votre login")  
     } 
-    event.preventDefault(); 
+    
   }
-  
 
+  useEffect(() => {
+    if(type==='c'){
+      localStorage.getItem('connectMb')!==null&& localStorage.clear();
+      localStorage.getItem('connectCl')!==null&& history.push('/deposer');
+    }else{
+      localStorage.getItem('connectCl')!==null&& localStorage.clear();
+      localStorage.getItem('connectMb')!==null&& history.push('/accueil');
+    }
+  }, [])
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -100,16 +103,17 @@ const useStyles = makeStyles((theme) => ({
             autoComplete="login"
             autoFocus
             onChange={(event)=>{
-                setLogin(event.target.value);setLoginErreur(false)
+                setLogin(event.target.value);setLoginErreur('')
             }}
-            error={loginErreur}
+            error={loginErreur!==""}
           />
           <Alert severity="error" hidden={!loginErreur} >
-            <AlertTitle style={{fontSize:"14px"}}>S'il vous plait tapez votre login</AlertTitle>
+            <AlertTitle style={{fontSize:"14px"}}>{loginErreur}</AlertTitle>
           </Alert>
           <TextField
             variant="outlined"
-            margin="normal" 
+            margin="normal"
+            
             fullWidth
             name="password"
             label="Mot de passe"
@@ -117,19 +121,21 @@ const useStyles = makeStyles((theme) => ({
             id="password"
             autoComplete="current-password"
             onChange={(event)=>{
-                setMotDePasse(event.target.value);setMotDePasseErreur(false)
+                setMotDePasse(event.target.value);setMotDePasseErreur('')
             }}
-            error={motDePasseErreur}
+            error={motDePasseErreur!==""}
             />
             <Alert severity="error" hidden={!motDePasseErreur} >
-                <AlertTitle style={{fontSize:"14px"}}>S'il vous plait tapez votre mot de passe</AlertTitle>
+                <AlertTitle style={{fontSize:"14px"}}>{motDePasseErreur} </AlertTitle>
             </Alert>
           <Button
+            type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={envoyer}>
+            onClick={envoyer}
+          >
             Connecter
           </Button>
           <Grid container>
@@ -146,4 +152,4 @@ const useStyles = makeStyles((theme) => ({
   );
 }
 
-export default SignInMembre
+export default SignInClient

@@ -33,13 +33,15 @@ const AjoutContrat=()=>{
         setErreur(true);
         setTimeout(()=>{setErreur(false)},4000);
       }
+      const getContrats = async ()=>{
+       const res =await Axios.get(`contrat/getContratsClient/${idClient}`)
+       setNbrContrat(res.data.data.length)  
+      }
+
     useEffect(() => {
-        Axios.get(`http://localhost:3001/api/v1/contrat/getContratsClient/${idClient}`)
-        .then(res => {
-          setNbrContrat(res.data.data.length)
-          })
+        getContrats();
     }, [idClient])
-    const ajouter=()=>{
+    const ajouter=async()=>{
 
         const ob={
             IDclient:idClient,
@@ -53,13 +55,10 @@ const AjoutContrat=()=>{
         }
         if(type!=="" && visitesMainPreventive!=="" && visitesMainCurative!=="" &&
         prixInterSupp!=="" && contact!=="" && telContact!=="" &&  emailContact!==""){
-        Axios.post('http://localhost:3001/api/v1/contrat',ob ).then( res => {
-            setMessageInfo(<MessageInfo >le nouveau contrat à ajouter avec succès </MessageInfo>);
-            console.log("seccues")
-            setNbrContrat(nbrContrat+1)
-            document.getElementById("form").reset();
-
-        })
+        const res= await Axios.post('contrat',ob )
+        setMessageInfo(<MessageInfo >le nouveau contrat à ajouter avec succès </MessageInfo>);
+        setNbrContrat(nbrContrat+1)
+        document.getElementById("form").reset();
         }else{
             afficherErreur()
             console.log("ereur")

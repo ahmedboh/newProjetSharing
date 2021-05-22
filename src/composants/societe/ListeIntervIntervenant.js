@@ -8,28 +8,26 @@ import Axios from 'axios';
 import IntervCompresse from './IntervCompresse';
 import Interv from './Interv';
 
-const ListeIntervIntervenant=()=>{
+const ListeIntervIntervenant=(props)=>{
+    const{user}=props
     const [listeDdes, setListeDdes] = useState([])
     const [intervActuel,setIntervActuel ] = useState(false)
     const [intervDetaille,setIntervDetaille]=useState()
-    const listeDemande=()=>{
-        
-        console.log(localStorage.getItem('user'));
-        Axios.get(`http://localhost:3001/api/v1/affectation/getAffectationsIntervenant/${localStorage.getItem('user')}`)
-        .then((res)=>{
-            console.log(res.data.data)
-            setListeDdes(res.data.data);
-        })
+    const listeDemande=async()=>{
+        console.log(user._id)
+        const res =await Axios.get(`affectation/getAffectationsIntervenant/${user._id}`)
+        setListeDdes(res.data.data);
     } 
 
-    useEffect(() => {listeDemande()},[]);
+    useEffect(() => {
+            listeDemande()
+    },[user]);
 
     
     
     const ouvrirInterv=(interv,raisonSociale,contrat,IDintervenant)=>{
         setIntervActuel(true)
-          console.log(interv)
-          setIntervDetaille(<Interv contenu={interv} contrat={contrat} raisonSociale={raisonSociale} traiter={true} IDintervenant={IDintervenant}/>)
+        setIntervDetaille(<Interv contenu={interv} contrat={contrat} user={user} raisonSociale={raisonSociale} traiter={true} IDintervenant={IDintervenant}/>)
     }
 
     const stylePr=(priorite)=>{
@@ -49,8 +47,9 @@ const ListeIntervIntervenant=()=>{
                 <Col sm={3}>
                     <GridList cellHeight={180}  spacing={1} className="gridList"  >
                         {listeDdes.map((dde) => {return(
+                         dde.IDTicket&&dde.IDTicket.etat==='En cour'&&   
                         <GridListTile key={dde.IDTicket._id} cols={ 2 } rows={1}>
-                            <IntervCompresse  ouvrir={ouvrirInterv} naviguer={true} contenu={dde.IDTicket} styleP={stylePr(dde.IDTicket.priorite)} IDintervenant={dde.IDintervenant}/>
+                            <IntervCompresse user={user}  ouvrir={ouvrirInterv} naviguer={true} contenu={dde.IDTicket} styleP={stylePr(dde.IDTicket.priorite)} IDintervenant={dde.IDintervenant}/>
                         </GridListTile>
                         )})}
                     </GridList>
@@ -58,7 +57,7 @@ const ListeIntervIntervenant=()=>{
                 <Col>
                   <br/> 
                   <div className="container text-info" style={{textAlign:'center',fontFamily:'arial'}}>
-                        <h3>Bienvenu  {localStorage.getItem('userNom')} a votre liste des damandes d'intervention</h3>
+                        <h3>Bienvenu  {user.nom} a votre liste des damandes d'intervention</h3>
                         <h3>vous avez {listeDdes.length } demandes</h3>
                         <h4>appuyer sur l'une des demandes qui se trouvent dans la liste pour plus de details</h4><br/><br/>
                   </div>

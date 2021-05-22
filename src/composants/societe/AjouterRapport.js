@@ -12,8 +12,9 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useParams } from 'react-router';
 
 
-const AjouterRapport=()=>{
-    const {id,intervenant}=useParams()
+const AjouterRapport=(props)=>{
+    const {user}=props
+    const {id}=useParams()
     const [intervenantLabel,setIntervenantLabel]=useState('')
     function formatDate(date) {
         var d = new Date(date),
@@ -28,14 +29,11 @@ const AjouterRapport=()=>{
     
         return [year, month, day].join('-');
     }
+    
 
     useEffect(() => {     
-             Axios.get(`http://localhost:3001/api/v1/membSociete/${intervenant}`)
-            .then((res)=>{
-                setIntervenantLabel(res.data.data.nom+" "+res.data.data.prenom);
-                 })
-   
-     },[])
+       user.nom!==undefined&&setIntervenantLabel(user.nom+" "+user.prenom) 
+     },[user])
     
      const [heureDebut,setHeureDebut]=useState("08:00")
      const [dateDebut,setDateDebut]=useState(formatDate(new Date()))
@@ -44,10 +42,10 @@ const AjouterRapport=()=>{
      const [attachement,setAttachement]=useState()
      const [messageInfo, setMessageInfo] = useState(<div></div>)
     
-    const enregistrer=()=>{
+    const enregistrer=async()=>{
         const formData = new FormData();
             formData.append('IDTicket',id);
-            formData.append('IDintervenant',intervenant);
+            formData.append('IDintervenant',user._id);
             formData.append('dateCreation',new Date().toLocaleDateString());
             formData.append('heureCreation',new Date().toLocaleTimeString());
             formData.append('dateDebut',dateDebut);
@@ -58,7 +56,7 @@ const AjouterRapport=()=>{
         
        let ob={
                 IDTicket:id,
-                IDintervenant:intervenant,
+                IDintervenant:user._id,
                 dateCreation:new Date().toLocaleDateString(),
                 heureCreation:new Date().toLocaleTimeString(),
                 dateDebut,
@@ -67,26 +65,20 @@ const AjouterRapport=()=>{
                 heureFin,
                 attachement
              }
-        Axios.get(`http://localhost:3001/api/v1/rapportInter/getRapportIntersTicket/${id}`)
-        .then(res => {
-            console.log(res.data.data.length);   
-            if (res.data.data.length === 0) {
-              Axios.get(`http://localhost:3001/api/v1/affectation/getAffectationsIntervenantTicket/${id}/${intervenant}`)
-              .then(res => {
-                console.log(res.data.data.length); 
-                if(res.data.data.length !== 0){
-                  if(res.data.data[0].annule === false){
-                    Axios.post(`http://localhost:3001/api/v1/rapportInter`,formData ).then(res =>{
-                      console.log(res);
-                      setMessageInfo(<MessageInfo >L'ajout d'un nouvel rapport est passeé avec seccess </MessageInfo>)
-                    })
-                  }
+        const res = await Axios.get(`rapportInter/getRapportIntersTicket/${id}`)
+        if (res.data.data.length === 0) {
+            const res2=await Axios.get(`affectation/getAffectationsIntervenantTicket/${id}/${user._id}`)
+            if(res2.data.data.length !== 0){
+                if(res2.data.data[0].annule === false){
+                const res3=await  Axios.post(`rapportInter`,formData )
+                setMessageInfo(<MessageInfo >L'ajout d'un nouvel rapport est passeé avec seccess </MessageInfo>)
                 }
-              })
-            }else{
-                setMessageInfo(<MessageInfo >le rapport de cette intervention existe vous ne pouvez pas ajouter un autre rapport</MessageInfo>)
-            }
-        })
+              }
+            
+          }else{
+              setMessageInfo(<MessageInfo >le rapport de cette intervention existe vous ne pouvez pas ajouter un autre rapport</MessageInfo>)
+          }    
+                
     }
      return(
          

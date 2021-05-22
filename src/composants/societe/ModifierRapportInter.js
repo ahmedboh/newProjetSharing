@@ -21,19 +21,19 @@ const ModifierRapportInter=()=>{
     const [attachement,setAttachement]=useState()
     const [messageInfo, setMessageInfo] = useState(<div></div>)
     let history = useHistory();
+    
+    const getRapport = async()=>{
+       const res=await Axios.get(`rapportInter/${history.location.state.idRapportInter}`)
+       setDateDebut(res.data.data.dateDebut)
+       setHeureDebut(res.data.data.heureDebut)
+       setDateFin(res.data.data.dateFin)
+       setHeureFin(res.data.data.heureFin)
+       setAttachement(res.data.data.nomAttachement)     
+       const res2=await Axios.get(`membSociete/${res.data.data.IDintervenant}`)
+       setIntervenantLabel(res2.data.data.nom+" "+res2.data.data.prenom)               
+    }
     useEffect(() => { 
-        Axios.get(`http://localhost:3001/api/v1/rapportInter/${history.location.state.idRapportInter}`)
-            .then(res => {
-                setDateDebut(res.data.data.dateDebut)
-                setHeureDebut(res.data.data.heureDebut)
-                setDateFin(res.data.data.dateFin)
-                setHeureFin(res.data.data.heureFin)
-                setAttachement(res.data.data.nomAttachement)
-                Axios.get(`http://localhost:3001/api/v1/membSociete/${res.data.data.IDintervenant}`)
-                .then((res)=>{
-                    setIntervenantLabel(res.data.data.nom+" "+res.data.data.prenom);
-                })
-        })    
+        getRapport()
     },[])
     const fileAttacher=attachement===undefined
         ?<CancelIcon />
@@ -42,18 +42,15 @@ const ModifierRapportInter=()=>{
         }}>
           <AttachFileIcon />
         </IconButton>
-    const enregistrer=()=>{
+    const enregistrer=async()=>{
         const formData = new FormData();
             formData.append('dateDebut',dateDebut);
             formData.append('heureDebut',heureDebut);
             formData.append('dateFin',dateFin);
             formData.append('heureFin',heureFin);
             formData.append('attachement',attachement);
-
-            Axios.patch(`http://localhost:3001/api/v1/rapportInter/${history.location.state.idRapportInter}`,formData ).then(res =>{
-                console.log(res);
-                setMessageInfo(<MessageInfo >Le rapport est modifié avec seccess</MessageInfo>)
-            })
+            const res =await Axios.patch(`rapportInter/${history.location.state.idRapportInter}`,formData )
+            setMessageInfo(<MessageInfo >Le rapport est modifié avec seccess</MessageInfo>)
     }
 
      return(

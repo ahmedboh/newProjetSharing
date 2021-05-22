@@ -9,8 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
+import Switch from '@material-ui/core/Switch';
+import FormGroup from '@material-ui/core/FormGroup';
 import FormLabel from '@material-ui/core/FormLabel';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import MessageInfo from '../MessageInfo';
@@ -20,6 +20,7 @@ import Col from 'react-bootstrap/Col';
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: 'relative',
+        zIndex:0
       },
     layout: {
       width: 'auto',
@@ -53,31 +54,52 @@ const ModifierMembSociete=()=> {
     const [email,setEmail]=useState("");
     const [login,setLogin]=useState("")
     const [motDePasse,setMotDePasse]=useState("");
-    const [role,setRole]=useState("");
+    const [role,setRole]=useState([]);
     const [erreur,setErreur]=useState(false)
     const [messageInfo, setMessageInfo] = useState(<div></div>)
     const [idMS,setIdMS]=useState("");
     const [showLabelMp,setShowLabelMp]=useState(true);
+    const [stateSwitch,setStateSwitch]=useState({Ad:false,Rc:false,Ri:false,In:false,Ins:false})
     let history = useHistory();
-
+    const getMembre=async ()=>{
+     const res=await Axios.get(`http://localhost:3001/api/v1/membSociete/${history.location.state.idMembSociete}`)
+     setNom(res.data.data.nom)
+      setPrenom(res.data.data.prenom)
+      setEmail(res.data.data.email)
+      setLogin(res.data.data.login)
+      setRole(res.data.data.role)
+      setIdMS(res.data.data._id)   
+      setStateSwitch({
+        Ad:res.data.data.role.indexOf("Ad")!==-1,
+        Rc:res.data.data.role.indexOf("Rc")!==-1,
+        Ri:res.data.data.role.indexOf("Ri")!==-1,
+        In:res.data.data.role.indexOf("In")!==-1,
+        Ins:res.data.data.role.indexOf("Ins")!==-1,
+      })
+    }
     useEffect(() => {
-        Axios.get(`http://localhost:3001/api/v1/membSociete/${history.location.state.idMembSociete}`)
-            .then(res => {
-              setNom(res.data.data.nom)
-              setPrenom(res.data.data.prenom)
-              setEmail(res.data.data.email)
-              setLogin(res.data.data.login)
-              setRole(res.data.data.role)
-              setIdMS(res.data.data._id)
-        })
+      getMembre()
+    
     }, []);
+
 
     const classes = useStyles();
     const  afficherErreur=()=>{
       setErreur(true);
       setTimeout(()=>{setErreur(false)},4000);
     }
-    const envoyer=(event,r)=>{
+    const ajouterRole=async(event)=>{
+      setStateSwitch({ ...stateSwitch, [event.target.value]: event.target.checked });
+      let tabR=await role
+      tabR.indexOf(event.target.value)===-1
+      ?tabR.push(event.target.value)
+      :tabR.splice(tabR.indexOf(event.target.value),1)
+     setRole(tabR)
+     tabR=[]
+    }
+    const envoyer=async(event,r)=>{
+      event.preventDefault();
+      
       const ob= r==="motdepasse"  
       ?{
         motDePasse
@@ -89,22 +111,20 @@ const ModifierMembSociete=()=> {
             login,
             role
         }
-        if(nom!=="" && prenom!=="" && email!=="" && login!=="" && role!=="" && r!=='motdepasse'){
-        Axios.patch(`http://localhost:3001/api/v1/membSociete/${idMS}`,ob ).then( res => {
-            setMessageInfo(<MessageInfo>le membre de la société <b> {nom} {prenom} </b>à été modifier avec succes !</MessageInfo>);
-        })
+
+        if(nom!=="" && prenom!=="" && email!=="" && login!=="" && role.length>0 && r!=='motdepasse'){
+          const res =await Axios.patch(`http://localhost:3001/api/v1/membSociete/${idMS}`,ob )
+          setMessageInfo(<MessageInfo>le membre de la société <b> {nom} {prenom} </b>à été modifier avec succes !</MessageInfo>)
         }else if(motDePasse!=="" && r==='motdepasse'){
-          Axios.patch(`http://localhost:3001/api/v1/membSociete/updateMotDePasse/${idMS}`,ob ).then( res => {
-            setMessageInfo(<MessageInfo >le mot de passe de <b> {nom} {prenom} </b>à été modifier avec succès </MessageInfo>);
+          const res =await Axios.patch(`http://localhost:3001/api/v1/membSociete/updateMotDePasse/${idMS}`,ob )
+          setMessageInfo(<MessageInfo >le mot de passe de <b> {nom} {prenom} </b>à été modifier avec succès </MessageInfo>);
             if (r==="motdepasse") {
               setMotDePasse("")
               setShowLabelMp(true)
             }
-          })
         }else{
           afficherErreur();
         }
-        event.preventDefault();
     }
   return (
     <>
@@ -165,12 +185,13 @@ const ModifierMembSociete=()=> {
         </Grid>
         <Grid item xs={12}>
             <FormLabel component="legend">Rôle</FormLabel>
-            <RadioGroup aria-label="gender" name="Rôle" value={role} onChange={(event)=>{setRole(event.target.value)}}>
-                <FormControlLabel value="Ad" control={<Radio />} label="Administrateur" />
-                <FormControlLabel value="Rc" control={<Radio />} label="Responsable de création des fiches clients" />
-                <FormControlLabel value="Ri" control={<Radio />} label="Responsable affectation des demandes interventions" />
-                <FormControlLabel value="In" control={<Radio />} label="Simple intervenant" />
-            </RadioGroup>
+            <FormGroup onChange={ajouterRole}  >
+                <FormControlLabel value="Ad"  control={<Switch name='role' color="primary" checked={stateSwitch.Ad}    />} label="Administrateur" />
+                <FormControlLabel value="Rc" control={<Switch name='role' color="primary"    checked={stateSwitch.Rc}   />} label="Responsable de création des fiches clients" />
+                <FormControlLabel value="Ri" control={<Switch  name='role' color="primary" checked={stateSwitch.Ri}  />} label="Responsable affectation des demandes interventions" />
+                <FormControlLabel value="Ins" control={<Switch name='role' color="primary"   checked={stateSwitch.Ins}    />} label="Intervenant Supérieur" />
+                <FormControlLabel value="In" control={<Switch name='role' color="primary"  checked={stateSwitch.In}   />} label="Intervenant Simple" />
+            </FormGroup>
         </Grid>
       </Grid >
       <br/>

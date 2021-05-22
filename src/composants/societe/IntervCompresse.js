@@ -71,7 +71,7 @@ function CircularStatic(props){
 
 
 const IntervCompresse=(props)=>{
-    const {contenu,styleP,ouvrir,naviguer,supprimerDemande,IDintervenant}=props 
+    const {contenu,styleP,ouvrir,naviguer,supprimerDemande,IDintervenant,user}=props 
   
     const [btn,setBtn]= useState(true)
     const [raisonSociale,setRaisonSociale]=useState("");
@@ -79,21 +79,18 @@ const IntervCompresse=(props)=>{
     let history = useHistory();
     
 
-    
+  const intialiserDonnes= async ()=>{
+    const res=await  Axios.get("client/"+contenu.IDclient)
+    setRaisonSociale(res.data.data.raisonSociale);
+    const res2=await   Axios.get("contrat/getContratsClient/"+contenu.IDclient)
+    res2.data.data.forEach( (contr,index)=> {  
+    contr._id === contenu.contrat&&setContrat("contrat n° "+(index+1))
+     })          
+  }  
     useEffect(() => {   
-        Axios.get("http://localhost:3001/api/v1/client/"+contenu.IDclient)
-            .then((res)=>{
-                setRaisonSociale(res.data.data.raisonSociale);
-            })
-       Axios.get("http://localhost:3001/api/v1/contrat/getContratsClient/"+contenu.IDclient)
-            .then((res)=>{
-              res.data.data.forEach( (contr,index)=> {  
-            
-                if (contr._id === contenu.contrat) setContrat("contrat n° "+(index+1))
-            }) 
-            })      
-
+      intialiserDonnes()   
     },[contenu.IDclient])
+   
     const affecter =()=>{
       history.push("/affecter",{interv:contenu,raisonSociale,contrat})
     }
@@ -103,7 +100,7 @@ const IntervCompresse=(props)=>{
         <Card.Body>
         <center>
         <Card.Title ><h6>{contenu.dateCreation} | {contenu.heureCreation} &nbsp;&nbsp; </h6> </Card.Title>
-        {!naviguer &&<IconButton color="secondary" hidden={([localStorage.getItem('userRole'),'Ad'].indexOf('Ad')===-1)}  style={{position:'absolute',top:'50px',right:'-10px' }}  onClick={()=>{supprimerDemande(contenu._id)}}  aria-label="delete"  ><DeleteSweepIcon  hidden={btn}  fontSize='large' /> </IconButton>}
+        {!naviguer &&<IconButton color="secondary" hidden={user.role&&user.role.indexOf('Ad')===-1}  style={{position:'absolute',top:'50px',right:'-10px' }}  onClick={()=>{supprimerDemande(contenu._id)}}  aria-label="delete"  ><DeleteSweepIcon  hidden={btn}  fontSize='large' /> </IconButton>}
         </center>
         <Card.Text>
             {contenu.nature} <br/>

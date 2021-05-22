@@ -32,12 +32,9 @@ import Button from '@material-ui/core/Button';
 const ListeClients=()=> {
     const [rows , setRows ]=useState([]);
 
-    const listecl=()=>{
-      Axios.get(`http://localhost:3001/api/v1/client`)
-      .then(res => {
-        const clients = res.data.data;
-        setRows( clients );
-        })
+    const listecl=async()=>{
+      const res =await Axios.get(`client`)
+      setRows( res.data.data );
     }
 useEffect(() => {
   listecl()
@@ -74,7 +71,11 @@ let history = useHistory();
   const handleClose = () => {
     setOpen1(false);
   };
-
+  const suprimerClient = async(id) => {
+    const res=await Axios.delete(`client/${id}`)
+    listecl()
+    handleClose();
+  }
   function Row(props) {
     const { row } = props;
     const [open, setOpen] = useState(false);
@@ -128,14 +129,7 @@ let history = useHistory();
                   <Button onClick={handleClose} color="secondary">
                     annuler
                   </Button>
-                  <Button onClick={() => {
-                    Axios.delete(`http://localhost:3001/api/v1/client/${row._id}`)
-                    .then(res => {
-                      console.log(res);
-                      listecl()
-                    });
-                    handleClose();
-                  }} color="primary" autoFocus>
+                  <Button onClick={()=>suprimerClient(row._id)} color="primary" autoFocus>
                     confirmer
                   </Button>
                 </DialogActions>
