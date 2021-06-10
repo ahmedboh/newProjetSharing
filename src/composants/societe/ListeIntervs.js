@@ -6,7 +6,7 @@ import IntervCompresse from './IntervCompresse'
 import CheckBoxType from './filtrage/CheckBoxType'
 import CheckDate from './filtrage/CheckDate'
 import CheckAutoComplete from './filtrage/CheckAutoComplete'
-
+import SearchFiltre from './filtrage/SearchFiltre';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import {  Collapse } from 'antd';
@@ -16,6 +16,7 @@ const ListeIntervs=(props)=>{
     const{user}=props
     const [FormRow, setFormRow] = useState([])
     const [listeDdes, setListeDdes] = useState([])
+    const [searchRef, setsearchRef] = useState('')
     const [Filters, setFilters] = useState({
         'nature':[],
         'priorite':[],
@@ -75,10 +76,10 @@ const ListeIntervs=(props)=>{
     
     const supprimerDemande=async(id)=>{
         const res =await Axios.delete(`ticket/`+id)
-        listeDemande({filters:Filters})      
+        listeDemande({searchRef,filters:Filters})      
     }
     useEffect(() => {
-        listeDemande({filters:Filters})
+        listeDemande({searchRef,filters:Filters})
     },[user]);
    
 
@@ -88,24 +89,36 @@ const ListeIntervs=(props)=>{
         newFilters[category] = filters
 
 
-         listeDemande({filters:newFilters})
+         listeDemande({searchRef,filters:newFilters})
          
          setFilters(newFilters)
     }
     
+    const updateSearchTerms = (newSearchTerm) => {
+
+        const variables = {
+            filters: Filters,
+            searchRef: newSearchTerm
+        }
+
+        setsearchRef(newSearchTerm)
+
+        listeDemande(variables)
+    }
+
     const charger=(listeDd)=> setFormRow( listeDd.map((dde,index)=>{return(<Grid key={index} item   lg={3} md={4} xs={12} > <IntervCompresse naviguer={false} contenu={dde} user={user} supprimerDemande={supprimerDemande} styleP={stylePr(dde.priorite)}/></Grid>)}))   
     
     return(<><br/><br/><br/>
-       <div className="container">
+       <div className="container" >
      <Collapse defaultActiveKey={['0']}  style={{color:'darkblue' ,backgroundColor:'#e0e0e0'}} >
         <Panel header="FILTRAGE" key="1" >
         <br/>   
         <Row style={{paddingLeft:20}}>
         <Col lg={6}>    
-        <CheckAutoComplete type="clients"   handleFilters={handleFilters}></CheckAutoComplete>
+        <CheckAutoComplete type="clients"  sty={false} label={'Client demndeur '} handleFilters={handleFilters}></CheckAutoComplete>
         </Col>
         <Col lg={6}>    
-        <CheckAutoComplete  type="intervenants" handleFilters={handleFilters}></CheckAutoComplete>
+        <CheckAutoComplete  type="intervenants" sty={false} label={'intervenant'}handleFilters={handleFilters}></CheckAutoComplete>
         </Col>
         </Row>
         <hr/>
@@ -114,12 +127,15 @@ const ListeIntervs=(props)=>{
         <CheckBoxType   handleFilters={handleFilters}></CheckBoxType>
         </Col>
         <Col lg={6}>    
-        <CheckDate   handleFilters={handleFilters}></CheckDate>
+        <CheckDate     handleFilters={handleFilters}></CheckDate>
+        </Col>
+        <Col lg={6}>    
+        <SearchFiltre     refreshFunction={updateSearchTerms}/>
         </Col>
         </Row>
         </Panel>
         </Collapse></div>
-    <div style={{padding:'2%',backgroundColor:'#e0e0e0',margin:'5%',borderRadius:'50px',border:'1px rgb(0, 153, 204) solid'}}>
+    <div style={{ overflow:'scroll',overflowX: 'hidden',height:'500px',padding:'2%',backgroundColor:'#e0e0e0',margin:'5%',borderRadius:'50px',border:'1px rgb(0, 153, 204) solid'}}>
         
         {/* <Collapse defaultActiveKey={['0']} style={{color:'blue' ,backgroundColor:'white'}} > */}
         

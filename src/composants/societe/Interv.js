@@ -9,7 +9,7 @@ import Alert from '@material-ui/lab/Alert';
 import Comment from '../chatApp/Comment'
 import Chat  from '../chatApp/Chat'
 const Interv = (props) => {
-    const { traiter,raisonSociale,contenu,contrat ,user} = props
+    const { traiter,contenu,contrat ,user} = props
     const [msg, setMsg] = useState("")
     const [open, setOpen] = useState(false);
     const [rapportExiste, setRapportExiste] = useState(false);
@@ -33,8 +33,7 @@ const Interv = (props) => {
 const cloturer =async()=>{
     if (rapportExiste){
         const res = await Axios.patch(`ticket/${contenu._id}`,{etat:"Clôturée",} )
-        setMsg("Demande est clôtureé")
-        //setMsg("la clôturation n'est pas encore passee"+contenu._id)                  
+        setMsg("Demande est clôtureé")                
     }else{
         setMsg("Ajouter un rapport pour pouvoir clôturer la damande")
     }
@@ -46,16 +45,16 @@ const cloturer =async()=>{
               <Col>  
                 <Row >
                     <Col>Client Demandeur :</Col>
-                    <Col> {raisonSociale}</Col>
+                    <Col> {contenu.IDclient.raisonSociale}</Col>
                 </Row><br />
                 <Row>
                     <Col  >Date de  Création  :</Col>
-                    <Col >{contenu.dateCreation} </Col>
+                    <Col >{new Date(contenu.dateCreation).toLocaleDateString()} </Col>
 
                 </Row><br />
                 <Row>
                     <Col  >Heure de  Création  :</Col>
-                    <Col >{contenu.heureCreation}  </Col>
+                    <Col >{new Date(contenu.dateCreation).toLocaleTimeString()}  </Col>
 
                 </Row><br />
                 <Row hidden={!traiter}>
@@ -80,7 +79,7 @@ const cloturer =async()=>{
                     <Col><pre>{contenu.details}</pre></Col>
                 </Row>
                 {   
-                        traiter&&  <Row><Comment  name={user.prenom+""+user.nom} room={contenu._id} role='In' /> </Row>
+                        traiter&&  <Row><Comment  name={user.prenom+""+user.nom} IDTicket={contenu._id} role='In' /> </Row>
                 }
                 <br/><br/>
                 <Row hidden={!traiter}>
@@ -99,7 +98,7 @@ const cloturer =async()=>{
                 <Col>
                     
                     {   
-                        traiter&&  <Row><Chat name={user.prenom+""+user.nom} room={contenu._id} role='In' nameCo={raisonSociale}/> </Row>
+                        traiter&&  <Row><Chat name={user.prenom+""+user.nom} IDTicket={contenu._id} role='In' nameCo={contenu.IDclient.raisonSociale}/> </Row>
                     }
                 </Col>
         

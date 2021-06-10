@@ -1,11 +1,44 @@
 .ligneInterv{
-    margin-left:30px;
-    margin-bottom: 10px;
-    height:370px;
+    margin-top: 30%;
+    margin-left:50%;
+    height:45vh;
     width:1px;
     border-radius:20px;
     border:2px  rgb(0, 153, 204) solid
  }
+
+ .box {
+   box-shadow:
+   0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+   0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+   0 12.5px 10px rgba(0, 0, 0, 0.06),
+   0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+   0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+   0 100px 80px rgba(0, 0, 0, 0.12);
+   margin-top:5vh;
+   padding:1%;
+   background-color:white;
+   border-radius:10px;
+ ;}
+ 
+.titre{
+   background: linear-gradient(to right, #498883, rgb(0, 153, 204));
+   -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family:  sans-serif;
+  font-variant: small-caps;
+  font-weight: bold;
+
+   text-align:center;
+   text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
+}
+
+.labelText{
+  font-family:  sans-serif;
+  font-weight: bold;
+  font-variant: small-caps;
+  
+}
 
 
   

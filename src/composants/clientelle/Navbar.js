@@ -57,16 +57,16 @@ const Navbar=(props)=> {
                 className='nav-links'
                 onClick={closeMobileMenu}
               >
-                INERVENTION
+                Nouveau ticket
               </Link>
             </li>
             <li className='nav-item'>
               <Link
-                to='#'
+                to='/historique'
                 className='nav-links'
                 onClick={closeMobileMenu}
               >
-                HISTORIQUE
+                Historique
               </Link>
             </li>
             <li className='nav-item'>
@@ -75,12 +75,14 @@ const Navbar=(props)=> {
                 className='nav-links'
                 onClick={closeMobileMenu}
               >
-                CONTRATS
+                Contrats
               </Link>
+            </li>
+            <li className='nav-item'>
+                <span className='btnLogout'><Button variant="contained" onClick={deconn} color="secondary" size="medium"  >Déconnecter</Button></span> 
             </li>
           
           </ul>
-          <Button variant="contained" onClick={deconn} color="secondary" size="medium" >Log-OUT</Button>
         </div>
       </nav>
     </>

@@ -89,14 +89,15 @@ const ModifierMembSociete=()=> {
       setTimeout(()=>{setErreur(false)},4000);
     }
     const ajouterRole=async(event)=>{
-      setStateSwitch({ ...stateSwitch, [event.target.value]: event.target.checked });
-      let tabR=await role
-      tabR.indexOf(event.target.value)===-1
-      ?tabR.push(event.target.value)
-      :tabR.splice(tabR.indexOf(event.target.value),1)
+      let tabR=[]
+      let obj= { ...stateSwitch, [event.target.value]: event.target.checked }
+      if(obj.Ins) obj={...obj,'In':true};
+      for (let role in obj) obj[role] && tabR.push(role)
+     setStateSwitch(obj);
      setRole(tabR)
-     tabR=[]
+     console.log(role)
     }
+
     const envoyer=async(event,r)=>{
       event.preventDefault();
       
@@ -190,7 +191,7 @@ const ModifierMembSociete=()=> {
                 <FormControlLabel value="Rc" control={<Switch name='role' color="primary"    checked={stateSwitch.Rc}   />} label="Responsable de création des fiches clients" />
                 <FormControlLabel value="Ri" control={<Switch  name='role' color="primary" checked={stateSwitch.Ri}  />} label="Responsable affectation des demandes interventions" />
                 <FormControlLabel value="Ins" control={<Switch name='role' color="primary"   checked={stateSwitch.Ins}    />} label="Intervenant Supérieur" />
-                <FormControlLabel value="In" control={<Switch name='role' color="primary"  checked={stateSwitch.In}   />} label="Intervenant Simple" />
+                <FormControlLabel value="In" control={<Switch name='role' color="primary"  checked={stateSwitch.In ||stateSwitch.Ins}   />} label="Intervenant Simple" />
             </FormGroup>
         </Grid>
       </Grid >

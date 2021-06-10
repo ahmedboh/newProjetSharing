@@ -19,16 +19,25 @@ const CheckAutoComplete=(props)=>{
             setVariables(res.data.data);
          }
         useEffect(() => {
-        props.type==='intervenants'?getIntervannats():getClients()   
+            props.type==='intervenants'?getIntervannats():getClients()   
          },[])
         
 
          const conserverVariable = async(value) => {
-            if(props.type==='intervenants'){
-            props.handleFilters(value!==null?value._id:'','IDintervenant') 
+            if (props.id){
+                if(props.type==='intervenants'){
+                    props.handleFilters(value!==null?value._id:'','IDintervenant',value?value.nom+" "+value.prenom:'',props.id) 
+                    }else{
+                    props.handleFilters(value!==null?value._id:'','IDclient',value?value.raisonSociale:'',props.id) 
+                    }
             }else{
-            props.handleFilters(value!==null?value._id:[],'IDclient') 
+                if(props.type==='intervenants'){
+                 props.handleFilters(value!==null?value._id:'','IDintervenant') 
+                    }else{
+                 props.handleFilters(value!==null?value._id:'','IDclient') 
+                }
             }
+            
         }
 
  return(<div>
@@ -36,13 +45,13 @@ const CheckAutoComplete=(props)=>{
                                 id="combo-box-demo"
                                 options={variables}
                                 getOptionLabel={(option) => { return props.type==='intervenants'?  (option.nom+" "+option.prenom):  option.raisonSociale}}
-                                style={{ width: 400,marginBottom:5,marginLeft:'5'}}
+                                style={props.sty?{ width: 400,marginBottom:5,marginLeft:'5'}:{ marginBottom:5}}
                                 size="small"
                                 onChange={ (event, values) => {
                                     conserverVariable(values)
                                   }}
                             
-                                renderInput={(params) =>  <TextField {...params}  style={{ backgroundColor:'white' }} label={props.type==='intervenants'?"intervenant":"Client Demandeur"} variant="outlined" />}
+                                renderInput={(params) =>  <TextField {...params}  style={{ backgroundColor:'white' }} label={props.label} variant="outlined" />}
     />
     </div>)
 }

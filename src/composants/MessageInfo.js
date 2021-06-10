@@ -11,7 +11,7 @@ const MessageInfo=(props)=>{
     const type=props.type ||"success"
     const [open, setOpen] = useState(true)
     return(<div><Collapse in={open}>
-        <Alert  severity={type} action={
+        <Alert hidden={!open}  severity={type} action={
         <IconButton
             aria-label="close"
             color="inherit"
@@ -26,8 +26,8 @@ const MessageInfo=(props)=>{
         {msg}
         </Alert>
         </Collapse>
-        <Button disabled={open} variant="outlined" onClick={() => { setOpen(true);}}>
-            ouvrir
+        <Button  variant="outlined" hidden={open} onClick={() => { setOpen(true);}}>
+            Re-ouvrir
         </Button> 
         </div>)
 

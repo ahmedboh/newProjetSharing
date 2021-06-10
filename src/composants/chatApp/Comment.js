@@ -12,7 +12,7 @@ import io from "socket.io-client";
 let socket;
 
 export default function Comment(props) {
-    const {name,room,role}=props
+    const {name,IDTicket,role}=props
     const [open, setOpen] = useState(role==='Ad'?false:true)
     const [moreDetails, setMoreDetails] = useState(false)
     const [comment, setComment] = useState('');
@@ -27,10 +27,10 @@ export default function Comment(props) {
     
     useEffect(() => {  
       socket=io('http://localhost:3001/')
-      socket.emit('joinComment', { name , room ,role }
+      socket.emit('joinComment', { name , IDTicket ,role }
       );
       return  closingCode;
-    }, [room])
+    }, [IDTicket])
 
 
     useEffect(() => {
@@ -44,13 +44,13 @@ export default function Comment(props) {
         }); 
 
        
-    },[room]);
+    },[IDTicket]);
 
     const sendComment = (event) => {
         event.preventDefault();
     
         if(comment) {
-          socket.emit('sendComment', {comment, name , room }, () =>{ setComment('');document.getElementById('input').focus();});
+          socket.emit('sendComment', {comment, name , IDTicket }, () =>{ setComment('');document.getElementById('input').focus();});
         }
          scrollmsag()
         
@@ -58,7 +58,7 @@ export default function Comment(props) {
 
        window.onbeforeunload = closingCode;
        function closingCode(){
-        role!=='Ad'&& socket.emit('disconnectComment', { name , room  })
+        role!=='Ad'&& socket.emit('disconnectComment', { name , IDTicket  })
           return null;
        } 
 
@@ -85,7 +85,7 @@ export default function Comment(props) {
                 <p hidden={!moreDetails && msg.user==="chatAdmin" } key={index}  className={msg.user==="chatAdmin" ?"comment__chatAdmin":"comment__message"}>
                     <span hidden={msg.user==="chatAdmin" } className="comment__name">{msg.user}</span>
                     {msg.text}
-                    <span  className="comment__timestamp" >{msg.date}</span>      
+                    <span  className="comment__timestamp" >{ new Date(msg.date).toUTCString()}</span>      
                 </p>
             ))}
             </div>   

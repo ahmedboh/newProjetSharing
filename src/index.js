@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import { useState,useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import './index.css';
@@ -12,7 +12,8 @@ import AjouMembSociete from './composants/societe/AjouMembSociete'
 import Sidebar from './composants/societe/Sidebar/Sidebar'
 import SignIn from './composants/SignIn'
 import DeposerTicket from './composants/clientelle/DeposerTicket'
-import { Switch,Redirect,Route,BrowserRouter as Router } from 'react-router-dom';
+import  Intervs from './composants/clientelle/Intervs'
+import { Switch,Route,BrowserRouter as Router } from 'react-router-dom';
 import AjoutContrat from './composants/societe/AjoutContrat';
 import ModifContrat from './composants/societe/ModifContrat';
 import ListeMembSocietes from './composants/societe/listeMembSociete';
@@ -26,13 +27,16 @@ import ListeRapportsInterventions from './composants/societe/ListeRapportsInterv
 import LirePDF from './composants/societe/Pdf/LirePDF';
 import Navbar from './composants/clientelle/Navbar';
 import ModifierRapportInter from './composants/societe/ModifierRapportInter';
-import Demo from './composants/societe/statistique/chart';
+import Stat from './composants/societe/statistique/Stat';
+
+
+
+
 import Axios from 'axios';
-import axios from 'axios';
 
 
 const Index =()=> {
-    axios.defaults.headers.common['xAuthToken']=localStorage.getItem('token');
+    Axios.defaults.headers.common['xAuthToken']=localStorage.getItem('token');
     const [connectMb,setConnectMB]=useState(false)
     const [connectCl,setConnectCl]=useState(false)
     const [decon,setDecon]=useState(false)
@@ -44,13 +48,13 @@ const Index =()=> {
     useEffect(() => {
       localStorage.getItem('connectMb')&&setConnectMB(true) 
       localStorage.getItem('connectCl')&&setConnectCl(true) 
+      refleshToken()
    }, [])
 
  
 
     const getMembreS = async()=>{
         const res=await Axios.get('membSociete/connect' )
-        console.log(res.data.data.role)
         res.status===200&&setMembreS(res.data.data)       
       }
 
@@ -59,7 +63,7 @@ const Index =()=> {
           const res=await Axios.get('auth/reflesh') 
           if(res.status===200){
             localStorage.setItem('token',res.data.token)
-            axios.defaults.headers.common['xAuthToken']=localStorage.getItem('token');  
+            Axios.defaults.headers.common['xAuthToken']=localStorage.getItem('token');  
           }else setDecon(true)
         }
         removeListner()
@@ -78,8 +82,9 @@ const Index =()=> {
       connectCl? getClient() : setClient({}) 
   }, [connectCl])
 
-  setInterval(()=>{addlisnter()}, 3600000); 
- const addlisnter=()=>{
+  setInterval(()=>{addlisnter()}, 360000); 
+
+const addlisnter=()=>{
   window.addEventListener('click',refleshToken);
   window.addEventListener('keydown',refleshToken);
   window.addEventListener('scroll',refleshToken);
@@ -88,7 +93,7 @@ const Index =()=> {
  const removeListner=()=>{
   window.removeEventListener('click',refleshToken)
   window.removeEventListener('keydown',refleshToken)
-  window.removeEventListener('keydown',refleshToken)
+  window.removeEventListener('keydown',refleshToken) 
 }
     return (<div>
              <Router>
@@ -101,7 +106,7 @@ const Index =()=> {
                 <Switch>
                   <Route exact path="/"  ><SignIn fn={setConnectCl}  fnc={setDecon} type="c"/></Route>
                   <Route  path="/SharingSignIn"   ><SignIn fn={setConnectMB}  fnc={setDecon} type="m" /></Route>
-                  <Route path="/demo"><Demo/></Route>
+                  <Route path="/demo"><Stat/></Route>
 
                   {connectMb&&
                   <><Route  path="/accueil"  ><Accueil  /></Route>
@@ -132,6 +137,7 @@ const Index =()=> {
                   {connectCl&&<>
                       <Route path="/deposer"  ><DeposerTicket    user={client} /></Route>
                       <Route path="/listeContrat"><ListeContrart  user={client}/></Route>
+                      <Route path="/historique"><Intervs user={client}/></Route>
                       </>}
                 </Switch>
               </Router>
@@ -140,7 +146,7 @@ const Index =()=> {
 }
 
 
-axios.defaults.baseURL='http://localhost:3001/api/v1/'
+Axios.defaults.baseURL='http://localhost:3001/api/v1/'
 
 ReactDOM.render(
    <Index/>,

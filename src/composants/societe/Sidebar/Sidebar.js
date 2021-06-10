@@ -42,11 +42,13 @@ top: 0;
 left: ${({ sidebar }) => (sidebar ? '0' : '-100%')};
 transition: 350ms;
 z-index: 10;
+
 `;
 
 const SidebarWrap = styled.div`
 width: 100%;
 `;
+
 const Sidebar = (props) => {
     const{user,decon,fn}=props
     let history = useHistory();

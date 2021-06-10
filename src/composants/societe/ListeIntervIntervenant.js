@@ -17,17 +17,19 @@ const ListeIntervIntervenant=(props)=>{
         console.log(user._id)
         const res =await Axios.get(`affectation/getAffectationsIntervenant/${user._id}`)
         setListeDdes(res.data.data);
+        console.log(res)
     } 
 
     useEffect(() => {
-            listeDemande()
+          user._id&& listeDemande()
     },[user]);
 
     
     
-    const ouvrirInterv=(interv,raisonSociale,contrat,IDintervenant)=>{
+    const ouvrirInterv=(interv,contrat,IDintervenant)=>{
+        console.log(interv)
         setIntervActuel(true)
-        setIntervDetaille(<Interv contenu={interv} contrat={contrat} user={user} raisonSociale={raisonSociale} traiter={true} IDintervenant={IDintervenant}/>)
+        setIntervDetaille(<Interv contenu={interv} contrat={contrat} user={user}  traiter={true} IDintervenant={IDintervenant}/>)
     }
 
     const stylePr=(priorite)=>{

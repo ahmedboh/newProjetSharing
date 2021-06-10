@@ -9,7 +9,7 @@ import StyledBadge from './StyledBadge'
 let socket;
 
 export default function Chat(props) {
-    const {name,nameCo,room,role}=props
+    const {name,nameCo,IDTicket,role}=props
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [connecte,setConnecte]= useState(false);
@@ -17,17 +17,15 @@ export default function Chat(props) {
 
     const scrollmsag=()=>{
         var element = document.getElementsByClassName("chat__body")[0];
-        element.scrollTop = element.scrollHeight;
+        if(element) element.scrollTop = element.scrollHeight;
     }
     
     useEffect(() => {  
       socket=io('http://localhost:3001/')
-      socket.emit('joinChat', { name,  room,role }
+      socket.emit('joinChat', { name,  IDTicket,role }
       );
-    //   socket.emit('oldStatus', {name:nameCo,  room }
-    //   );
       return  closingCode;
-    }, [room])
+    }, [IDTicket])
 
 
     useEffect(() => {
@@ -41,18 +39,15 @@ export default function Chat(props) {
           scrollmsag()
         }); 
         socket.on('usermessage', users => {
-            setConnecte(users.findIndex((us)=>us.name ===nameCo && us.room === room)!==-1?true:false); 
+                setConnecte(users.findIndex((us)=>us.role !==role && us.IDTicket === IDTicket)!==-1?true:false); 
         });
-        // socket.on('status', status => {
-        //     setConnecte(status==='true'?true:false); 
-        // }); 
-    },[room]);
+    },[IDTicket]);
 
     const sendMessage = (event) => {
         event.preventDefault();
     
         if(message) {
-          socket.emit('sendMessage', {message,name,room}, () =>{ setMessage('');document.getElementById('inputMsg').focus();});
+          socket.emit('sendMessage', {message,name,IDTicket,connecte,role,type:'text'}, () =>{ setMessage('');document.getElementById(`${IDTicket}`).focus();});
         }
          scrollmsag()
         
@@ -60,7 +55,7 @@ export default function Chat(props) {
 
        window.onbeforeunload = closingCode;
        function closingCode(){
-        role!=='Ad'&& socket.emit('disconnectChat', { name , room  })
+        role!=='Ad'&& socket.emit('disconnectChat', { name , IDTicket  })
           return null;
        } 
 
@@ -70,7 +65,7 @@ export default function Chat(props) {
     return (
         <div className='chat'>
             <div className="chat__header" >
-                <StyledBadge  overlap="circle" anchorOrigin={{ vertical: 'bottom', horizontal: 'right', }}  variant={connecte?"dot":'standard'}>
+                <StyledBadge  overlap="circle" style={{marginBottom:'20px'}} anchorOrigin={{ vertical: 'bottom', horizontal: 'right', }}  variant={connecte?"dot":'standard'}>
                     <Avatar  className="avatar" style={{backgroundColor:'orangered',color:'white'}}>{nameCo[0].toUpperCase()}</Avatar>
                 </StyledBadge>   
                 <div className="chat__headerInfo">
@@ -94,8 +89,8 @@ export default function Chat(props) {
                 messages.findIndex((ms)=>ms.text === msg.text && ms.date === msg.date)===index&&
                 <p  key={index}  className={msg.user===name ?"chat__message":"chat__message chat__reciever "}>
                     <span className="chat__name">{msg.user}</span>
-                    {msg.text}
-                    <span  className="chat__timestamp" >{msg.date}</span>        
+                    {msg.contenu}
+                    <span  className="chat__timestamp" >{new Date(msg.date).toUTCString()}</span>        
                 </p>
             ))}
             </div> 
@@ -103,8 +98,7 @@ export default function Chat(props) {
             <div className="chat__footer">
                 <InsertEmoticon/>
                 <form>
-                    <input id="inputMsg" placeholder="type a message" value={message}   onKeyPress={event => event.key === 'Enter' ? sendMessage(event) : null} onChange={(event)=>{setMessage(event.target.value)}} type="text"/>    
-                    <button type="submit" >send a message</button>
+                    <input id={IDTicket} placeholder="type a message" value={message}   onKeyPress={event => event.key === 'Enter' ? sendMessage(event) : null} onChange={(event)=>{setMessage(event.target.value)}} type="text"/>    
                 </form>
                 <Mic/>
             </div>

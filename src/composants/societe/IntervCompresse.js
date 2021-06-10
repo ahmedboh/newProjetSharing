@@ -2,10 +2,8 @@ import Card from 'react-bootstrap/Card';
 import React,{ useState ,useEffect} from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import '../../style/interv.css';
-import Axios from 'axios';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import IconButton from '@material-ui/core/IconButton';
-import BackspaceIcon from '@material-ui/icons/Backspace';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import  Button  from 'react-bootstrap/Button';
@@ -74,41 +72,32 @@ const IntervCompresse=(props)=>{
     const {contenu,styleP,ouvrir,naviguer,supprimerDemande,IDintervenant,user}=props 
   
     const [btn,setBtn]= useState(true)
-    const [raisonSociale,setRaisonSociale]=useState("");
+  
     const [contrat,setContrat]=useState("contrat");
     let history = useHistory();
     
-
-  const intialiserDonnes= async ()=>{
-    const res=await  Axios.get("client/"+contenu.IDclient)
-    setRaisonSociale(res.data.data.raisonSociale);
-    const res2=await   Axios.get("contrat/getContratsClient/"+contenu.IDclient)
-    res2.data.data.forEach( (contr,index)=> {  
-    contr._id === contenu.contrat&&setContrat("contrat n° "+(index+1))
-     })          
-  }  
-    useEffect(() => {   
-      intialiserDonnes()   
-    },[contenu.IDclient])
+ 
+    
    
     const affecter =()=>{
-      history.push("/affecter",{interv:contenu,raisonSociale,contrat})
+      history.push("/affecter",{interv:contenu,contrat})
     }
     return( 
     <Card border={styleP[0]}  onMouseOver={()=>{setBtn(false)}} onMouseLeave={()=>{setBtn(true)}} className="intervCompresse" >
-        <b><Card.Header  className={styleP[1]}>{raisonSociale} <CircularStatic status={contenu.etat} />  </Card.Header></b>
+        <b><Card.Header  className={styleP[1]}>{contenu.IDclient.raisonSociale} <CircularStatic status={contenu.etat} />  </Card.Header></b>
         <Card.Body>
         <center>
-        <Card.Title ><h6>{contenu.dateCreation} | {contenu.heureCreation} &nbsp;&nbsp; </h6> </Card.Title>
+        <Card.Title ><h6>{new Date(contenu.dateCreation).toLocaleDateString()} | {new Date(contenu.dateCreation).toLocaleTimeString()} &nbsp;&nbsp; </h6> </Card.Title>
         {!naviguer &&<IconButton color="secondary" hidden={user.role&&user.role.indexOf('Ad')===-1}  style={{position:'absolute',top:'50px',right:'-10px' }}  onClick={()=>{supprimerDemande(contenu._id)}}  aria-label="delete"  ><DeleteSweepIcon  hidden={btn}  fontSize='large' /> </IconButton>}
         </center>
         <Card.Text>
-            {contenu.nature} <br/>
-            {contrat}    
+             {contenu.ref} <br/>
+            {contenu.nature} 
+               
             {!naviguer
             //?<Link  to={'/affecter/'+contenu._id+'/'+raisonSociale+'/'+(contenu.IDintervenant===''?"None":contenu.IDintervenant)+'/'+contenu.periodeTrai+"/"+contenu.etat}> <Button hidden={btn}  className="ouvrirInterv btn-sm">  OUVRIR</Button></Link> 
             ?  <Button hidden={btn} onClick={affecter} className="ouvrirInterv btn-sm">  OUVRIR</Button>
-            : <Button hidden={btn} onClick={()=>{ouvrir(contenu,raisonSociale,contrat,IDintervenant)}}  className="ouvrirInterv btn-sm">  OUVRIR</Button>     
+            : <Button hidden={btn} onClick={()=>{ouvrir(contenu,contrat,IDintervenant)}}  className="ouvrirInterv btn-sm">  OUVRIR</Button>     
             }<br/>
         </Card.Text>
         

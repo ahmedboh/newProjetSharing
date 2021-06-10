@@ -1,0 +1,10 @@
+.listTickets{
+    margin:20px;
+    height:75vh;
+    padding:10px; 
+    overflow:scroll;
+    overflow-x: hidden;
+    background: rgb(104,239,241);
+    background: linear-gradient(135deg, rgba(104,239,241,1) 0%, rgba(246,207,123,1) 100%);
+    border-radius: 20px;
+}

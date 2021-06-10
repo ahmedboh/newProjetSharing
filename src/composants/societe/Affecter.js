@@ -32,9 +32,11 @@ const Affecter=(props)=>{
         const intialiserDonnees=async ()=>{
           const res =await  Axios.get(`membSociete/getMembSocietesRole/${"In"}`)
           setIntervenants(res.data.data)
-          const res2 =await  Axios.get("client/"+interv.IDclient)
+
+          const res2 =await  Axios.get("client/"+interv.IDclient._id)
           setClient(res2.data.data)  
           const res3=await  Axios.get(`affectation/getAffectationsTicket/${interv._id}`)
+          console.log(res3)
           if(res3.data.data){
                 const res4 = await Axios.get(`membSociete/${res3.data.data.IDintervenant}`)       
                 setIntervenantLabel(res4.data.data.nom+" "+res4.data.data.prenom)
@@ -46,7 +48,7 @@ const Affecter=(props)=>{
         
         const misAjourTicket=async(object)=>{
             const res = await Axios.patch(`ticket/${interv._id}`,object )
-            setInterv(res.data.data);
+            console.log(res)
         }
         const getlisteContrats=async(client)=>{
             const res = await Axios.get(`http://localhost:3001/api/v1/contrat/getContratsClient/${client}`)
@@ -59,7 +61,7 @@ const Affecter=(props)=>{
             setPriorite(interv.priorite)
             interv.contrat!==''&&setContrat(interv.contrat)
             interv.contrat!==undefined&&setContrat(interv.contrat)
-            getlisteContrats(interv.IDclient)
+            getlisteContrats(interv.IDclient._id)
             intialiserDonnees()
         
          },[user])
@@ -67,16 +69,14 @@ const Affecter=(props)=>{
          const options=listeContrats.length>0 && listeContrats.map((contrat,index)=>{return <option value={contrat._id} key={contrat._id}>Contrat n°{index+1}</option>});
         
         const Affecter=async(role,action)=>{
-           
-
             const ob={
                 IDTicket:interv._id,
                 IDMembSociete:user._id,
-                IDintervenant:role==='Ri'?intervenant:user._id,
                 dateAffectation:new Date().toLocaleDateString(),
                 heureAffectation:new Date().toLocaleTimeString(),
                 dureeTraitement:periode,
             }
+            ob['IDintervenant']=role==='Ri'?intervenant:user._id;
             const ob1={
                 to:client.email,
                 subject:"Votre ticket est affecté",
@@ -121,12 +121,42 @@ const Affecter=(props)=>{
         
         return (<div className="container" style={{border:'2px rgb(0, 153, 204) solid',borderRadius:'50px',marginTop:'20px',padding:'20px'}}>
                 <Row >
-                <Col sm={user&&user.role.indexOf('Ri')===-1?12:6} >
+                <Col sm={user.role&&user.role.indexOf('Ri')===-1?12:6} >
                     <h2  className="text-info" style={{textAlign:'center'}}>La Demande D'intervention </h2><br/><br/>
-                    <Interv contenu={interv} user={user} contrat={history.location.state.contrat} traiter={false} raisonSociale={history.location.state.raisonSociale}/>
-                    <Button variant="contained"color="primary" hidden={etatActuel!=="En attente" ||user.role.indexOf('Ins')===-1 } style={{backgroundColor:'rgb(0, 153, 204)',left:"40%"}} startIcon={<SaveIcon />}endIcon={<SaveIcon />}onClick={()=>{Affecter('In','aff')}}>Prendre en charge</Button> 
+                    <Interv contenu={interv} user={user} contrat={history.location.state.contrat} traiter={false} />
+                    <Form hidden={etatActuel!=="En attente" ||user.role.indexOf('Ins')===-1 }>
+                        <Form.Group as={Row} controlId="formHorizontaNature">
+                                <Form.Label  column sm={5} >
+                                    Priorite de la demande
+                                </Form.Label>
+                                <Col sm={7}>
+                                    <Form.Control as="select" value={priorite} disabled={etatActuel==="Clôturée"}  onChange={(event)=>{
+                                        setPriorite(event.target.value)
+                                    }}>
+                                        <option>Normal</option>
+                                        <option>Urgent</option>
+                                        <option>Critique</option>
+                                    </Form.Control>
+                                </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} controlId="formHorizontaNature">
+                                <Form.Label  column sm={5} >
+                                    contrat 
+                                </Form.Label>
+                                <Col sm={7}>
+                                    <Form.Control as="select" value={contrat} disabled={etatActuel==="Clôturée"} controlid='contrat' onChange={(event)=>{
+                                        setContrat(event.target.value);
+                                    }}>
+                                        <option value={-1}>-------------</option>
+                                        {options}
+                                    </Form.Control>
+                                </Col>
+                                
+                        </Form.Group> 
+                        <Button variant="contained"color="primary"  style={{backgroundColor:'rgb(0, 153, 204)',left:"40%"}} startIcon={<SaveIcon />}endIcon={<SaveIcon />}onClick={()=>{Affecter('In','aff')}}>Prendre en charge</Button> 
+                    </Form>
                 </Col>  
-                <Col sm={6} hidden={user&&user.role.indexOf('Ri')===-1}>
+                <Col sm={6} hidden={user.role&&user.role.indexOf('Ri')===-1}>
                     <h2  className="text-info" style={{textAlign:'left'}}>Zone D'affectation </h2><br/><br/>
                     <Form>
                         <Form.Group as={Row}  controlId="formHorizontalEmail">
@@ -226,7 +256,7 @@ const Affecter=(props)=>{
                         
                     </Form>
                     <span hidden={etatActuel==="En attente"||!intervenant} >
-                    <Comment name={user.prenom+""+user.nom} room={interv._id} role='Ad'/>
+                    <Comment name={user.prenom+""+user.nom} IDTicket={interv._id} role='Ad'/>
                     </span>
                 </Col>
                
