@@ -68,7 +68,7 @@ export default function ChartIntervenant() {
     const colorsh=['rgb(54, 162, 235)'  , 'rgb(255, 99, 132)','rgb(255, 205, 86)','rgb(201, 203, 207)']
 
     const getStatPie = async(ob,etat)=>{
-      const res=await Axios.post('statistisque/client',{filtres:{year:ob.year},role:'interv',etat})
+      const res=await Axios.post('statistique/client',{filtres:{year:ob.year},role:'interv',etat})
       const newData = { ...dataPie }
       newData['labels']=res.data.data.labels
       var col=[]
@@ -82,7 +82,7 @@ export default function ChartIntervenant() {
       setDataPie(newData)      
     }
     const getStat = async(ob,label,idcourbe)=>{
-        const res=await Axios.post('statistisque',ob)
+        const res=await Axios.post('statistique',ob)
         const newData = { ...data }
         console.log(newData['datasets'].findIndex((data)=>data.id===idcourbe ) )
         listeAnnes.length===0&&label==='Totale'&&setListeAnnes(res.data.data.labels.reverse())

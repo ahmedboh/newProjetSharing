@@ -12,7 +12,7 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 const  CardBody=({contenu,contrat})=>{
     
     return(<>
-                <Card.Title ><center><h5>{contenu.dateCreation} | {contenu.heureCreation} &nbsp;&nbsp; </h5></center> </Card.Title><br/>
+                <Card.Title ><center><h5>{new Date(contenu.dateCreation).toLocaleDateString()} | {new Date(contenu.dateCreation).toLocaleTimeString()} &nbsp;&nbsp; </h5></center> </Card.Title><br/>
                 <Card.Text style={{marginLeft:'10%'}} >
                 <Row >   
                 <Col><b>Nature  :</b></Col><Col>{contenu.nature}</Col>

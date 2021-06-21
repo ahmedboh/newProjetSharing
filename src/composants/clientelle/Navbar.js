@@ -79,7 +79,7 @@ const Navbar=(props)=> {
               </Link>
             </li>
             <li className='nav-item'>
-                <span className='btnLogout'><Button variant="contained" onClick={deconn} color="secondary" size="medium"  >Déconnecter</Button></span> 
+                <span className='btnLogout'><Button variant="contained" onClick={deconn} color="secondary" size="medium"  >Deconnecter</Button></span> 
             </li>
           
           </ul>

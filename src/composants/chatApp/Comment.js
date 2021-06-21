@@ -85,7 +85,7 @@ export default function Comment(props) {
                 <p hidden={!moreDetails && msg.user==="chatAdmin" } key={index}  className={msg.user==="chatAdmin" ?"comment__chatAdmin":"comment__message"}>
                     <span hidden={msg.user==="chatAdmin" } className="comment__name">{msg.user}</span>
                     {msg.text}
-                    <span  className="comment__timestamp" >{ new Date(msg.date).toUTCString()}</span>      
+                    <span  className="comment__timestamp" >{ new Date(msg.date).toUTCString().substr(0,22)}</span>      
                 </p>
             ))}
             </div>   

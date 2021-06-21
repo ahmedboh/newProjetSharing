@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.css';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import ListeIntervs from './composants/societe/ListeIntervs'
+import ListeTickets from './composants/societe/ListeTickets'
 import Affecter from './composants/societe/Affecter'
-import ListeIntervIntervenant from './composants/societe/ListeIntervIntervenant'
+import ListeTicketIntervenant from './composants/societe/ListeTicketIntervenant'
 import AjouterRapport from './composants/societe/AjouterRapport'
 import AjouClient from './composants/societe/AjouClient'
 import AjouMembSociete from './composants/societe/AjouMembSociete'
@@ -28,6 +28,11 @@ import LirePDF from './composants/societe/Pdf/LirePDF';
 import Navbar from './composants/clientelle/Navbar';
 import ModifierRapportInter from './composants/societe/ModifierRapportInter';
 import Stat from './composants/societe/statistique/Stat';
+import ListeContratCl from './composants/societe/ListeContratCl';
+
+
+
+
 
 
 
@@ -107,6 +112,7 @@ const addlisnter=()=>{
                   <Route exact path="/"  ><SignIn fn={setConnectCl}  fnc={setDecon} type="c"/></Route>
                   <Route  path="/SharingSignIn"   ><SignIn fn={setConnectMB}  fnc={setDecon} type="m" /></Route>
                   <Route path="/demo"><Stat/></Route>
+                  <Route path="/li"><ListeContratCl/></Route>
 
                   {connectMb&&
                   <><Route  path="/accueil"  ><Accueil  /></Route>
@@ -115,8 +121,8 @@ const addlisnter=()=>{
                       <LirePDF/>
                     </div>
                   </Route>   
-                  <Route  path="/liste"  ><ListeIntervs user={membreS}/></Route>   
-                  <Route path="/maliste" ><ListeIntervIntervenant  user={membreS} /></Route>
+                  <Route  path="/liste"  ><ListeTickets user={membreS}/></Route>   
+                  <Route path="/maliste" ><ListeTicketIntervenant  user={membreS} /></Route>
                   <Route path="/affecter" ><Affecter user={membreS} /></Route>
                   <Route path="/ajouterRapport/:id" ><AjouterRapport  user={membreS}/></Route>
                   <Route path="/AjouterClient" ><AjouClient/></Route>
@@ -136,7 +142,7 @@ const addlisnter=()=>{
                   }
                   {connectCl&&<>
                       <Route path="/deposer"  ><DeposerTicket    user={client} /></Route>
-                      <Route path="/listeContrat"><ListeContrart  user={client}/></Route>
+                      <Route path="/listeContrat"><ListeContratCl  user={client}/></Route>
                       <Route path="/historique"><Intervs user={client}/></Route>
                       </>}
                 </Switch>

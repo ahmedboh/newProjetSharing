@@ -80,7 +80,7 @@ const Sidebar = (props) => {
                 </NavIcon>
                 <span style={{position:'absolute',right:'15px',color:"white",textTransform:'uppercase',fontFamily:'cursive'}}>
                  {user?user.prenom===undefined?" ":user.prenom+" "+user.nom:""}   &nbsp;&nbsp;&nbsp;&nbsp;  
-                <Button variant="contained"  onClick={deconn} color="secondary" size="medium" >Log-OUT</Button>
+                <Button variant="contained"  onClick={deconn} color="secondary" size="medium" >Deconnecter</Button>
                 </span>
             </Nav>
             <SidebarNav sidebar={sidebar}>

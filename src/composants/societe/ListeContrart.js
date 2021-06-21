@@ -21,7 +21,8 @@ import UpdateIcon from '@material-ui/icons/Update';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import DescriptionIcon from '@material-ui/icons/Description';
-
+import Tooltip from '@material-ui/core/Tooltip';
+import '../../style/interv.css'
 const ListeContrat=(props)=>{
     const {user}=props
     const [rows , setRows ]=useState([]);
@@ -71,17 +72,16 @@ const ListeContrat=(props)=>{
         </Toolbar>
       </AppBar>
     <TableContainer  component={Paper}>
-      <Table className={classes.table} aria-label="custom pagination table">
+      <Table size='small' className={classes.table} aria-label="custom pagination table">
         <TableHead>
           <TableRow>
-            <StyledTableCell align="center">Type de contrat </StyledTableCell>
-            <StyledTableCell align="center">Visites de maintenance préventive</StyledTableCell>
-            <StyledTableCell align="center">Visites de maintenance curative</StyledTableCell>
-            <StyledTableCell align="center">Prix unitaire des interventions supplémentaires</StyledTableCell>
+           <StyledTableCell align="center">Type  </StyledTableCell>
+            <StyledTableCell title={`Nombre de visites\nde maintenance\npréventive par ans` } align="center"> Visites préventives   </StyledTableCell>
+            <StyledTableCell title={`Nombre de visites\nde maintenance\ncurative par ans` }  align="center">Visites curatives </StyledTableCell>
+            <StyledTableCell title={`Prix unitaire des\ninterventions\nsupplémentaires` }  className='StyledTableCell' align="center">Prix unitaire </StyledTableCell>
             <StyledTableCell align="center">Contact</StyledTableCell>
-            <StyledTableCell align="center">Liste des contrats</StyledTableCell>
-            <StyledTableCell align="center">N° téléphone contact</StyledTableCell>
-            <StyledTableCell align="center">Adresse email contact</StyledTableCell>
+            <StyledTableCell align="center">N° téléphone </StyledTableCell>
+            <StyledTableCell align="center">Adresse email </StyledTableCell>
             <StyledTableCell align="center">Action</StyledTableCell>
           </TableRow>
         </TableHead>
@@ -94,7 +94,7 @@ const ListeContrat=(props)=>{
                 <TableCell component="th" scope="row" align="center">
                   {row.type}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="center">
+                <TableCell style={{ width: 200 }} align="center">
                   {row.visitesMainPreventive}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="center">
@@ -107,9 +107,6 @@ const ListeContrat=(props)=>{
                   {row.contact}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="center">
-                  {row.telContact} 
-                </TableCell>
-                <TableCell style={{ width: 160 }} align="center">
                 {row.telContact}
                 </TableCell>
                 <TableCell style={{ width: 160 }} align="center">
@@ -119,12 +116,12 @@ const ListeContrat=(props)=>{
                   {user!==undefined
                   ?<DescriptionIcon />
                   :<>
-                    <IconButton component="span"onClick={() => {
+                    <IconButton size='small' component="span"onClick={() => {
                       history.push("/modifierContrat",{idContrat:row._id,page:'/listeContrat',idClient:history.location.state.idClient,raisonSociale:history.location.state.raisonSociale})
                     }}>
                       <UpdateIcon />
                     </IconButton>      
-                    <IconButton color="secondary" component="span" onClick={() => { suprimerContrat(row._id)}}>
+                    <IconButton size='small' color="secondary" component="span" onClick={() => { suprimerContrat(row._id)}}>
                       <DeleteIcon />
                     </IconButton>
                   </>}

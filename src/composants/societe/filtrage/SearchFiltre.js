@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import IconButton from '@material-ui/core/IconButton'
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -22,17 +21,13 @@ function SearchFiltre(props) {
     return (
         <div>
 
-        <FormControl  variant="outlined">
-            <InputLabel htmlFor="outlined-adornment-Search">Search</InputLabel>
+        <FormControl size="small"  variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-Search">Chercher Ref</InputLabel>
             <OutlinedInput
                 id="outlined-adornment-Search"
                 onChange={onChangeSearch}
-                endAdornment={
-                <InputAdornment position="end">
-                   
-                     <SearchSharpIcon />
-                </InputAdornment>
-                }
+                endAdornment={<InputAdornment position="end"><SearchSharpIcon /></InputAdornment>}
+                size="small"
                 labelWidth={70}
             />
             </FormControl>

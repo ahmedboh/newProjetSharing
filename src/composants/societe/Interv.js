@@ -8,6 +8,9 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import Comment from '../chatApp/Comment'
 import Chat  from '../chatApp/Chat'
+import TextField from '@material-ui/core/TextField';
+import  '../../style/interv.css';
+
 const Interv = (props) => {
     const { traiter,contenu,contrat ,user} = props
     const [msg, setMsg] = useState("")
@@ -44,43 +47,47 @@ const cloturer =async()=>{
           <Row>
               <Col>  
                 <Row >
-                    <Col>Client Demandeur :</Col>
-                    <Col> {contenu.IDclient.raisonSociale}</Col>
+                    <Col  className="labelText">Client Demandeur :</Col>
+                    <Col className="labelText2" style={{color:'red',fontWeight:'bold',textDecoration:'underline'}}> {contenu.IDclient.raisonSociale}</Col>
                 </Row><br />
+                
                 <Row>
-                    <Col  >Date de  Création  :</Col>
-                    <Col >{new Date(contenu.dateCreation).toLocaleDateString()} </Col>
-
+                    <Col className="labelText" style={{fontSize:15}} >Date et heure de Creation :</Col>
+                    <Col className="labelText2" >{new Date(contenu.dateCreation).toLocaleDateString()}||{new Date(contenu.dateCreation).toLocaleTimeString().substr(0,5)}</Col>
                 </Row><br />
-                <Row>
-                    <Col  >Heure de  Création  :</Col>
-                    <Col >{new Date(contenu.dateCreation).toLocaleTimeString()}  </Col>
-
+                <Row >
+                    <Col className="labelText" >Reference ticket :</Col>
+                    <Col className="labelText2"> {contenu.ref}</Col>
                 </Row><br />
                 <Row hidden={!traiter}>
-                    <Col>Contrat :</Col>
-                    <Col> {contrat}</Col>
-                </Row><br />
+                    <Col className="labelText">Contrat :</Col>
+                    <Col className="labelText2"> contrat 2</Col>
+                </Row><br hidden={!traiter} />
 
                 <Row>
-                    <Col>Nature de la demande :</Col>
-                    <Col>{contenu.nature}</Col>
+                    <Col className="labelText">Nature du ticket :</Col>
+                    <Col className="labelText2">{contenu.nature}</Col>
                 </Row><br />
                 <Row>
-                    <Col>Objet</Col>
+                    <Col className="labelText">Objet :</Col>
+                    <Col className="labelText2">{contenu.objet}</Col>
                 </Row><br />
                 <Row>
-                    <Col sm={8}>{contenu.objet}</Col>
-                </Row><br />
-                <Row>
-                    <Col >Details</Col>
-                </Row><br />
-                <Row>
-                    <Col><pre>{contenu.details}</pre></Col>
+                    <Col className="labelText">Detailles</Col>
                 </Row>
-                {   
-                        traiter&&  <Row><Comment  name={user.prenom+""+user.nom} IDTicket={contenu._id} role='In' /> </Row>
-                }
+                <Row>
+                    <Col >
+                    <TextField fullWidth
+                    id="outlined-multiline-static"
+                    multiline
+                    aria-readonly
+                    value={contenu.details}
+                    rows={4}
+                    
+                    />
+                   </Col>
+                </Row>
+               
                 <br/><br/>
                 <Row hidden={!traiter}>
                     <Col><Button variant="contained" onClick={cloturer} color="secondary" >Clôturer</Button></Col>
@@ -95,11 +102,9 @@ const cloturer =async()=>{
                 <br />
               </Col>
     
-                <Col>
-                    
-                    {   
-                        traiter&&  <Row><Chat name={user.prenom+""+user.nom} IDTicket={contenu._id} role='In' nameCo={contenu.IDclient.raisonSociale}/> </Row>
-                    }
+                <Col hidden={!traiter}  ><br/><br/><br/><br/>
+                         <Row><Chat name={user.prenom+""+user.nom} IDTicket={contenu._id} role='In' nameCo={contenu.IDclient.raisonSociale}/> </Row>
+                         {/* <Row ><Comment  name={user.prenom+""+user.nom} IDTicket={contenu._id} role='In' /> </Row>      */}
                 </Col>
         
             </Row>

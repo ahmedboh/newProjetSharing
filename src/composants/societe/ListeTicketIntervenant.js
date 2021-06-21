@@ -1,14 +1,16 @@
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
+
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import '../../style/interv.css';
+import  '../../style/interv.css';
 import { useState ,useEffect} from 'react';
 import Axios from 'axios';
 import IntervCompresse from './IntervCompresse';
 import Interv from './Interv';
 
-const ListeIntervIntervenant=(props)=>{
+import { BlockLoading } from 'react-loadingg';
+
+
+const ListeTicketIntervenant=(props)=>{
     const{user}=props
     const [listeDdes, setListeDdes] = useState([])
     const [intervActuel,setIntervActuel ] = useState(false)
@@ -16,8 +18,9 @@ const ListeIntervIntervenant=(props)=>{
     const listeDemande=async()=>{
         console.log(user._id)
         const res =await Axios.get(`affectation/getAffectationsIntervenant/${user._id}`)
-        setListeDdes(res.data.data);
-        console.log(res)
+        const data=res.data.data.filter((aff)=>aff.IDTicket.etat==='En cour')
+        setListeDdes(data);
+        
     } 
 
     useEffect(() => {
@@ -44,24 +47,23 @@ const ListeIntervIntervenant=(props)=>{
     }
     
     return(
-        <div  style={{margin:"20px",border :'2px blue solid',borderTopLeftRadius:"20px"}}>
-            <Row>
-                <Col sm={3}>
-                    <GridList cellHeight={180}  spacing={1} className="gridList"  >
+        <div  style={{margin:"20px",border :'2px blue solid',borderRadius:'20px'}}>
+            <Row style={{height:'84vh'}}>
+                <Col lg={3}  >
+                    <div style={{width:'94%',height:'80vh',overflow:'scroll',overflowX:'hidden',borderTopLeftRadius:"20px",borderBottomLeftRadius:"20px",backgroundColor:'lightgray'}}>
                         {listeDdes.map((dde) => {return(
-                         dde.IDTicket&&dde.IDTicket.etat==='En cour'&&   
-                        <GridListTile key={dde.IDTicket._id} cols={ 2 } rows={1}>
-                            <IntervCompresse user={user}  ouvrir={ouvrirInterv} naviguer={true} contenu={dde.IDTicket} styleP={stylePr(dde.IDTicket.priorite)} IDintervenant={dde.IDintervenant}/>
-                        </GridListTile>
+                           <span style={{margin:'5px'}}> <IntervCompresse user={user}   key={dde.IDTicket._id} ouvrir={ouvrirInterv} naviguer={true} contenu={dde.IDTicket} styleP={stylePr(dde.IDTicket.priorite)} IDintervenant={dde.IDintervenant}/></span>
                         )})}
-                    </GridList>
+                    </div>    
                 </Col>
                 <Col>
                   <br/> 
-                  <div className="container text-info" style={{textAlign:'center',fontFamily:'arial'}}>
-                        <h3>Bienvenu  {user.nom} a votre liste des damandes d'intervention</h3>
+                  <div hidden={intervActuel} className="container text-info" style={{textAlign:'center',fontFamily:'arial'}}>
+                        <h3 >Bienvenu  {user.nom} à votre liste des tickets </h3>
                         <h3>vous avez {listeDdes.length } demandes</h3>
-                        <h4>appuyer sur l'une des demandes qui se trouvent dans la liste pour plus de details</h4><br/><br/>
+                        <div className='loading'><BlockLoading size={'large'} speed={3}  /></div>;
+                       <h4>choisissez  l'une des tickets  de la liste apparante pour plus de détails </h4>
+
                   </div>
                   {!intervActuel
                   ?<></>
@@ -75,4 +77,4 @@ const ListeIntervIntervenant=(props)=>{
 
 
 
-export default ListeIntervIntervenant;
+export default ListeTicketIntervenant;

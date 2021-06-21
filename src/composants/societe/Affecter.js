@@ -72,8 +72,7 @@ const Affecter=(props)=>{
             const ob={
                 IDTicket:interv._id,
                 IDMembSociete:user._id,
-                dateAffectation:new Date().toLocaleDateString(),
-                heureAffectation:new Date().toLocaleTimeString(),
+                dateAffectation:new Date(),
                 dureeTraitement:periode,
             }
             ob['IDintervenant']=role==='Ri'?intervenant:user._id;
@@ -119,12 +118,12 @@ const Affecter=(props)=>{
             ?<Button variant="contained"color="primary"style={{backgroundColor:'rgb(0, 153, 204)'}}startIcon={<SaveIcon />}onClick={()=>{Affecter('Ri','aff')}}>Affecter</Button> 
             :<Button variant="contained"color="primary"style={{backgroundColor:'#ffc107'}}startIcon={<SaveIcon />}onClick={()=>{Affecter('Ri','reaff')}}>Reaffecter</Button>          
         
-        return (<div className="container" style={{border:'2px rgb(0, 153, 204) solid',borderRadius:'50px',marginTop:'20px',padding:'20px'}}>
+        return (<div className="container box">
                 <Row >
                 <Col sm={user.role&&user.role.indexOf('Ri')===-1?12:6} >
-                    <h2  className="text-info" style={{textAlign:'center'}}>La Demande D'intervention </h2><br/><br/>
+                    <h2  className="titre" >detailles du ticket </h2><br/><br/>
                     <Interv contenu={interv} user={user} contrat={history.location.state.contrat} traiter={false} />
-                    <Form hidden={etatActuel!=="En attente" ||user.role.indexOf('Ins')===-1 }>
+                    <Form hidden={etatActuel!=="En attentee" ||user.role.indexOf('Ins')===-1 }>
                         <Form.Group as={Row} controlId="formHorizontaNature">
                                 <Form.Label  column sm={5} >
                                     Priorite de la demande
@@ -156,13 +155,15 @@ const Affecter=(props)=>{
                         <Button variant="contained"color="primary"  style={{backgroundColor:'rgb(0, 153, 204)',left:"40%"}} startIcon={<SaveIcon />}endIcon={<SaveIcon />}onClick={()=>{Affecter('In','aff')}}>Prendre en charge</Button> 
                     </Form>
                 </Col>  
-                <Col sm={6} hidden={user.role&&user.role.indexOf('Ri')===-1}>
-                    <h2  className="text-info" style={{textAlign:'left'}}>Zone D'affectation </h2><br/><br/>
+                
+                <Col sm={6} style={{paddingLeft:'0px'}} hidden={user.role&&user.role.indexOf('Ri')===-1}>
+                    <h2  className="titre">Zone D'affectation </h2><br/><br/>
                     <Form>
                         <Form.Group as={Row}  controlId="formHorizontalEmail">
-                            <Form.Label column sm={5} >
-                                l'intervenant :
+                            <Form.Label column sm={5} className="labelText" >
+                                l'intervenant : 
                             </Form.Label>
+                            <br/>
                             <Col sm={7}>
                                 <Autocomplete
                                 id="combo-box-demo"
@@ -179,9 +180,9 @@ const Affecter=(props)=>{
                         />   </Col>
                         </Form.Group>
                         
-                        <Form.Group as={Row} controlId="formHorizontaNature">
-                            <Form.Label  column sm={5} >
-                                Priorite de la demande
+                        <Form.Group  as={Row} controlId="formHorizontaNature">
+                            <Form.Label className="labelText"  column sm={5} >
+                                Priorite du ticket :
                             </Form.Label>
                             <Col sm={7}>
                                 <Form.Control as="select" value={priorite} disabled={etatActuel==="Clôturée"}  onChange={(event)=>{
@@ -196,10 +197,10 @@ const Affecter=(props)=>{
                         </Form.Group>
 
                         <Form.Group as={Row}  controlId="formHorizontalEmail">
-                            <Form.Label column sm={5} >
-                                Duree :
+                            <Form.Label column sm={5} className="labelText">
+                                Durée :
                             </Form.Label>
-                            <Col sm={3}>
+                            <Col sm={2}>
                                     <TextField id="time" type="number" value={periode} disabled={etatActuel==="Clôturée"}
                                         onChange={(event)=>{
                                             setPeriode(event.target.value)
@@ -208,13 +209,13 @@ const Affecter=(props)=>{
                                     /> 
                             </Col>
                             <Col sm={3}>
-                                <Form.Label >Heure(s)</Form.Label>
+                                <Form.Label className="labelText">Heure(s)</Form.Label>
                             </Col>
                         </Form.Group>    
 
-                        <Form.Group as={Row} controlId="formHorizontaNature">
-                            <Form.Label  column sm={5} >
-                                contrat 
+                        <Form.Group  as={Row} controlId="formHorizontaNature">
+                            <Form.Label className="labelText"   column sm={5} >
+                                contrat :
                             </Form.Label>
                             <Col sm={7}>
                                 <Form.Control as="select" value={contrat} disabled={etatActuel==="Clôturée"} controlid='contrat' onChange={(event)=>{
@@ -241,14 +242,15 @@ const Affecter=(props)=>{
                                     hidden={listeContrats.length>0}
                                     disabled={etatActuel==="Clôturée"}
                                 /> 
-                        </Form.Group>               
+                        </Form.Group>      
+                        <br/>         
                         <Form.Group as={Row}   controlId="formHorizontalEmail">
                             <Col >
                                 <Form.Label >
                                     {composant}
                                 </Form.Label>
                             </Col> 
-                            <Col hidden={etatActuel!=="En attente"}>
+                            <Col hidden={etatActuel!=="En attentee"}>
                                 <Button variant="contained"  onClick={onCloture}   color="secondary" >Clôturer</Button>
                             </Col>
                         </Form.Group>

@@ -83,7 +83,7 @@ export default function ChartAnnee() {
           }
           
           const getStatPie = async(ob)=>{
-            const res=await Axios.post('statistisque',{year:ob.year})
+            const res=await Axios.post('statistique',{year:ob.year})
             const newData = { ...dataPie }
             newData['labels']=res.data.data.labels
             var col=[]
@@ -99,7 +99,7 @@ export default function ChartAnnee() {
           }
    
     const getStat = async(ob,label,idcourbe)=>{
-        const res=await Axios.post('statistisque',ob)
+        const res=await Axios.post('statistique',ob)
         const newData = { ...data }
         console.log(newData['datasets'].findIndex((data)=>data.id===idcourbe ) )
         listeAnnes.length===0&&label==='Totale'&&setListeAnnes(res.data.data.labels.reverse())
@@ -175,9 +175,7 @@ export default function ChartAnnee() {
         <div> 
         <Row >
            <Col sm={9} > 
-                <MenuVer   dataLabels={["version 1","version 2","camembert 1", "camembert 2"]} changeState={setCol} data={[<>{titre} <Bar data={data}  options={options} /></>,<> {titre}<Line data={data}  options={{scales:{...options.scales,y:{...options.scales.y,beginAtZero:true}}}}/></>,<> {titre2}<div style={{width:'70%',position:'relative', top:'-5vh' ,left:'10vw'}} ><Pie  data={dataPie} options={options2} /></div></>,<> {titre2}<div style={{width:'70%',position:'relative', top:'-5vh' ,left:'10vw'}} ><Doughnut  data={dataPie} options={options2} /></div></>]} />   
-               
-                {/* <MenuVer   dataLabels={["version 1","version 2","camembert"]} changeState={setCol} data={[<>{titre} <Bar data={data} options={options} /></>,<> {titre} <Line data={data}  options={{scales:{...options.scales,y:{...options.scales.y,beginAtZero:true}}}}/></>,<>{titre2} <div style={{width:'70%',position:'relative', top:'-5vh' ,left:'10vw'}} ><Pie data={dataPie} options={options2} /></div></>,]} />    */}
+                <MenuVer   dataLabels={["version 1","version 2","camembert 1", "camembert 2"]} changeState={setCol} data={[<>{titre} <Bar data={data}  options={options} /></>,<> {titre}<Line data={data}  options={{scales:{...options.scales,y:{...options.scales.y,beginAtZero:true}}}}/></>,<> {titre2}<div style={{width:'65%',position:'relative', top:'-5vh' ,left:'8vw'}} ><Pie  data={dataPie} options={options2} /></div></>,<> {titre2}<div style={{width:'65%',position:'relative', top:'-5vh' ,left:'8vw'}} ><Doughnut  data={dataPie} options={options2} /></div></>]} />   
            </Col>
            <Col  >
            <br/> <br/> <br/> <br/> 

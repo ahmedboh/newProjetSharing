@@ -6,6 +6,15 @@
     border-radius:20px;
     border:2px  rgb(0, 153, 204) solid
  }
+ .AllTickets{
+   margin:20px;
+   height:58vh;
+   padding:5%; 
+   overflow:auto;
+   overflow-x: hidden;
+   background: linear-gradient(135deg, rgb(215, 254, 255) 0%, rgb(255, 189, 178) 100%);
+   border-radius: 20px;
+}
 
  .box {
    box-shadow:
@@ -19,7 +28,48 @@
    padding:1%;
    background-color:white;
    border-radius:10px;
+  
  ;}
+ .boxLIteTicket{
+   
+   box-shadow:
+   0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+   0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+   0 12.5px 10px rgba(0, 0, 0, 0.06),
+   0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+   0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+   0 100px 80px rgba(0, 0, 0, 0.12); 
+   background-color:white;
+   border-radius:10px;
+   margin-left:5%;
+   margin-right:5%;
+   margin-top:1%;
+   padding-left: 3%;
+   padding-bottom:1px;
+   padding-top:5px;
+
+
+ ;}
+
+ .boxLIteTicketTable{
+   box-shadow:
+   0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+   0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+   0 12.5px 10px rgba(0, 0, 0, 0.06),
+   0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+   0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+   0 100px 80px rgba(0, 0, 0, 0.12); 
+   height:57vh;
+   border-radius:10px;
+   margin-left:2%;
+   margin-right:2%;
+   margin-top:2%;
+   overflow:auto
+ ;}
+
+ .headtableTicket{
+   background: rgb(230, 254, 255);
+ }
  
 .titre{
    background: linear-gradient(to right, #498883, rgb(0, 153, 204));
@@ -37,10 +87,28 @@
   font-family:  sans-serif;
   font-weight: bold;
   font-variant: small-caps;
+  color: darkslateblue;
   
+}
+.labelText2{
+   font-family: Verdana, Geneva, Tahoma, sans-serif; 
+ }
+
+.labelTextChekBok{
+   font-family:  sans-serif;
+   font-weight: 600;
+   font-variant: small-caps;
+   /* color: rgb(233, 39, 0); */
 }
 
 
+
+
+.loading{
+   position: absolute;
+   top: 50%;left: 40%;
+   transform: scale(5);
+}
   
 .intervCompresse{
    width: 18 wh;

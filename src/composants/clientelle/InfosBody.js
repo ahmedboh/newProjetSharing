@@ -15,23 +15,22 @@ const InfosBody=({contenu})=>{
     },[contenu._id]);
     return(
         <div  style={{overflow:  'auto', height:'100%',overflowX:'hidden' }}>
-                <Card.Title style={{backgroundColor:'lightgrey'}}><center><h5>Date de creation </h5></center> </Card.Title>
-                <Card.Text style={{marginLeft:'10%'}} >
-                {contenu.dateCreation} | {contenu.heureCreation}
+                <Card.Title style={{backgroundColor:'lightgrey'}}><center><h5>Date de  création </h5></center> </Card.Title>
+                <Card.Text align='center' >
+                {new Date(contenu.dateCreation).toLocaleDateString()} | {new Date(contenu.dateCreation).toLocaleTimeString()}
                 </Card.Text>
                 {listeAff.map((data,index)=>(
                    <span key={index}>  
-                        <Card.Title style={{backgroundColor:'lightgrey'}}><center><h5> {index===0?'Affactation':'Reaffactation'} </h5></center> </Card.Title>
-                        <Card.Text style={{marginLeft:'10%',marginBottom:'2vh'}} > 
-                            {data.dateAffectation} | {data.heureAffectation} || {data.IDintervenant.nom} {data.IDintervenant.prenom}
-                           
+                        <Card.Title style={{backgroundColor:'lightgrey'}}><center><h5> {index===0?'Affectation':'Réaffectation'} </h5></center> </Card.Title>
+                        <Card.Text style={{marginBottom:'2vh'}} align='center'> 
+                            {new Date(data.dateAffectation ).toLocaleDateString()} | {new Date(data.dateAffectation ).toLocaleTimeString()} || {data.IDintervenant.nom} {data.IDintervenant.prenom}      
                         </Card.Text>
                  </span>
           
                 ))}
-                <Card.Title style={{backgroundColor:'lightgrey'}}><center><h5>Date de  cloture</h5></center> </Card.Title>
+                <Card.Title style={{backgroundColor:'lightgrey'}}><center><h5>Date de   clôture</h5></center> </Card.Title>
                 {contenu.etat==='Clôturée'? 
-                 <Card.Text style={{marginLeft:'10%'}} >{contenu.dateCreation} | {contenu.heureCreation}</Card.Text>
+                 <Card.Text style={{marginLeft:'10%'}} >{new Date(contenu.dateCreation).toLocaleDateString()} | {new Date(contenu.dateCreation).toLocaleTimeString()}</Card.Text>
                  :<Card.Text style={{marginLeft:'10%' ,color:'red',fontWeight:'500',fontFamily:'Georgia'}} >Ce ticket est {contenu.etat} n'est pas encore cloturéé</Card.Text>   
                 }       
          </div>

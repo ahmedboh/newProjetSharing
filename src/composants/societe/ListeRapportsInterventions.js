@@ -24,17 +24,31 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Loader from './../Loader';
+import CheckBoxType from './filtrage/CheckBoxType'
+import CheckDate from './filtrage/CheckDate'
+import CheckAutoComplete from './filtrage/CheckAutoComplete'
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 const  ListeRapportsInterventions=()=> {
   const [rows , setRows ]=useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const listeRapports=async()=>{
-   const res =await Axios.post(`rapportInter/getAll`)
+  const [Filters, setFilters] = useState({})
+
+
+  const listeRapports=async(ob)=>{
+   const res =await Axios.post(`rapportInter/getAll`,ob)
     setRows( res.data.data );
     setIsLoading(false);
   }
+  const handleFilters = (filters, category) => {
+    const newFilters = { ...Filters }
+    newFilters[category] = filters
+    listeRapports({filters:newFilters}) 
+    setFilters(newFilters)
+}
   useEffect(() => {
-    listeRapports()
+    listeRapports({filters:Filters})
   }, []);
 
   const classes = useStyles2();
@@ -47,14 +61,14 @@ const  ListeRapportsInterventions=()=> {
     setPage(newPage);
   };
 
+ 
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  function Row(props) {
+  function RowTable(props) {
     const { row } = props;
-    const [clientDemandeur , setClientDemandeur]=useState([]);
-    const [intervenant , setIntervenant]=useState([]);
     const classes = useStyles2();
     const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
@@ -63,14 +77,8 @@ const  ListeRapportsInterventions=()=> {
   const handleClose = () => {
     setOpen(false);
   };
-    const getClientDemandeur =async () => {
-      const res =await Axios.get(`client/${row.IDTicket.IDclient}`)
-      setClientDemandeur( res.data.data.raisonSociale );
-    }
-    const getIntervenant = async() => {
-     const res=await Axios.get(`membSociete/${row.IDintervenant}`)
-     setIntervenant( res.data.data.nom +" "+res.data.data.prenom );
-    }
+
+
     
     const suprimerRapport = async(id) => {
       const res=await Axios.delete(`rapportInter/${id}`)
@@ -78,14 +86,11 @@ const  ListeRapportsInterventions=()=> {
       handleClose();
     }
 
-    useEffect(() => {
-      getClientDemandeur();
-      getIntervenant();
-    }, []);
 
-    const attachement=row.nomAttachement===undefined
-        ?<CancelIcon />
-        :<IconButton color="primary" component="span" onClick={() => {
+
+    const attachement=row.IDTicket.IDclient.raisonSociale.length<5
+        ?<CancelIcon size='small' />
+        :<IconButton size='small' color="primary" component="span" onClick={() => {
           history.push("/LirePDF",{idRapport:row._id})
         }}>
           <AttachFileIcon />
@@ -93,43 +98,40 @@ const  ListeRapportsInterventions=()=> {
     let history = useHistory();
     return (
       <>
-        <TableRow key={row._id} className={classes.root}>
+        <TableRow key={row._id} className={classes.root} >
             <TableCell style={{ width: 160 }} align="center">
-              {clientDemandeur}
+              {row.IDTicket.IDclient.raisonSociale}
             </TableCell>
-            <TableCell style={{ width: 160 }} align="center">
-              {intervenant}
+            <TableCell style={{ width: 220 }} align="center">
+              {row.IDintervenant.nom} {row.IDintervenant.prenom}
             </TableCell>
-            <TableCell style={{ width: 160 }} align="center">
+            <TableCell style={{ width: 220 }} align="center">
               {row.IDTicket.objet}
             </TableCell>
-            <TableCell style={{ width: 160 }} align="center">
-              {row.dateCreation} {row.heureCreation}
+            <TableCell style={{ width: 160 }}>
+              {new Date(row.dateCreation).toLocaleDateString()} {new Date(row.dateCreation).toLocaleTimeString().substring(0,5)}
             </TableCell>
-            <TableCell style={{ width: 160 }} align="center">
-              {row.dateDebut} {row.heureDebut}
+            <TableCell style={{ width: 160 }} >
+              {new Date(row.dateDebut).toLocaleDateString()} {new Date(row.dateDebut).toLocaleTimeString().substring(0,5)}
             </TableCell>
-            <TableCell style={{ width: 160 }} align="center">
-              {row.dateFin} {row.heureFin}
+            <TableCell style={{ width: 160 }}>
+              {new Date(row.dateFin).toLocaleDateString()}  {new Date(row.dateFin).toLocaleTimeString().substring(0,5)}
             </TableCell>
-            <TableCell style={{ width: 160 }} align="center">
-              {row.detailinter}
-            </TableCell>
-            <TableCell style={{ width: 160 }} align="center">
+            <TableCell  align="center">
       
                 {attachement}
              
             </TableCell>
-            <TableCell style={{ width: 160 }} align="center">
-            <IconButton color="secondary" component="span" onClick={handleClickOpen}>
-                <DeleteIcon />
+            <TableCell  align="center">
+            <IconButton color="secondary" style={{height:'10px'}} component="span" onClick={handleClickOpen}>
+                <DeleteIcon  />
               </IconButton> 
               <Dialog
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description" >
-                <DialogTitle id="alert-dialog-title">{`Vous voulez supprimer le rapport de l'intervention du client ${clientDemandeur} et de l'intervenant ${intervenant}?`}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">{`Vous voulez supprimer le rapport de l'intervention du client ${row.IDintervenant.nom} ${row.IDintervenant.prenom} et de l'intervenant ${row.IDTicket.IDclient.raisonSociale}?`}</DialogTitle>
                 <DialogActions>
                   <Button onClick={handleClose} color="secondary">
                     annuler
@@ -155,17 +157,34 @@ const  ListeRapportsInterventions=()=> {
           </Typography>
         </Toolbar>
       </AppBar>
+      <div style={{marginLeft:'4%'}}  >  
+        <Row >
+        <Col lg={3} style={{paddingTop:'5px'}}>    
+        <CheckAutoComplete type="clients"  sty={false} label={'Client demandeur '} handleFilters={handleFilters}></CheckAutoComplete>
+        </Col>
+        <Col lg={3} style={{paddingTop:'5px'}}>    
+        <CheckAutoComplete  type="intervenants" sty={false} label={'intervenant'}handleFilters={handleFilters}></CheckAutoComplete>
+        </Col>
+        <Col lg={3} style={{paddingTop:'15px'}}>    
+        <CheckBoxType label='attachement' data={['Avec ','Sans']}  handleFilters={handleFilters}></CheckBoxType>
+
+        </Col> 
+        <Col lg={3}  >  
+         <CheckDate     handleFilters={handleFilters}></CheckDate>
+        </Col>
+        </Row>
+       </div><br/>
+       
     <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="custom pagination table" id="table">
+      <Table className={classes.table} size="small" aria-label="custom pagination table" id="table">
         <TableHead>
           <TableRow>
             <StyledTableCell align="center">Client</StyledTableCell>
             <StyledTableCell align="center">Intervenant</StyledTableCell>
-            <StyledTableCell align="center">Objet intervention</StyledTableCell>
-            <StyledTableCell align="center">Date Creation</StyledTableCell>
+            <StyledTableCell align="center">Objet de ticket </StyledTableCell>
+            <StyledTableCell align="center">Date Création</StyledTableCell>
             <StyledTableCell align="center">Date Debut</StyledTableCell>
             <StyledTableCell align="center">Date Fin</StyledTableCell>
-            <StyledTableCell align="center">Description intervention</StyledTableCell>
             <StyledTableCell align="center">Fichier attacher</StyledTableCell>
             <StyledTableCell align="center">Actions</StyledTableCell>
           </TableRow>
@@ -176,7 +195,7 @@ const  ListeRapportsInterventions=()=> {
             : rows
           ).map((row) => (
             row.IDTicket&&
-            <Row key={row._id} row={row} />
+            <RowTable key={row._id} row={row} />
           ))}
 
           {emptyRows > 0 && (

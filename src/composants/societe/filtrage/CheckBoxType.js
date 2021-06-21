@@ -1,120 +1,35 @@
 import  { useState } from 'react'
-import { Checkbox, Collapse } from 'antd';
-const { Panel } = Collapse
+import { Checkbox } from 'antd';
+import  '../../../style/interv.css';
+
 const CheckBoxType=(props)=>{
-const [checkedPriorite, setCheckedPriorite] = useState([])
-const [checkedNature, setCheckedNature] = useState([])
-const [checkedEtat, setCheckedEtat] = useState([])
+const [checked, setChecked] = useState([])
 
-
-
-const conserverFiltreNature = (value) => {
-
-    const currentIndex = checkedNature.indexOf(value);
-    const newChecked = [...checkedNature];
-
+const conserverFiltre = (value) => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
     if (currentIndex === -1) {
         newChecked.push(value)
     } else {
         newChecked.splice(currentIndex, 1)
     }
-
-    setCheckedNature(newChecked)
-    props.handleFilters(newChecked,'nature')
-    
+    setChecked(newChecked)
+    props.handleFilters(newChecked,props.label)
 
 }
 
 
-const conserverFiltrePriorite = (value) => {
-
-    const currentIndex = checkedPriorite.indexOf(value);
-    const newChecked = [...checkedPriorite];
-
-    if (currentIndex === -1) {
-        newChecked.push(value)
-    } else {
-        newChecked.splice(currentIndex, 1)
-    }
-
-    setCheckedPriorite(newChecked)
-    props.handleFilters(newChecked,'priorite')
-
-}
-
-const conserverFiltreEtat = (value) => {
-
-    const currentIndex = checkedEtat.indexOf(value);
-    const newChecked = [...checkedEtat];
-
-    if (currentIndex === -1) {
-        newChecked.push(value)
-    } else {
-        newChecked.splice(currentIndex, 1)
-    }
-
-    setCheckedEtat(newChecked)
-    props.handleFilters(newChecked,'etat')
-
-}
- return(<div>
-    <Collapse defaultActiveKey={['1']} >
-        <Panel header="PAR TYPE" key="1">
-        Priorite  &nbsp;&nbsp;
-        <Checkbox
-                onChange={() => conserverFiltrePriorite("Normal")}
-                type="checkbox"
-                checked={checkedPriorite.indexOf("Normal") === -1 ? false : true}
-            />&nbsp;&nbsp;
-            <span>Normal</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <Checkbox
-                onChange={() => conserverFiltrePriorite("Urgent")}
-                type="checkbox"
-                checked={checkedPriorite.indexOf("Urgent") === -1 ? false : true}
-            />&nbsp;&nbsp;&nbsp;&nbsp;
-            <span>Urgent</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <Checkbox
-                onChange={() => conserverFiltrePriorite("Critique")}
-                type="checkbox"
-                checked={checkedPriorite.indexOf("Critique") === -1 ? false : true}
-            />&nbsp;&nbsp;
-            <span>Critique</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;         
-        <hr/> Nature  &nbsp;&nbsp;&nbsp;&nbsp;
-        <Checkbox
-                onChange={() => conserverFiltreNature("Maintenance")}
-                type="checkbox"
-                checked={checkedNature.indexOf("Maintenance") === -1 ? false : true}
-            />&nbsp;&nbsp;
-            <span>Maintenance</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <Checkbox
-                onChange={() => conserverFiltreNature("Neauvau besoin")}
-                type="checkbox"
-                checked={checkedNature.indexOf("Neauvau besoin") === -1 ? false : true}
-            />&nbsp;&nbsp;
-            <span>Neauvau besoin</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            
-            <hr/> Etat  &nbsp;&nbsp;&nbsp;&nbsp;
-        <Checkbox
-                onChange={() => conserverFiltreEtat("En attente")}
-                type="checkbox"
-                checked={checkedEtat.indexOf("En attente") === -1 ? false : true}
-            />&nbsp;&nbsp;
-            <span>En attente</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <Checkbox
-                onChange={() => conserverFiltreEtat("En cour")}
-                type="checkbox"
-                checked={checkedEtat.indexOf("En cour") === -1 ? false : true}
-            />&nbsp;&nbsp;
-            <span>En cour</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-        <Checkbox
-                onChange={() => conserverFiltreEtat("Clôturée")}
-                type="checkbox"
-                checked={checkedEtat.indexOf("Clôturée") === -1 ? false : true}
-            />&nbsp;&nbsp;
-            <span>Clôturée</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </Panel>
-    </Collapse>
-    </div>)
+ return(<>
+      <span className="labelTextChekBok"> {props.label.toUpperCase()} </span> &nbsp;
+      {props.data.map((data,index)=>(
+            <span  key={index}>
+                <Checkbox type="checkbox"
+                onChange={() => conserverFiltre(data)}
+                checked={checked.indexOf(data) === -1 ? false : true}/>&nbsp;&nbsp;
+                <span>{data}</span>&nbsp;&nbsp;&nbsp;
+            </span>
+            ))}  
+        
+    </>)
 }
 export default CheckBoxType

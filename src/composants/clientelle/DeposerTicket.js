@@ -8,32 +8,30 @@ import TextField from '@material-ui/core/TextField';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import MessageInfo from '../MessageInfo'
 import Icon from '@material-ui/core/Icon';
-import { useState ,useEffect, Fragment} from 'react';
+import { useState ,useEffect} from 'react';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import Axios from 'axios';
 
 function DeposerTicket (props){
     const {user}=props
     const [nature,setNature]=useState("Maintenance")
-    const [priorite,setPriorite]=useState("Urgent")
+    const [priorite,setPriorite]=useState("Urgente")
     const [objet,setObjet]=useState("")
     const [details,setDetails]=useState("")
     const [objetErreur,setObjetErreur]=useState(false)
     const [messageInfo, setMessageInfo] = useState()
     const [image,setImage]=useState()
     const [imageErreur,setImageErreur]=useState('');
-    const [refTicket,setRefTicket]=useState(0);
+
 
 
     
-    //  prepartin la liste de contrat 
-    
-    // rinsialier les donnes
+    // réinitialiser les données
     const resetFroms=()=>{
         setObjet("");
         setDetails("");
         setNature("Maintenance");
-        setPriorite("Urgent");
+        setPriorite("Urgente");
         setImage()
     }
     
@@ -41,28 +39,24 @@ function DeposerTicket (props){
     const envoyer=async()=>{
         
         if(objet!==""){
-
             const formData = new FormData();
             formData.append('IDclient',user._id);
             formData.append('dateCreation',new Date());
             formData.append('nature',nature);
-            formData.append('ref','Ti-'+new Date().getFullYear()+'-'+refTicket);
             formData.append('priorite',priorite);
             formData.append('objet',objet);
             formData.append('details',details);
             formData.append('image',image);
-        
             const ob1={
                 to:"sharingticket@gmail.com",
-                subject:"Un nouvel ticket",
-                text:`Bonjour,\nLe client ${user.raisonSociale} à déposer un nouvel ticket qu'il à les détails suivante:\nNature : ${nature}\nPriorite : ${priorite}\nObjet : ${objet}\nDetails : ${details}\nVeuillez traiter cette ticket sur la plateforme SharingTicket: http://localhost:3000/ `
+                subject:"Un nouveau ticket",
+                text:`Bonjour,\nLe client ${user.raisonSociale} à déposer un nouveau ticket qu'il à les détails suivante:\nNature : ${nature}\nPriorite : ${priorite}\nObjet : ${objet}\nDetails : ${details}\nVeuillez traiter ce ticket sur la plateforme SharingTicket: http://localhost:3000/ `
             }
            const res=await Axios.post('ticket',formData)
            console.log(res.data.data)
-           setMessageInfo(<MessageInfo >L'ajout d'une nouvelle Ticket est passé avec succès </MessageInfo>)
+           setMessageInfo(<MessageInfo >L'ajout d'un nouveau Ticket est passé avec succès </MessageInfo>)
            setTimeout(()=>{setMessageInfo();resetFroms()},4000);
-           getRef()
-           const res2=await Axios.post('http://localhost:3001/api/v1/mailing',ob1 )
+           const res2=await Axios.post('mailing',ob1 )
            
                     
         }else{
@@ -85,14 +79,11 @@ function DeposerTicket (props){
                 setImageErreur("S'il vous chosir une fichier de type image");
             }   
         }
-        const getRef=async()=>
-        {
-            const res=await Axios.post('statistisque',{year:new Date().getFullYear()})
-            setRefTicket(res.data.data.somme+1)
-        }
+       
+    
 
         useEffect(() => {
-            getRef()
+            
             document.body.style.backgroundColor = 'rgb(204, 193, 193)';
       return ()=>{document.body.style.backgroundColor = 'white'}
        }, [])
@@ -102,7 +93,7 @@ function DeposerTicket (props){
         
             <div className="container box">
                 <br/>
-            <h2  className="titre">Déposer une nouvelle ticket </h2><br/>
+            <h2  className="titre">Deposer un nouveau ticket </h2><br/>
             <form>
 
             <Row> 
@@ -119,14 +110,14 @@ function DeposerTicket (props){
 
                 <Form.Group as={Row} controlId="formHorizontaNature">
                     <Form.Label column className="labelText" >
-                        Nature de la demande
+                        Nature du Ticket
                     </Form.Label>
                     <Col sm={12}>
                         <Form.Control as="select" value={nature}  onChange={(event)=>{
                             setNature(event.target.value)
                         }}>
                             <option>Maintenance</option>
-                            <option>Neauvau besoin</option>
+                            <option>Nouveau besoin</option>
                         </Form.Control>
                     </Col>
 
@@ -135,32 +126,32 @@ function DeposerTicket (props){
                 
                     <Form.Group as={Row}>
                     <Form.Label as="legend" column className="labelText" sm={6}>
-                        Priorité de la demande 
+                        Priorite du ticket
                     </Form.Label>
                     <Col sm={5}>
                     <Form.Check
                         type="radio"
-                        label="Normal "
+                        label="Normale"
                         name="formHorizontalRadios"
                         id="formHorizontalRadios1"
-                        value="Normal"
+                        value="Normale"
                         className="labelText"
                         onChange={(event)=>{
                             setPriorite(event.target.value)
                         }}
-                        checked={priorite==='Normal'}
+                        checked={priorite==='Normale'}
                         />
                         <Form.Check
                         type="radio"
-                        label="Urgent"
+                        label="Urgente"
                         name="formHorizontalRadios"
                         id="formHorizontalRadios2"
-                        value="Urgent"
+                        value="Urgente"
                         className="labelText"
                         onChange={(event)=>{
                             setPriorite(event.target.value)
                         }}
-                        checked={priorite==='Urgent'}
+                        checked={priorite==='Urgente'}
                         />
                         <Form.Check
                         type="radio"
@@ -200,7 +191,7 @@ function DeposerTicket (props){
                     error={objetErreur&& objet===""}
                 />
                 <Alert severity="error" hidden={!(objetErreur&&objet==="")} >
-                    <AlertTitle style={{fontSize:"14px"}}>S'il vous plait tapez l'objet de la demande</AlertTitle>
+                    <AlertTitle style={{fontSize:"14px"}}>S'il vous plait tapez l'objet du ticket</AlertTitle>
                 </Alert>
                 <br/><br/>
                 <TextField fullWidth
@@ -227,7 +218,7 @@ function DeposerTicket (props){
                             <label htmlFor="imageTiket">
                                 <Button variant="contained" color={image?'primary':'inherit'} component="span">
                                     <PhotoCamera />
-                                </Button><span className="labelText"> {image && image.name}</span>
+                                </Button><span className="labelText"> {image && (image.name.length>15?image.name.substr(0,10)+'... .jpg':image.name)}</span>
                             </label>
                         </Col>     
                 </Row>

@@ -8,10 +8,10 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { Alert, AlertTitle } from '@material-ui/lab';
 import MessageInfo from '../MessageInfo';
 import { useHistory } from "react-router-dom";
-
+import { Formik, Form} from 'formik';
+import * as Yup from 'yup';
 const useStyles = makeStyles((theme) => ({
     appBar: {
         position: 'relative',
@@ -46,75 +46,85 @@ const useStyles = makeStyles((theme) => ({
   
 
 const AjouClient=()=> {
-    const [raisonSociale,setRaisonSociale]=useState("");
-    const [adresse,setAdresse]=useState("");
-    const [tel,setTel]=useState("");
-    const [fax,setFax]=useState("");
-    const [email,setEmail]=useState("");
-    const [nRegistreCommerce,setNRegistreCommerce]=useState("");
-    const [codeTVA,setCodeTVA]=useState("");
-    const [login,setLogin]=useState("");
-    const [motDePasse,setMotDePasse]=useState("");
-    const [erreur,setErreur]=useState(false);
     const [ajoutAutre,setAjoutAutre]=useState(true);
     const [messageInfo, setMessageInfo] = useState(<div></div>);
     const [idCl,setIdCl]=useState("");
+    const [loginErreur,setLoginErreur]=useState("");
+
 
     
     const classes = useStyles();
     
-    const  afficherErreur=()=>{
-      setErreur(true);
-      setTimeout(()=>{setErreur(false)},4000);
-    }
 
-    const envoyer=async(event)=>{
-      const ob={
-          raisonSociale,
-          adresse,
-          tel,
-          fax,
-          email,
-          nRegistreCommerce,
-          codeTVA,
-          login,
-          motDePasse
-      }
+
+    const envoyer=async(event,validate,values)=>{
+      console.log(event,validate,values)
+     if(validate){
       const ob1={
-        to:email,
+        to:values.email,
         subject:"Compte Sharing",
-        text:`Bonjour,\nFélicitation, votre compte Sharing a été créé. Voici les paramètres :\nEmail : ${email}\nMot de passe : ${motDePasse}\nCe compte Sharing vous permettra de vous déposer une demande d'intervention sur http://localhost:3000/ `
+        text:`Bonjour,\nFélicitation, votre compte Sharing a été créé. Voici les paramètres :\nEmail : ${values.email}\nMot de passe : ${values.motDePasse}\nCe compte Sharing vous permettra de vous déposer une demande d'intervention sur http://localhost:3000/ `
       }
-      if(raisonSociale!=="" && adresse!=="" && tel!=="" &&
-      email!=="" && nRegistreCommerce!=="" && codeTVA!=="" && 
-      login!=="" && motDePasse!==""&&fax!=="" ){
-      const res= await Axios.post('auth/signupClient',ob )  
+  
+      const res= await Axios.post('auth/signupClient',values )  
       if(res.status===200){
-        setMessageInfo(<MessageInfo >le nouveau membre de la société <b> {raisonSociale} </b>à ajouter avec succès </MessageInfo>);
+        setMessageInfo(<MessageInfo >le nouveau membre de la société <b> {values.raisonSociale} </b>à ajouter avec succès </MessageInfo>);
         setAjoutAutre(false)
         setIdCl(res.data.client)
         const res2=await Axios.post('mailing',ob1 )
-      }
       }else{
-        afficherErreur()
-
+        setLoginErreur(res.data.errors.login)
       }
-      event.preventDefault();
+    }
+   
   }
 
    
   const ajouterAutre=()=>{
-          document.getElementById("form").reset();
           setAjoutAutre(true)
-          setMessageInfo(<div></div>);
-
-          
+          setMessageInfo(<div></div>);        
   }  
+
   let history = useHistory();
   
-  const ajoutCon=()=>{
+  const ajoutCon=(raisonSociale)=>{
     history.push("/ajouterContrat/"+idCl+"/"+raisonSociale,{page:'/AjouterClient'})
   }
+
+  const validate = Yup.object({
+    raisonSociale: Yup.string()
+      .min(3, 'La raison sociale doit être au moins de 3 caractères')
+      .required('La raison sociale est obligatoire'),
+    adresse: Yup.string()
+      .min(4, "L'adresse doit être au moins de 4 caractères")
+      .required("L'adresse est obligatoire"),
+    tel: Yup.string()
+      .required('Tel est obligatoire')
+      .matches(/^[0-9]+$/, "Tel doit être uniquement des chiffres")
+      .test('len', 'Tel doit être exactement de  8 chiffres', val => val&&val.length === 8),
+    fax: Yup.string()
+      .matches(/^[0-9]+$/, "Fax doit être uniquement des chiffres")  
+      .required('Fax est obligatoire')
+      .test('len', 'Fax doit être exactement de  8 chiffres', val => val&&val.length === 8),
+    nRegistreCommerce: Yup.string()
+      .min(4, "N° Registre du commerce doit être au moins de 4 caractères")
+      .required('N° Registre du commerce est obligatoire'),
+    codeTVA: Yup.string()
+      .min(4, "L'adresse doit être au moins de 4 caractères")
+      .required('Code TVA est obligatoire'),        
+    email: Yup.string()
+      .email('Email est invalide')
+      .required('Email est obligatoire'),
+    login: Yup.string()
+      .min(4, "Login doit être au moins de 4 caractères")
+      .required('Login  est obligatoire'), 
+    motDePasse: Yup.string()
+      .matches(/^.*[0-9].*$/,"Bessoin d'un chiffre")
+      .min(8, 'Le mot de passe doit être au moins de 8 caractères')    
+      .required('motDePasse est obligatoire'),
+   
+  })
+
   return (
     <>
       <AppBar position="absolute" xs={12} color="default" className={classes.appBar}>
@@ -126,111 +136,152 @@ const AjouClient=()=> {
       </AppBar>
       <main className={classes.layout}>
       <Paper className={classes.paper}>
-      <form id="form">
+      <Formik
+      initialValues={{
+        raisonSociale: '',
+        adresse: '',
+        tel:'',
+        fax:'',
+        nRegistreCommerce:'',
+        codeTVA:'',
+        email: '',
+        login:'',
+        motDePasse:''
+      }}
+      validationSchema={validate}
+    
+    >
+      {formik => (
+      <Form >
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="raisonSociale"
             name="raisonSociale"
             label="Raison Sociale"
+            onBlur={formik.handleBlur}
             fullWidth
-            onChange={(event)=>{setRaisonSociale(event.target.value)}}
+            error={(formik.touched.raisonSociale&&formik.errors.raisonSociale)}
+            helperText={formik.touched.raisonSociale&&formik.errors.raisonSociale} 
+            onChange={formik.handleChange}
+            value={formik.values.raisonSociale}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="adresse"
             name="adresse"
             label="Adresse"
             fullWidth
-            onChange={(event)=>{setAdresse(event.target.value)}}
+            onBlur={formik.handleBlur}
+            value={formik.values.adresse}
+            onChange={formik.handleChange}
+            error={(formik.touched.adresse&&formik.errors.adresse)}
+            helperText={formik.touched.adresse&&formik.errors.adresse} 
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="tel"
             name="tel"
             label="Tél"
             type="tel"
+            min={0}
             fullWidth
-            onChange={(event)=>{setTel(event.target.value)}}
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            value={formik.values.tel}
+            error={(formik.touched.tel&&formik.errors.tel)}
+            helperText={formik.touched.tel&&formik.errors.tel} 
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="fax"
             name="fax"
             label="Fax"
             type="tel"
             fullWidth
-            onChange={(event)=>{setFax(event.target.value)}}
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            value={formik.values.fax}
+            error={(formik.touched.fax&&formik.errors.fax)}
+            helperText={formik.touched.fax&&formik.errors.fax} 
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="nRegistreCommerce"
             name="nRegistreCommerce"
             label="N° Registre du commerce"
             type="number"
             fullWidth
-            onChange={(event)=>{setNRegistreCommerce(event.target.value)}}
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            error={(formik.touched.nRegistreCommerce&&formik.errors.nRegistreCommerce)}
+            helperText={formik.touched.nRegistreCommerce&&formik.errors.nRegistreCommerce} 
+            value={formik.values.nRegistreCommerce}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="codeTVA"
             name="codeTVA"
             label="Code TVA"
             fullWidth
-            onChange={(event)=>{setCodeTVA(event.target.value)}}/>
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            error={(formik.touched.codeTVA&&formik.errors.codeTVA)}
+            helperText={formik.touched.codeTVA&&formik.errors.codeTVA} 
+            value={formik.values.codeTVA}
+            />
         </Grid>
         <Grid item xs={12}>
           <TextField
-            required
             id="email"
             name="email"
             label="Adresse email"
             fullWidth
-            onChange={(event)=>{setEmail(event.target.value)}}
+            onBlur={formik.handleBlur}
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            error={(formik.touched.email&&formik.errors.email)}
+            helperText={formik.touched.email&&formik.errors.email} 
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
-            required
             id="login"
             name="login"
             label="Login"
             fullWidth
-            onChange={(event)=>{setLogin(event.target.value)}}
-          />
+            onBlur={formik.handleBlur}
+            onChange={(event)=>{formik.handleChange(event);setLoginErreur("")}}
+            value={formik.values.login}
+            error={((formik.touched.login&&formik.errors.login)||loginErreur!=="")}
+            helperText={loginErreur===""?formik.touched.login&&formik.errors.login:loginErreur } 
+            />
         </Grid>
         <Grid item xs={12}>
           <TextField
-            required
             id="motDePasse"
             name="motDePasse"
             label="Mot de passe"
             fullWidth
-            onChange={(event)=>{setMotDePasse(event.target.value)}}
-          />
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            value={formik.values.motDePasse}
+            error={(formik.touched.motDePasse&&formik.errors.motDePasse)}
+            helperText={formik.touched.motDePasse&&formik.errors.motDePasse} 
+            />
         </Grid>
       
       </Grid><br/>
-      <Alert severity="error" hidden={!erreur} >
-        <AlertTitle style={{fontSize:"14px",paddingLeft:"10vw"}}>Veuillez remplir tous les champs</AlertTitle>
-      </Alert>
       <Button
-            type="submit"
             fullWidth
             variant="contained"
             className={classes.button}
-            onClick={ajoutCon}
+            onClick={()=>{ajoutCon(formik.values.raisonSociale)}}
             hidden={ajoutAutre}
             >
             Ajouter des contrats
@@ -241,13 +292,14 @@ const AjouClient=()=> {
             fullWidth
             variant="contained"
             className={classes.button}
-            onClick={envoyer}
+           onClick={(event)=>envoyer(event,formik.isValid,formik.values)}
+          
             >
             Ajouter
       </Button>
       :
       <Button
-            type="submit"
+            type="reset"
             fullWidth
             variant="contained"
             className={classes.button}
@@ -260,7 +312,9 @@ const AjouClient=()=> {
       <Grid item xs={12}>
         {messageInfo}
       </Grid>  
-      </form>  
+      </Form> 
+       )}
+      </Formik>
       </Paper>
       </main>
     </>
