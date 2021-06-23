@@ -24,9 +24,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Loader from './../Loader';
-import CheckBoxType from './filtrage/CheckBoxType'
-import CheckDate from './filtrage/CheckDate'
-import CheckAutoComplete from './filtrage/CheckAutoComplete'
+import CheckBoxType from '../filtrage/CheckBoxType'
+import CheckDate from '../filtrage/CheckDate'
+import CheckAutoComplete from '../filtrage/CheckAutoComplete'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 

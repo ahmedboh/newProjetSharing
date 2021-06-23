@@ -105,7 +105,7 @@ let history = useHistory();
           </TableCell>
           <TableCell style={{ width: 200 }} align="center">
           <IconButton color="primary" component="span" onClick={() => {
-            history.push("/listeContrat",{idClient:row._id,raisonSociale:row.raisonSociale})
+            history.push("/listeContrat",{page:'/listeContrat',idClient:row._id,raisonSociale:row.raisonSociale})
           }}>
             <ListAltIcon />
           </IconButton>

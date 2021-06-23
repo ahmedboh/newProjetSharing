@@ -57,16 +57,18 @@ const TablePaginationActions=(props)=> {
     return (
       <div className={classes.root}>
         <IconButton
+          size='small'
           onClick={handleFirstPageButtonClick}
           disabled={page === 0}
           aria-label="first page"
         >
           {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
         </IconButton>
-        <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+        <IconButton  size='small' onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
           {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
         </IconButton>
         <IconButton
+          size='small'
           onClick={handleNextButtonClick}
           disabled={page >= Math.ceil(count / rowsPerPage) - 1}
           aria-label="next page"
@@ -74,6 +76,7 @@ const TablePaginationActions=(props)=> {
           {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
         </IconButton>
         <IconButton
+          size='small'
           onClick={handleLastPageButtonClick}
           disabled={page >= Math.ceil(count / rowsPerPage) - 1}
           aria-label="last page"

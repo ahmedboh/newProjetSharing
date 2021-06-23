@@ -28,7 +28,7 @@ import LirePDF from './composants/societe/Pdf/LirePDF';
 import Navbar from './composants/clientelle/Navbar';
 import ModifierRapportInter from './composants/societe/ModifierRapportInter';
 import Stat from './composants/societe/statistique/Stat';
-import ListeContratCl from './composants/societe/ListeContratCl';
+import ListeContratCl from './composants/clientelle/ListeContratCl';
 
 
 

@@ -3,10 +3,10 @@ import Axios from 'axios';
 import Grid from '@material-ui/core/Grid';
 import  'bootstrap/dist/css/bootstrap.min.css';
 import IntervCompresse from './IntervCompresse'
-import CheckBoxType from './filtrage/CheckBoxType'
-import CheckDate from './filtrage/CheckDate'
-import CheckAutoComplete from './filtrage/CheckAutoComplete'
-import SearchFiltre from './filtrage/SearchFiltre';
+import CheckBoxType from '../filtrage/CheckBoxType'
+import CheckDate from '../filtrage/CheckDate'
+import CheckAutoComplete from '../filtrage/CheckAutoComplete'
+import SearchFiltre from '../filtrage/SearchFiltre';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import  '../../style/interv.css';

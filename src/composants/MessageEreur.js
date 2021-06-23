@@ -3,7 +3,7 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 
 function MessageEreur(props) {
     return (
-        <Alert  severity="error" hidden={props.children==''} style={{fontSize:"12px"}}>{props.children}</Alert>
+        <Alert  severity="error" hidden={props.children==''} style={{fontSize:"14px"}}>{props.children}</Alert>
     )
 }
 

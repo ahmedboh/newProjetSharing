@@ -76,7 +76,7 @@ const  ListeMembSocietes=()=> {
         </Toolbar>
       </AppBar>
     <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="custom pagination table" id="table">
+      <Table size='small' className={classes.table} aria-label="custom pagination table" id="table">
         <TableHead>
           <TableRow>
             <StyledTableCell align="center">Nom</StyledTableCell>
@@ -109,12 +109,12 @@ const  ListeMembSocietes=()=> {
               {row.login}
             </TableCell>
             <TableCell style={{ width: 160 }} align="center">
-              <IconButton color="primary" component="span" onClick={() => {
+              <IconButton color="primary" size='small' component="span" onClick={() => {
                 history.push("/ModifierMembSociete",{idMembSociete:row._id})
               }}>
                 <UpdateIcon />
               </IconButton>  
-              <IconButton color="secondary" component="span" onClick={handleClickOpen}>
+              <IconButton size='small' color="secondary" component="span" onClick={handleClickOpen}>
                 <DeleteIcon />
               </IconButton> 
               <Dialog
@@ -148,6 +148,7 @@ const  ListeMembSocietes=()=> {
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
               colSpan={4}
               count={rows.length}
+              
               rowsPerPage={rowsPerPage}
               page={page}
               SelectProps={{

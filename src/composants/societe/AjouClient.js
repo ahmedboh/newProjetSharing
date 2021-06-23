@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
 
 const AjouClient=()=> {
     const [ajoutAutre,setAjoutAutre]=useState(true);
-    const [messageInfo, setMessageInfo] = useState(<div></div>);
+    const [messageInfo, setMessageInfo] = useState();
     const [idCl,setIdCl]=useState("");
     const [loginErreur,setLoginErreur]=useState("");
 
@@ -82,7 +82,7 @@ const AjouClient=()=> {
    
   const ajouterAutre=()=>{
           setAjoutAutre(true)
-          setMessageInfo(<div></div>);        
+          setMessageInfo();        
   }  
 
   let history = useHistory();

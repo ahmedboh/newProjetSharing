@@ -1,10 +1,10 @@
 import {Bar,Line,Doughnut ,Pie} from 'react-chartjs-2/'
-import  { useState,useEffect, Fragment } from 'react';
+import  { useState,useEffect } from 'react';
 import Axios from 'axios';
 import MenuVer from '../../menuVer'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import CheckAutoComplete from '../filtrage/CheckAutoComplete'
+import CheckAutoComplete from '../../filtrage/CheckAutoComplete'
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';

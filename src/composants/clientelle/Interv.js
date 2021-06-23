@@ -5,6 +5,8 @@ import { useState ,useEffect} from 'react';
 import Chat from '../chatApp/Chat';
 import InfosBody from './InfosBody';
 import CardBody from './CardBody';
+import FeedBody from './FeedBody';
+
 import  'bootstrap/dist/css/bootstrap.min.css';
 import Badge from '@material-ui/core/Badge';
 import io from "socket.io-client";
@@ -15,7 +17,7 @@ let socket;
 
 
 export default function Interv(props) {
-    const {contenu,user,labelContrat}=props
+    const {fnContrat,fnTicket,contenu,user,labelContrat}=props
     const [etatActuelle, setEtatActuelle] = useState('ticket');
     const [count, setCount] = useState(0);
 
@@ -38,22 +40,27 @@ export default function Interv(props) {
                 <Card.Header style={{height:'55px'}}>
                     <Nav variant="tabs" defaultActiveKey="#first">
                         <Nav.Item>
-                            <Nav.Link href="#first" onClick={()=>{setEtatActuelle('ticket')}}>Ticket</Nav.Link>
+                            <Nav.Link href="#first" onClick={()=>{setEtatActuelle('ticket')}}><div  style={{padding:'1px'}}>Ticket</div></Nav.Link>
                         </Nav.Item>
                         <Nav.Item>
-                            <Nav.Link href="#infos"   onClick={()=>{setEtatActuelle('infos')}}>infos</Nav.Link>
+                            <Nav.Link href="#infos"   onClick={()=>{setEtatActuelle('infos')}}><div  style={{padding:'1px'}}>Infos</div></Nav.Link>
                         </Nav.Item>
                         <Nav.Item>
-                            <Nav.Link href="#chat" onClick={()=>{setEtatActuelle('msg');setCount(0)}}><Badge color="secondary" badgeContent={count}>messages</Badge></Nav.Link>
+                            <Nav.Link href="#chat" onClick={()=>{setEtatActuelle('msg');setCount(0)}}><Badge color="secondary" badgeContent={count}>Messages</Badge></Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link href="#feedBack" hidden={contenu.etat==='clôture'} onClick={()=>{setEtatActuelle('feed')}} ><div style={{padding:'1px'}} >FeedBack</div></Nav.Link>
                         </Nav.Item>
                     </Nav>
                 </Card.Header>
                 <Card.Body style={{height:'350px'}} >
                     {etatActuelle==='ticket'
-                    ?<div style={{marginTop:'5%'}}><CardBody  contenu={contenu} contrat={labelContrat} /> </div>
+                    ?<CardBody showDetailContrat={fnContrat} showDetailTicket={fnTicket} contenu={contenu} contrat={labelContrat} /> 
                     : etatActuelle==='infos'
                         ?<InfosBody  contenu={contenu} />
-                        :<div  ><Chat name={user.raisonSociale} IDTicket={contenu._id} role='Cl' nameCo={'Sharing'}/> </div>
+                        :etatActuelle==='msg'
+                            ?<Chat name={user.raisonSociale} IDTicket={contenu._id} role='Cl' nameCo={'Sharing'}/> 
+                            :<FeedBody IDTicket={contenu._id} />
                     }
                 </Card.Body>   
             </Card> 

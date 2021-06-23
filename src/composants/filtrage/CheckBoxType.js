@@ -1,6 +1,6 @@
 import  { useState } from 'react'
 import { Checkbox } from 'antd';
-import  '../../../style/interv.css';
+import  '../../style/interv.css';
 
 const CheckBoxType=(props)=>{
 const [checked, setChecked] = useState([])
