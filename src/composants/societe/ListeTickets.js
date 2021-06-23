@@ -29,8 +29,6 @@ const ListeTickets=(props)=>{
         'etat':[],
         'dateCreation':[]
     })
-    
-    
 
     const trirerParPriorite = tab =>{
         var tabCritique=[]
@@ -71,8 +69,6 @@ const ListeTickets=(props)=>{
         else  sty=['primary','text-primary'];
         return sty;
     }
-
-
 
     const listeTicket=async(ob)=>{
         const res =await Axios.post(`ticket/getAll`,ob)
@@ -157,14 +153,10 @@ const ListeTickets=(props)=>{
                   ?FormRow
                   :<h2>Accun Ticket exist ..............</h2>
                 }
-            </Grid>
-            
+            </Grid>  
         </Grid>
     </div> 
-    
     <span hidden={!switchMode}>  <ListeTicketTable listeTicket={listeDdes} ></ListeTicketTable></span>  
-   
-    
     </>)     
 }
 export default ListeTickets;

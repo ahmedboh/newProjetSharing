@@ -208,8 +208,8 @@ function DeposerTicket (props){
                 />
                 <br/><br/>
                 <input type="file"  id="imageTiket" hidden accept="image/*" onChange={event => { 
-                        validateImage( event.target.files[0] ) 
-                    }} />
+                    validateImage( event.target.files[0] ) 
+                }} />
                     
                 <Row>
                         <Col sm={6} className="labelText">   Ajouter une photo  </Col>  

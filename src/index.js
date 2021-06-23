@@ -29,16 +29,7 @@ import Navbar from './composants/clientelle/Navbar';
 import ModifierRapportInter from './composants/societe/ModifierRapportInter';
 import Stat from './composants/societe/statistique/Stat';
 import ListeContratCl from './composants/clientelle/ListeContratCl';
-
-
-
-
-
-
-
-
 import Axios from 'axios';
-
 
 const Index =()=> {
     Axios.defaults.headers.common['xAuthToken']=localStorage.getItem('token');
@@ -47,17 +38,13 @@ const Index =()=> {
     const [decon,setDecon]=useState(false)
     const [membreS,setMembreS]=useState({})
     const [client,setClient]=useState({})
-    
-   
-   
+
     useEffect(() => {
       localStorage.getItem('connectMb')&&setConnectMB(true) 
       localStorage.getItem('connectCl')&&setConnectCl(true) 
       refleshToken()
    }, [])
-
- 
-
+   
     const getMembreS = async()=>{
         const res=await Axios.get('membSociete/connect' )
         res.status===200&&setMembreS(res.data.data)       

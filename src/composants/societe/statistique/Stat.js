@@ -3,11 +3,12 @@ import ChartClient from './ChartClient'
 import ChartIntervenant from './ChartIntervenat'
 import ChartAnnee from './ChartAnnee'
 import  { useState,useEffect } from 'react';
-
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import TableauStatClient from './tableauStatClient';
+import TableauStatInter from './tableauStatInter';
 
 export default function Stat() {
   
@@ -24,13 +25,13 @@ export default function Stat() {
         <Row>  
          <Col sm={10}>  
           {valueStat===0
-          ?<MenuVer  dataLabels={[" Tandence mode ","Tablaux mode "]} data={[<ChartClient/>,<div>table</div>]} />   
+          ?<MenuVer  dataLabels={[" Tandence mode ","Tablaux mode "]} data={[<ChartClient/>,<TableauStatClient/>]} />   
           :valueStat===1
-          ?<MenuVer  dataLabels={[" Tandence mode ","Tablaux mode "]} data={[<ChartIntervenant/>,<div>table</div>]} />   
+          ?<MenuVer  dataLabels={[" Tandence mode ","Tablaux mode "]} data={[<ChartIntervenant/>,<TableauStatInter/>]} />   
           :<MenuVer  dataLabels={[" Tandence mode ","Tablaux mode "]} data={[<ChartAnnee/>,<div>table</div>]} />   
 
           }
-         </Col>  
+         </Col> 
          <Col>
          <br/><br/><br/>
          <h5 style={{color:'gray',textAlign:'center'}}>STATISTIQUE</h5>
