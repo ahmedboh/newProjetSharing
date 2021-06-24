@@ -13,6 +13,7 @@ import  '../../style/interv.css';
 import ListeTicketTable from './ListeTicketTable';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import ReactToExcel from 'react-html-table-to-excel';
 
 
 
@@ -76,7 +77,7 @@ const ListeTickets=(props)=>{
         charger(trirerParEtat(res.data.data))
     }
     
-    const supprimerDemande=async(id)=>{
+    const supprimerTicket=async(id)=>{
         const res =await Axios.delete(`ticket/`+id)
         listeTicket({searchRef,filters:Filters})      
     }
@@ -113,7 +114,7 @@ const ListeTickets=(props)=>{
         listeTicket(variables)
     }
 
-    const charger=(listeDd)=> setFormRow( listeDd.map((dde,index)=>{return(<Grid key={index} item   lg={3} md={4} xs={12} > <IntervCompresse naviguer={false} contenu={dde} user={user} supprimerDemande={supprimerDemande} styleP={stylePr(dde.priorite)}/></Grid>)}))   
+    const charger=(listeDd)=> setFormRow( listeDd.map((dde,index)=>{return(<Grid key={index} item   lg={3} md={4} xs={12} > <IntervCompresse naviguer={false} contenu={dde} user={user} supprimerTicket={supprimerTicket} styleP={stylePr(dde.priorite)}/></Grid>)}))   
     
     return(<>
        <div className='boxLIteTicket '  >  
@@ -158,8 +159,8 @@ const ListeTickets=(props)=>{
                 }
             </Grid>  
         </Grid>
-    </div> 
-    <span hidden={!switchMode}>  <ListeTicketTable listeTicket={listeDdes} ></ListeTicketTable></span>  
+    </div>
+    <span hidden={!switchMode}>  <ListeTicketTable supprimerTicket={supprimerTicket}  listeTicket={listeDdes} ></ListeTicketTable></span>  
     </>)     
 }
 export default ListeTickets;

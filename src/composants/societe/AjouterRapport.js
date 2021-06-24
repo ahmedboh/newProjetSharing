@@ -10,6 +10,7 @@ import { useState ,useEffect} from 'react';
 import Axios from 'axios';
 import SaveIcon from '@material-ui/icons/Save';
 import { useParams } from 'react-router';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 
 const AjouterRapport=(props)=>{
@@ -40,38 +41,26 @@ const AjouterRapport=(props)=>{
      const [heureFin,setHeureFin]=useState("11:00")
      const [dateFin,setDateFin]=useState(formatDate(new Date()))
      const [attachement,setAttachement]=useState()
+     const [description,setDescription]=useState()
      const [messageInfo, setMessageInfo] = useState(<div></div>)
     
     const enregistrer=async()=>{
         const formData = new FormData();
             formData.append('IDTicket',id);
             formData.append('IDintervenant',user._id);
-            formData.append('dateCreation',new Date().toLocaleDateString());
-            formData.append('heureCreation',new Date().toLocaleTimeString());
-            formData.append('dateDebut',dateDebut);
-            formData.append('heureDebut',heureDebut);
-            formData.append('dateFin',dateFin);
-            formData.append('heureFin',heureFin);
-            formData.append('attachement',attachement);
-        
-       let ob={
-                IDTicket:id,
-                IDintervenant:user._id,
-                dateCreation:new Date().toLocaleDateString(),
-                heureCreation:new Date().toLocaleTimeString(),
-                dateDebut,
-                heureDebut,
-                dateFin,
-                heureFin,
-                attachement
-             }
+            formData.append('dateCreation',new Date());
+            formData.append('dateDebut',new Date(dateDebut.substr(0,4),dateDebut.substr(5,2),dateDebut.substr(8,2),heureDebut.substr(0,2),heureDebut.substr(3,2),0));
+            formData.append('dateFin',new Date(dateFin.substr(0,4)  ,dateFin.substr(5,2),dateFin.substr(8,2),heureFin.substr(0,2),heureFin.substr(3,2),0));
+            formData.append('detailinter',description); 
+            formData.append('attachement',attachement); 
         const res = await Axios.get(`rapportInter/getRapportIntersTicket/${id}`)
         if (res.data.data.length === 0) {
             const res2=await Axios.get(`affectation/getAffectationsIntervenantTicket/${id}/${user._id}`)
-            if(res2.data.data.length !== 0){
-                if(res2.data.data[0].annule === false){
+            if(res2.data.data !== null){
+                if(res2.data.data.annule === false){           
                 const res3=await  Axios.post(`rapportInter`,formData )
-                setMessageInfo(<MessageInfo >L'ajout d'un nouvel rapport est passeé avec seccess </MessageInfo>)
+                console.log(res3)
+                setMessageInfo(<MessageInfo >L'ajout d'un nouveau rapport est passeé avec seccess </MessageInfo>)
                 }
               }
             
@@ -82,16 +71,15 @@ const AjouterRapport=(props)=>{
     }
      return(
          
-        <div className="container" style={{border:'2px rgb(0, 153, 204) solid',borderRadius:'50px',marginTop:'20px',padding:'20px'}}>
+        <div className="container box" >
+            <h2  className="titre" >Ajouter un nouveau rapport  </h2>
             <br/>
-        <h2  className="text-info" style={{textAlign:'center'}}>Ajouter un nouvel rapport  </h2><br/><br/>
         <form>
-        <Row style={{marginLeft:'15%'}}> 
-
-           <Col sm={8}>
+        <Row > 
+           <Col sm={6}>
             <Form.Group as={Row}  controlId="formHorizontalEmail">
-                <Form.Label column >
-                l'intervenant 
+                <Form.Label column className='text' >
+                L'intervenant 
                 </Form.Label>
                 <Col sm={12}>
                 <Form.Control type="text" placeholder={intervenantLabel} disabled />
@@ -99,8 +87,8 @@ const AjouterRapport=(props)=>{
             </Form.Group>
 
             <Form.Group as={Row} controlId="formHorizontalContrat">
-                <Form.Label column >
-                    Date de debut de l'itervention
+                <Form.Label column  className='text'>
+                    Date de début du ticket
                 </Form.Label>
                 
                 <Col >
@@ -110,8 +98,8 @@ const AjouterRapport=(props)=>{
             </Form.Group>
 
             <Form.Group as={Row} controlId="formHorizontaNature">
-                <Form.Label column >
-                     Heure Début de l'intervention
+                <Form.Label column className='text' >
+                     Heure de début du ticket
                 </Form.Label>
                 <Col >
                 <TextField id="time" label=" Heure" type="time" value={heureDebut} onChange={(event)=>{ setHeureDebut(event.target.value) }} 
@@ -120,8 +108,8 @@ const AjouterRapport=(props)=>{
             </Form.Group>
             
             <Form.Group as={Row} controlId="formHorizontalContrat">
-                <Form.Label column >
-                    Date de fin de l'itervention
+                <Form.Label column className='text'>
+                    Date de fin du ticket
                 </Form.Label>
                 
                 <Col >
@@ -131,8 +119,8 @@ const AjouterRapport=(props)=>{
             </Form.Group>
 
             <Form.Group as={Row} controlId="formHorizontaNature">
-                <Form.Label column >
-                     Heure fin de l'intervention
+                <Form.Label column className='text'>
+                     Heure fin du ticket
                 </Form.Label>
                 <Col >
                 <TextField id="time" label="Heure" type="time" value={heureFin} onChange={(event)=>{ setHeureFin(event.target.value) }} 
@@ -141,16 +129,45 @@ const AjouterRapport=(props)=>{
             </Form.Group>
 
 
-            <Form.Group as={Row} controlId="formHorizontaNature">
-                <Form.Label column >
-                     PV d'intervention
-                </Form.Label>
-                <Col >
-                <input type="file"
-                accept="application/pdf"   
-                onChange={event => { setAttachement( event.target.files[0] ); }}/>
-                </Col>
-            </Form.Group>
+            
+            </Col>
+            <Col><br/><br/>
+                   <Form.Label column  className='text' >
+                            Description
+                   </Form.Label>
+                    <TextField fullWidth
+                            id="outlined-multiline-static"
+                            label="Description"
+                            onChange={(event)=>{
+                                setDescription(event.target.value)
+                            }}
+                            multiline
+                            rows={6}
+                            placeholder="Descriptions ... ."
+                            value={description}
+                            variant="outlined"
+                        /><br/><br/><br/>
+                    <Form.Group as={Row} controlId="formHorizontaNature">
+                        <Form.Label column sm={8} className='text' >
+                            PV du ticket
+                        </Form.Label>
+                        <input type="file" id='filera' hidden
+                        accept="application/pdf"   
+                        onChange={event => { setAttachement( event.target.files[0] ); }}/>
+                        <Col >
+                            <label htmlFor="filera">
+                                <Button
+                                    variant="contained"
+                                    color="primary"  component="span"
+                                    style={{backgroundColor:'rgb(0, 153, 204)'}}
+                                    startIcon={<CloudUploadIcon />}
+                                >
+                                    Upload
+                                </Button>
+                           </label> 
+                        
+                        </Col>
+                    </Form.Group>
             </Col>
             </Row>
                 

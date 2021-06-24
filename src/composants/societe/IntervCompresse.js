@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import  Button  from 'react-bootstrap/Button';
 import { useHistory } from "react-router-dom";
+import Tooltip from '@material-ui/core/Tooltip';
 
 function CircularProgressWithLabel(props) {
  const circulaire= props.etat==='En attente'
@@ -67,7 +68,7 @@ function CircularStatic(props){
 
 
 const IntervCompresse=(props)=>{
-    const {contenu,styleP,ouvrir,naviguer,supprimerDemande,IDintervenant,user}=props 
+    const {contenu,styleP,ouvrir,naviguer,supprimerTicket,IDintervenant,user}=props 
   
     const [btn,setBtn]= useState(true)
   
@@ -86,7 +87,13 @@ const IntervCompresse=(props)=>{
         <Card.Body>
         <center>
         <Card.Title ><h6>{new Date(contenu.dateCreation).toLocaleDateString()} | {new Date(contenu.dateCreation).toLocaleTimeString()} &nbsp;&nbsp; </h6> </Card.Title>
-        {!naviguer &&<IconButton color="secondary" hidden={user.role&&user.role.indexOf('Ad')===-1}  style={{position:'absolute',top:'50px',right:'-10px' }}  onClick={()=>{supprimerDemande(contenu._id)}}  aria-label="delete"  ><DeleteSweepIcon  hidden={btn}  fontSize='large' /> </IconButton>}
+        {!naviguer 
+        && <Tooltip title='Supprimer ce Ticket'   arrow>
+            <IconButton color="secondary" hidden={user.role&&user.role.indexOf('Ad')===-1}  style={{position:'absolute',top:'50px',right:'-10px' }}  onClick={()=>{supprimerTicket(contenu._id)}}  aria-label="delete"  >
+              <DeleteSweepIcon  hidden={btn}  fontSize='large' /> 
+            </IconButton>
+          </Tooltip>
+          }
         </center>
         <Card.Text>
              {contenu.ref} <br/>

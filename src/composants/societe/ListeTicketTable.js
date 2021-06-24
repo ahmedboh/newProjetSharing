@@ -8,11 +8,13 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import { useState ,useEffect} from 'react';
-import ErrorSharpIcon from '@material-ui/icons/ErrorSharp';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import  'bootstrap/dist/css/bootstrap.min.css';
-
+import Tooltip from '@material-ui/core/Tooltip';
+import { useHistory } from "react-router-dom";
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import ReactToExcel from 'react-html-table-to-excel';
 
 
 const rows = [];
@@ -92,8 +94,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function ListeTicketTable(props) {
-  const{listeTicket}=props
+const ListeTicketTable=(props) =>{
+  let history = useHistory();
+  const{listeTicket,supprimerTicket}=props
   const classes = useStyles();
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('ref');
@@ -120,6 +123,9 @@ export default function ListeTicketTable(props) {
   return (
     <div className='boxLIteTicketTable'>
       <Paper className={classes.paper}>
+      <span  style={{margin:'5px'}}>
+          <ReactToExcel  className='btn btn-outline-success btn-sm' table="table" filename="ListeTicketTable" sheet="sheet 1" buttonText="Exporter"/>
+      </span>   
         <TableContainer>
           <Table
             className={classes.table}
@@ -144,12 +150,16 @@ export default function ListeTicketTable(props) {
                       <TableCell >{new Date(row.dateCreation).toLocaleDateString()}</TableCell>
                       <TableCell >{row.etat}</TableCell>
                       <TableCell align='center' >
-                        <IconButton color="primary" size='small' component="span" >
-                            <ErrorSharpIcon  />
+                      <Tooltip title='Ouvrir ce Ticket'   arrow>
+                        <IconButton color="primary" size='small' onClick={()=>{ history.push("/affecter",{interv:listeTicket[index],contrat:'contrat'})}} component="span" >
+                            <OpenInNewIcon  />
                         </IconButton>
-                        <IconButton color="secondary" size='small' component="span" >
+                      </Tooltip>  
+                      <Tooltip title='Supprimer ce Ticket'   arrow>
+                        <IconButton color="secondary" size='small' onClick={()=>{supprimerTicket(listeTicket[index]._id)}} component="span" >
                             <DeleteIcon  />
                         </IconButton>
+                      </Tooltip>  
                       </TableCell>
                     </TableRow>
                   );
@@ -161,3 +171,4 @@ export default function ListeTicketTable(props) {
     </div>
   );
 }
+export default ListeTicketTable;
