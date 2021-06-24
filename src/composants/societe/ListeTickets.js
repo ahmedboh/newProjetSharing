@@ -83,7 +83,10 @@ const ListeTickets=(props)=>{
     useEffect(() => {
         listeTicket({searchRef,filters:Filters})
         document.body.style.backgroundColor = 'rgb(204, 193, 193)';
-        return ()=>{document.body.style.backgroundColor = 'white'}
+        document.body.style.overflow = 'hidden';
+
+        return ()=>{document.body.style.backgroundColor = 'white';
+                    document.body.style.overflow = 'auto';}
     },[user]);
    
 

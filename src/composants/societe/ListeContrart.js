@@ -20,10 +20,10 @@ import Toolbar from '@material-ui/core/Toolbar';
 import UpdateIcon from '@material-ui/icons/Update';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import DescriptionIcon from '@material-ui/icons/Description';
+import Tooltip from '@material-ui/core/Tooltip';
+
 import '../../style/interv.css'
-const ListeContrat=(props)=>{
-    const {user}=props
+const ListeContrat=()=>{
     const [rows , setRows ]=useState([]);
     const [client, setClient] = useState("");
     const classes = useStyles2();
@@ -33,24 +33,17 @@ const ListeContrat=(props)=>{
     let history = useHistory();
 
     const listeContrat=async()=>{
-      if(user===undefined){
         setClient(history.location.state.raisonSociale);
-          
-      const res = await Axios.get(`contrat/getContratsClient/${history.location.state.idClient}`)
-      setRows( res.data.data );
-      }else{
-      setClient(user.raisonSociale);
-      const res =await Axios.get(`contrat/getContratsClient/${user._id}`)
-      setRows( res.data.data );
-      }
+        const res = await Axios.get(`contrat/getContratsClient/${history.location.state.idClient}`)
+        setRows( res.data.data );
     }
     const suprimerContrat = async(id) => {
       const res=await Axios.delete(`contrat/${id}`)
       listeContrat()
     }
     useEffect(() => {
-      user!=={}&&listeContrat()
-    }, [user]);
+     listeContrat()
+    }, []);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -111,19 +104,19 @@ const ListeContrat=(props)=>{
                 <TableCell style={{ width: 160 }} align="center">
                 {row.emailContact}
                 </TableCell>
-                <TableCell style={{ width: 160 }} align="center">
-                  {user!==undefined
-                  ?<DescriptionIcon />
-                  :<>
-                    <IconButton size='small' component="span"onClick={() => {
+                <TableCell style={{ width: 160 }} align="center">                
+                  <Tooltip title='Modifier ce contrat'  arrow>
+                    <IconButton size='small' style={{color:'orange'}} component="span"onClick={() => {
                       history.push("/modifierContrat",{idContrat:row._id,page:'/listeContrat',idClient:history.location.state.idClient,raisonSociale:history.location.state.raisonSociale})
                     }}>
                       <UpdateIcon />
-                    </IconButton>      
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title='Modifier ce contrat'  arrow>   
                     <IconButton size='small' color="secondary" component="span" onClick={() => { suprimerContrat(row._id)}}>
                       <DeleteIcon />
                     </IconButton>
-                  </>}
+                  </Tooltip>  
                 </TableCell>
               </TableRow>
           ))}
@@ -155,8 +148,7 @@ const ListeContrat=(props)=>{
         </TableFooter>
       </Table>
     </TableContainer>
-    {user===undefined              
-    ?<Row style={{margin:"10px"}}>
+    <Row style={{margin:"10px"}}>
     <Col> 
     <Button variant="outlined"
             color="secondary"  
@@ -176,8 +168,7 @@ const ListeContrat=(props)=>{
                 history.push("/ajouterContrat/"+history.location.state.idClient+"/"+history.location.state.raisonSociale,{page:'/listeContrat',idClient:history.location.state.idClient})
               }}
              >Ajouter un nouveau </Button> </Col>
-    </Row>
-    :<></>}     
+    </Row>  
     </>
   );
 }

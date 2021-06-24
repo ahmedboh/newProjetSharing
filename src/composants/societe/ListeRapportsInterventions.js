@@ -29,15 +29,39 @@ import CheckDate from '../filtrage/CheckDate'
 import CheckAutoComplete from '../filtrage/CheckAutoComplete'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Tooltip from '@material-ui/core/Tooltip';
+import Drawer from '@material-ui/core/Drawer';
+import DescriptionIcon from '@material-ui/icons/Description';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 
-const  ListeRapportsInterventions=()=> {
+const useStyles = makeStyles({
+  paper: {
+    background: 'rgba(255,255,255,)',
+    marginTop:'20%',
+     width:'30%',
+     height:'35%',
+     padding:'2%',
+     borderTopLeftRadius:'20px',
+     borderBottomLeftRadius:'20px'
+  }
+});
+const  ListeRapportsInterventions=(props)=> {
+  const stylesDrawer = useStyles();
+  const {role,user}=props
   const [rows , setRows ]=useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [Filters, setFilters] = useState({})
+  const [showDesc, setShowDesc] = useState(false);
+  const [desc, setDesc] = useState();
+
 
 
   const listeRapports=async(ob)=>{
-   const res =await Axios.post(`rapportInter/getAll`,ob)
+   var res 
+   role==='In'
+   ? res = await Axios.get(`rapportInter/getRapportIntersIntervenant/${user._id}`)
+   : res =await Axios.post(`rapportInter/getAll`,ob)
     setRows( res.data.data );
     setIsLoading(false);
   }
@@ -85,10 +109,14 @@ const  ListeRapportsInterventions=()=> {
       listeRapports()
       handleClose();
     }
+    const ouvrirDisc = (description) => {
+  
+      setShowDesc(true);
+      setDesc(description)
+    };
 
 
-
-    const attachement=row.IDTicket.IDclient.raisonSociale.length<5
+    const attachement=row.nomAttachement===undefined
         ?<CancelIcon size='small' />
         :<IconButton size='small' color="primary" component="span" onClick={() => {
           history.push("/LirePDF",{idRapport:row._id})
@@ -102,7 +130,7 @@ const  ListeRapportsInterventions=()=> {
             <TableCell style={{ width: 160 }} align="center">
               {row.IDTicket.IDclient.raisonSociale}
             </TableCell>
-            <TableCell style={{ width: 220 }} align="center">
+            <TableCell hidden={role==='In'} style={{ width: 220 }} align="center">
               {row.IDintervenant.nom} {row.IDintervenant.prenom}
             </TableCell>
             <TableCell style={{ width: 220 }} align="center">
@@ -118,14 +146,21 @@ const  ListeRapportsInterventions=()=> {
               {new Date(row.dateFin).toLocaleDateString()}  {new Date(row.dateFin).toLocaleTimeString().substring(0,5)}
             </TableCell>
             <TableCell  align="center">
-      
-                {attachement}
-             
+              <Tooltip title={row.nomAttachement===undefined?"Sans attachement":"Consulter l'attachement"}  arrow>
+                  {attachement}
+              </Tooltip> 
             </TableCell>
             <TableCell  align="center">
-            <IconButton color="secondary" style={{height:'10px'}} component="span" onClick={handleClickOpen}>
-                <DeleteIcon  />
-              </IconButton> 
+            <Tooltip title='Consulter la description'  arrow>
+                <IconButton color="primary" size='small'disabled={!row.detailinter} component="span" onClick={()=>{ouvrirDisc(row.detailinter)}}>
+                    <DescriptionIcon />
+                </IconButton> 
+              </Tooltip>  
+              <Tooltip title='Supprimer ce rapport'  arrow>
+                <IconButton color="secondary" size='small' component="span" onClick={handleClickOpen}>
+                    <DeleteIcon  />
+                </IconButton> 
+              </Tooltip>   
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -157,7 +192,7 @@ const  ListeRapportsInterventions=()=> {
           </Typography>
         </Toolbar>
       </AppBar>
-      <div style={{marginLeft:'4%'}}  >  
+      <div style={{marginLeft:'4%'}}  hidden={role==='In'}>  
         <Row >
         <Col lg={3} style={{paddingTop:'5px'}}>    
         <CheckAutoComplete type="clients"  sty={false} label={'Client demandeur '} handleFilters={handleFilters}></CheckAutoComplete>
@@ -174,13 +209,15 @@ const  ListeRapportsInterventions=()=> {
         </Col>
         </Row>
        </div><br/>
-       
-    <TableContainer component={Paper}>
+       <span  style={{margin:'5px'}}>
+          <ReactToExcel  className='btn btn-outline-success' table="table" filename="ListeRapportsInterventions" sheet="sheet 1" buttonText="Exporter"/>
+      </span>   
+    <TableContainer component={Paper} style={{marginTop:'2px'}}>
       <Table className={classes.table} size="small" aria-label="custom pagination table" id="table">
         <TableHead>
           <TableRow>
             <StyledTableCell align="center">Client</StyledTableCell>
-            <StyledTableCell align="center">Intervenant</StyledTableCell>
+            <StyledTableCell align="center" hidden={role==='In'}>Intervenant</StyledTableCell>
             <StyledTableCell align="center">Objet de ticket </StyledTableCell>
             <StyledTableCell align="center">Date Création</StyledTableCell>
             <StyledTableCell align="center">Date Debut</StyledTableCell>
@@ -224,13 +261,19 @@ const  ListeRapportsInterventions=()=> {
         </TableFooter>
       </Table>
     </TableContainer>
-    <ReactToExcel
-      className="btn"
-      table="table"
-      filename="listeMembresSociété"
-      sheet="sheet 1"
-      buttonText="Export excel"
-    />
+    <Drawer   anchor='right' open={showDesc} onClose={()=>{setShowDesc(false)}}   classes={{ paper: stylesDrawer.paper }} >
+             <div  >
+                 <h4 className="titreC"> Description  :</h4> 
+                 <hr/>
+                 <TextField fullWidth
+                    multiline
+                    aria-readonly
+                    value={desc}
+                    rows={4}
+
+                    />
+             </div>
+    </Drawer>
     </>
   );
 }

@@ -13,7 +13,6 @@
    overflow:auto;
    overflow-x: hidden;
    background: linear-gradient(135deg, rgb(215, 254, 255) 0%, rgb(255, 189, 178) 100%);
-   border-radius: 20px;
 }
 
  .box {
@@ -24,7 +23,7 @@
    0 22.3px 17.9px rgba(0, 0, 0, 0.072),
    0 41.8px 33.4px rgba(0, 0, 0, 0.086),
    0 100px 80px rgba(0, 0, 0, 0.12);
-   margin-top:5vh;
+   margin-top:4vh;
    padding:1%;
    background-color:white;
    border-radius:10px;

@@ -1,71 +1,38 @@
-import {SearchOutlined,AttachFile,MoreVert,InsertEmoticon,Mic} from '@material-ui/icons/';
+import {AttachFile,MoreVert} from '@material-ui/icons/';
 import {IconButton,Avatar} from '@material-ui/core';
+import PermMediaIcon from '@material-ui/icons/PermMedia';
 import './chat.css'
 import io from "socket.io-client";
+import EmojiEmotionsTwoToneIcon from '@material-ui/icons/EmojiEmotionsTwoTone';
+import Tooltip from '@material-ui/core/Tooltip';
 import { useEffect, useState } from 'react'
 import StyledBadge from './StyledBadge'
-import PhotoCamera from '@material-ui/icons/PhotoCamera';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
-import VisibilityIcon from '@material-ui/icons/Visibility';
-import { withStyles } from '@material-ui/core/styles';
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
-
+import ImageMsg from './ImageMsg';
+import Picker from 'emoji-picker-react';
 let socket;
-const styles = (theme) => ({
-  root: {
-    margin: 0,
-    padding: theme.spacing(2),
-  },
-  closeButton: {
-    position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    color: theme.palette.grey[500],
-  },
-});
-
-const DialogTitle = withStyles(styles)((props) => {
-  const { children, classes, onClose, ...other } = props;
-  return (
-    <MuiDialogTitle disableTypography className={classes.root} {...other}>
-      <Typography variant="h6">{children}</Typography>
-      {onClose ? (
-        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </MuiDialogTitle>
-  );
-});
-
-const DialogContent = withStyles((theme) => ({
-  root: {
-    padding: theme.spacing(2),
-  },
-}))(MuiDialogContent);
 
 export default function Chat(props) {
-    const [open, setOpen] = useState(false);
     const {name,nameCo,IDTicket,role}=props
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [connecte,setConnecte]= useState(false);
-    const [image,setImage]=useState()
-    const [file,setFile]=useState(null)
-    const [base64URL,setBase64URL]=useState("")
+    const [showEmoji, setShowEmoji] = useState(true);
+    const [positionEnd, setPositionEnd] = useState(0);
 
-    const handleClickOpen = () => {
-      setOpen(true);
+
+ 
+    const onEmojiClick = (event, emojiObject) => {
+      document.getElementById(`${IDTicket}`).focus()
+      console.log(document.getElementById(`${IDTicket}`).selectionStart)
+      const start=message.substring(0,document.getElementById(`${IDTicket}`).selectionStart)
+      const end=message.substring(document.getElementById(`${IDTicket}`).selectionStart)
+      setMessage(start+emojiObject.emoji+end)
+      setPositionEnd(start.length+emojiObject.emoji.length)
     };
-    const handleClose = () => {
-      setOpen(false);
-    };
-  
+
+    useEffect(() => {  
+      document.getElementById(`${IDTicket}`).selectionEnd=positionEnd;
+    }, [positionEnd])
     const scrollmsag=()=>{
         var element = document.getElementsByClassName("chat__body")[0];
         if(element) element.scrollTop = element.scrollHeight;
@@ -77,7 +44,7 @@ export default function Chat(props) {
       );
       return  closingCode;
     }, [IDTicket])
-
+    
 
     useEffect(() => {
         socket.on('oldMessages', messages => {
@@ -100,8 +67,7 @@ export default function Chat(props) {
         if(message) {
           socket.emit('sendMessage', {message,name,IDTicket,connecte,role,type:'text'}, () =>{ setMessage('');document.getElementById(`${IDTicket}`).focus();});
         }
-         scrollmsag()
-        
+         scrollmsag() 
       }
       const  getBase64=(file1)=>{
         return new Promise(resolve => {
@@ -119,9 +85,9 @@ export default function Chat(props) {
           };
         });
       };
-    
+      
       const sendImage = (event) => {
-        event.preventDefault();
+       // event.preventDefault();
           //console.log(e.target.files[0]);
           let file ;
           let message ;
@@ -133,11 +99,8 @@ export default function Chat(props) {
             .then(result => {
               file["base64"] = result;
               message = result;
-              console.log("File Is", message);
-              setBase64URL(result)
-              setFile(file);
-              //console.log("File Is", file.base64)
-              socket.emit('sendMessage', {message,name,IDTicket,connecte,role,type:'image'}, () =>{ document.getElementById(`${IDTicket}`).focus();});
+              console.log("File Is", message);  
+              socket.emit('sendMessage', {message,name,IDTicket,connecte,role,type:'image'}, () =>{console.log('image uploade')});
             })
             .catch(err => {
               //console.log(err);
@@ -153,8 +116,8 @@ export default function Chat(props) {
        } 
 
     return (
-        <div className='chat'>
-            <div className="chat__header" >
+        <div className='chat'   >
+            <div className="chat__header" onClick={()=>{setShowEmoji(true)}}>
                 <StyledBadge  overlap="circle" style={{marginBottom:'20px'}} anchorOrigin={{ vertical: 'bottom', horizontal: 'right', }}  variant={connecte?"dot":'standard'}>
                     <Avatar  className="avatar" style={{backgroundColor:'orangered',color:'white'}}>{nameCo[0].toUpperCase()}</Avatar>
                 </StyledBadge>   
@@ -164,59 +127,50 @@ export default function Chat(props) {
                 </div>
                 <div className="chat__headerRight">
                     <label htmlFor="imageTiket">
+                      <Tooltip title='Choisir une photo'  arrow>  
                         <IconButton variant="contained" component="span">
-                            <PhotoCamera />
+                            <PermMediaIcon />
                         </IconButton>
+                      </Tooltip>
                     </label>
-                    <IconButton>
-                        <AttachFile/>
-                    </IconButton>
+                    <Tooltip title='Choisir un fichier'  arrow>
+                      <IconButton >
+                          <AttachFile/>
+                      </IconButton>
+                    </Tooltip>  
                     <IconButton>
                         <MoreVert/>
                     </IconButton>
                 </div>
             </div>
-            <div className="chat__body"  >     
+            <div className="chat__body" onClick={()=>{setShowEmoji(true)}} >     
             {messages.map((msg,index)=>(
                 messages.findIndex((ms)=>ms.text === msg.text && ms.date === msg.date)===index&&
                 msg.type === 'text' ?
                 <p  key={index}  className={msg.user===name ?"chat__message":"chat__message chat__reciever "}>
                     <span className="chat__name">{msg.user}</span>
                     {msg.contenu}
-                    <span  className="chat__timestamp" >{new Date(msg.date).toUTCString()}</span>        
+                    <span  className="chat__timestamp" >{new Date(msg.date).toUTCString().substr(0,22)}</span>        
                 </p>
                 : msg.type === 'image' ?
-                <><IconButton aria-label="upload picture" component="span" onClick={handleClickOpen} ><VisibilityIcon  style={{ color: 'green' }}></VisibilityIcon> </IconButton>
-                <Dialog fullWidth={true} maxWidth={'lg'} onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
-                    <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-                        Image
-                    </DialogTitle>
-                    <DialogContent dividers>
-                        <center><img src={`${msg.contenu}`} /></center>
-                    </DialogContent>
-                </Dialog></>
-                : <><p>fichier</p></>
+                <ImageMsg msg={msg} name={name}/>
+                :msg.type === 'fichier' && <><p>fichier</p></>
             ))}
             </div> 
             
             <div className="chat__footer">
-                <InsertEmoticon/>
+                <span hidden={showEmoji} style={{width:'300px',height:'80px',position:'absolute',top:'30px'}}>
+                  <Picker onEmojiClick={onEmojiClick} />
+                </span>
+                <Tooltip title='Choisir un emoji'  arrow>
+                <IconButton onClick={()=>{setShowEmoji(!showEmoji)}}>
+                  <EmojiEmotionsTwoToneIcon style={showEmoji?{color:'#2196f3'}:{color:'#ffc400'}}/>
+                </IconButton>
+                </Tooltip>
                 <form>
-                    <span className="labelText"> {image && image.name}</span>
                     <input type="file"  id="imageTiket" hidden accept="image/*" onChange={event => sendImage(event)} />
                     <input id={IDTicket} placeholder="type a message" value={message}   onKeyPress={event => event.key === 'Enter' ? sendMessage(event) : null} onChange={(event)=>{setMessage(event.target.value)}} type="text"/>    
                 </form>
-                <Button
-                                variant="contained"
-                                color="primary"
-                                style={{backgroundColor:'rgb(0, 153, 204)'}}
-                                onClick={sendImage}
-                                endIcon={<Icon>send</Icon>}
-                                
-                            >
-                                Envoyer
-                    </Button> 
-                <Mic/>
             </div>
 
         </div>

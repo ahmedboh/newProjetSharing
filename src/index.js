@@ -22,7 +22,6 @@ import ListeClients from './composants/societe/listeClients';
 import ModifierClient from './composants/societe/ModifierClient';
 import ModifierMembSociete from './composants/societe/ModifierMembSociete';
 import Accueil from './composants/societe/Accueil';
-import ListeRapportsIntervenant from './composants/societe/ListeRapportsIntervenant';
 import ListeRapportsInterventions from './composants/societe/ListeRapportsInterventions';
 import LirePDF from './composants/societe/Pdf/LirePDF';
 import Navbar from './composants/clientelle/Navbar';
@@ -85,7 +84,7 @@ const addlisnter=()=>{
  const removeListner=()=>{
   window.removeEventListener('click',refleshToken)
   window.removeEventListener('keydown',refleshToken)
-  window.removeEventListener('keydown',refleshToken) 
+  window.removeEventListener('scroll',refleshToken) 
 }
     return (<div>
              <Router>
@@ -120,9 +119,9 @@ const addlisnter=()=>{
                   <Route path="/ListeMembSocietes"><ListeMembSocietes/></Route>
                   <Route path="/ModifierClient"><ModifierClient/></Route>
                   <Route path="/ModifierMembSociete"><ModifierMembSociete/></Route>
-                  <Route path="/ListeRapportsIntervenant"><ListeRapportsIntervenant user={membreS} /></Route>
+                  <Route path="/ListeRapportsIntervenant"><ListeRapportsInterventions role='In' user={membreS}/></Route>
                   <Route path="/ModifierRapportInter"><ModifierRapportInter/></Route>
-                  <Route path="/ListeRapportsInterventions"><ListeRapportsInterventions user={membreS}/></Route>
+                  <Route path="/ListeRapportsInterventions"><ListeRapportsInterventions role='Rsp' user={membreS}/></Route>
                   <Route path="/listeContrat"><ListeContrart   /></Route>
                   </>
                   

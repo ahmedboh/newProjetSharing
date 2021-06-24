@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import Axios from 'axios';
 import { makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -13,11 +13,8 @@ import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ListAltIcon from '@material-ui/icons/ListAlt';
-import Box from '@material-ui/core/Box';
-import Collapse from '@material-ui/core/Collapse';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { useHistory } from "react-router-dom";
 import {TablePaginationActions ,StyledTableCell,useStyles2} from './TablePaginationActions'
 import AppBar from '@material-ui/core/AppBar';
@@ -64,7 +61,7 @@ let history = useHistory();
     },
   });
 
-  const [open1, setOpen1] = React.useState(false);
+  const [open1, setOpen1] = useState(false);
   const handleClickOpen = () => {
     setOpen1(true);
   };
@@ -78,20 +75,14 @@ let history = useHistory();
   }
   function Row(props) {
     const { row } = props;
-    const [open, setOpen] = useState(false);
     const classes = useRowStyles();
     return (
       <>
         <TableRow className={classes.root}>
-          <TableCell style={{ width: 10 }}>
-            <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-            </IconButton>
-          </TableCell>
           <TableCell style={{ width: 160 }} align="center">
             {row.raisonSociale}
           </TableCell>
-          <TableCell style={{ width: 160 }} align="center">
+          <TableCell style={{ width: 200,fontSize:'12px' }} align="center">
             {row.adresse}
           </TableCell>
           <TableCell style={{ width: 160 }} align="center">
@@ -103,22 +94,32 @@ let history = useHistory();
           <TableCell style={{ width: 160 }} align="center">
             {row.email}
           </TableCell>
-          <TableCell style={{ width: 200 }} align="center">
-          <IconButton color="primary" component="span" onClick={() => {
-            history.push("/listeContrat",{page:'/listeContrat',idClient:row._id,raisonSociale:row.raisonSociale})
-          }}>
-            <ListAltIcon />
-          </IconButton>
-          
-          <IconButton component="span"onClick={() => {
-            history.push("/ModifierClient",{idClient:row._id})
-          }}>
-            <UpdateIcon />
-          </IconButton>  
-          
-          <IconButton color="secondary" component="span" onClick={handleClickOpen}>
-            <DeleteIcon />
-          </IconButton>
+          <TableCell style={{ width: 160 }}  align="center">
+              {row.nRegistreCommerce}
+          </TableCell>
+          <TableCell style={{ width: 160,fontSize:'12px'  }}  align="center">{row.codeTVA}</TableCell>
+          <TableCell style={{ width: 160 }}  align="center">{row.login}</TableCell>
+          <TableCell style={{ width: 160 }} align="center">
+
+          <Tooltip title='Liste des contrats '  arrow>
+            <IconButton  size="small" color="primary" component="span" onClick={() => {
+              history.push("/listeContrat",{page:'/listeContrat',idClient:row._id,raisonSociale:row.raisonSociale})
+            }}>
+              <ListAltIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title='Modifier ce client '  arrow>
+            <IconButton size="small"  style={{color:'orange'}} component="span"onClick={() => {
+              history.push("/ModifierClient",{idClient:row._id})
+            }}>
+              <UpdateIcon />
+            </IconButton>  
+          </Tooltip>
+          <Tooltip title='Supprimer ce client'  arrow>
+            <IconButton  size="small" color="secondary" component="span" onClick={handleClickOpen}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
           <Dialog
                 open={open1}
                 onClose={handleClose}
@@ -135,36 +136,7 @@ let history = useHistory();
                 </DialogActions>
           </Dialog>  
           </TableCell>
-        </TableRow>
-        <TableRow>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={9}>
-            <Collapse in={open} timeout="auto" unmountOnExit>
-              <Box margin={1}>
-                <Typography variant="h6" gutterBottom component="div">
-                  Détaille
-                </Typography>
-                <Table size="small" aria-label="purchases">
-                  <TableHead>
-                    <TableRow>
-                    <TableCell align="center">n° Registre Commérce</TableCell>
-                      <TableCell align="center">Code TVA</TableCell>
-                      <TableCell align="center">Login</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    <TableRow key={row.nRegistreCommerce}>
-                      <TableCell component="th" scope="row" align="center">
-                        {row.nRegistreCommerce}
-                      </TableCell>
-                      <TableCell align="center">{row.codeTVA}</TableCell>
-                      <TableCell align="center">{row.login}</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </Box>
-            </Collapse>
-          </TableCell>
-        </TableRow>
+        </TableRow>        
       </>
     );
   }
@@ -178,16 +150,21 @@ let history = useHistory();
           </Typography>
         </Toolbar>
       </AppBar>
-    <TableContainer component={Paper}>
-      <Table className={classes.table} aria-label="custom pagination table" id="table">
+      <span  style={{margin:'5px'}}>
+          <ReactToExcel  className='btn btn-outline-success' table="table" filename="listeClients" sheet="sheet 1" buttonText="Exporter"/>
+      </span>
+    <TableContainer component={Paper} style={{marginTop:'2px'}}>
+      <Table size="small" className={classes.table} aria-label="custom pagination table" id="table">
         <TableHead>
           <TableRow>
-            <StyledTableCell />
             <StyledTableCell align="center">Raison Sociale</StyledTableCell>
             <StyledTableCell align="center">Adresse</StyledTableCell>
             <StyledTableCell align="center">Télèphone</StyledTableCell>
             <StyledTableCell align="center">Fax</StyledTableCell>
             <StyledTableCell align="center">Email</StyledTableCell>
+            <StyledTableCell align="center">n° Registre</StyledTableCell>
+            <StyledTableCell align="center">Code TVA</StyledTableCell>
+            <StyledTableCell align="center">Login</StyledTableCell>
             <StyledTableCell align="center">Actions</StyledTableCell>
           </TableRow>
         </TableHead>
@@ -225,13 +202,7 @@ let history = useHistory();
         </TableFooter>
       </Table>
     </TableContainer>
-    <ReactToExcel
-      className="btn"
-      table="table"
-      filename="listeClients"
-      sheet="sheet 1"
-      buttonText="Export excel"
-    />
+   
     </>
   );
 }

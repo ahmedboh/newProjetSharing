@@ -6,8 +6,9 @@ import Row from 'react-bootstrap/Row';
 import ContactMailIcon from '@material-ui/icons/ContactMail';
 import InfoIcon from '@material-ui/icons/Info';
 import Col from 'react-bootstrap/Col';
+import PanoramaIcon from '@material-ui/icons/Panorama';
 import  'bootstrap/dist/css/bootstrap.min.css';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import Tooltip from '@material-ui/core/Tooltip';
 import './style/contrat.css'
 import  'bootstrap/dist/css/bootstrap.min.css';
 import { withStyles } from '@material-ui/core/styles';
@@ -85,8 +86,12 @@ const  CardBody=({showDetailContrat,showDetailTicket,contenu,contrat})=>{
                 <Row>
                 <Col sm="5"><b>capture  :</b></Col>
                 <Col  style={{position:'relative',top:'-10px'}}  className="text2">
-                {contenu.image?'img.jpg':'Accune'}   
-                <IconButton aria-label="upload picture" component="span" onClick={handleClickOpen} disabled={!(contenu.image && image!="dW5kZWZpbmVk")}>{contenu.image && image!="dW5kZWZpbmVk" ? <VisibilityIcon  style={{ color: 'green' }} />:<VisibilityIcon  style={{ color: 'red' }} />} </IconButton>
+                {(contenu.image && image!="dW5kZWZpbmVk")?'img.jpg':'Accune'}  
+                <Tooltip title='Ouvrir image '  arrow>
+                  <IconButton aria-label="upload picture" component="span" onClick={handleClickOpen} style={{ color:`${(contenu.image && image!="dW5kZWZpbmVk")?'orange':'gray'}`   }} disabled={!(contenu.image && image!="dW5kZWZpbmVk")} >
+                     <PanoramaIcon  /> 
+                  </IconButton>
+                </Tooltip>
                 <Dialog fullWidth={true} maxWidth={'lg'} onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
                     <DialogTitle id="customized-dialog-title" onClose={handleClose}>
                         Image
@@ -101,7 +106,11 @@ const  CardBody=({showDetailContrat,showDetailTicket,contenu,contrat})=>{
                 <Col sm="5"><b>Contrat :</b></Col>
                 <Col  style={{position:'relative',top:'-10px'}} className="text2">
                     {contrat!==-1?`Num ° ${contrat+1}`:'Sans contrat'} 
-                    <IconButton aria-label="upload picture" onClick={(event)=>{showDetailContrat(event,contrat)}} style={{ color:`${contrat!==-1?'green':'gray'}`   }} disabled={contrat===-1} component="span"> <ContactMailIcon   /> </IconButton>
+                    <Tooltip title='Ouvrir contrat'  arrow>
+                      <IconButton aria-label="upload picture" onClick={(event)=>{showDetailContrat(event,contrat)}} style={{ color:`${contrat!==-1?'green':'gray'}`   }} disabled={contrat===-1} component="span">
+                         <ContactMailIcon   /> 
+                      </IconButton>
+                    </Tooltip>  
                 </Col> 
                 </Row> 
                 </Card.Text>

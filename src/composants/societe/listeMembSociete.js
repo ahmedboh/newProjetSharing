@@ -22,6 +22,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
+
 import Loader from './../Loader';
 const  ListeMembSocietes=()=> {
   const [rows , setRows ]=useState([]);
@@ -75,7 +77,10 @@ const  ListeMembSocietes=()=> {
           </Typography>
         </Toolbar>
       </AppBar>
-    <TableContainer component={Paper}>
+      <span  style={{margin:'5px'}}>
+          <ReactToExcel  className='btn btn-outline-success' table="table" filename="listeMembresSociété" sheet="sheet 1" buttonText="Exporter"/>
+      </span>  
+    <TableContainer component={Paper} style={{marginTop:'2px'}}>
       <Table size='small' className={classes.table} aria-label="custom pagination table" id="table">
         <TableHead>
           <TableRow>
@@ -109,14 +114,18 @@ const  ListeMembSocietes=()=> {
               {row.login}
             </TableCell>
             <TableCell style={{ width: 160 }} align="center">
-              <IconButton color="primary" size='small' component="span" onClick={() => {
-                history.push("/ModifierMembSociete",{idMembSociete:row._id})
-              }}>
-                <UpdateIcon />
-              </IconButton>  
-              <IconButton size='small' color="secondary" component="span" onClick={handleClickOpen}>
-                <DeleteIcon />
-              </IconButton> 
+              <Tooltip title='Modifier ce membre'  arrow>
+                <IconButton color="primary" size='small'style={{color:'orange'}}  component="span" onClick={() => {
+                  history.push("/ModifierMembSociete",{idMembSociete:row._id})
+                }}>
+                  <UpdateIcon />
+                </IconButton> 
+              </Tooltip> 
+              <Tooltip title='Supprimer ce membre'  arrow>
+                <IconButton size='small' color="secondary" component="span" onClick={handleClickOpen}>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>  
               <Dialog
                 open={open}
                 onClose={handleClose}
@@ -148,7 +157,6 @@ const  ListeMembSocietes=()=> {
               rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
               colSpan={4}
               count={rows.length}
-              
               rowsPerPage={rowsPerPage}
               page={page}
               SelectProps={{
@@ -163,13 +171,6 @@ const  ListeMembSocietes=()=> {
         </TableFooter>
       </Table>
     </TableContainer>
-    <ReactToExcel
-      className="btn"
-      table="table"
-      filename="listeMembresSociété"
-      sheet="sheet 1"
-      buttonText="Export excel"
-    />
     </>
   );
 }
