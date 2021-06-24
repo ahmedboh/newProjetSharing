@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react'
 import StyledBadge from './StyledBadge'
 import ImageMsg from './ImageMsg';
 import Picker from 'emoji-picker-react';
+import DescriptionIcon from '@material-ui/icons/Description';
+
 let socket;
 
 export default function Chat(props) {
@@ -80,7 +82,6 @@ export default function Chat(props) {
           reader.onload = () => {
             // Make a fileInfo Object
             baseURL = reader.result;
-            //console.log(baseURL);
             resolve(baseURL);
           };
         });
@@ -88,7 +89,6 @@ export default function Chat(props) {
       
       const sendImage = (event) => {
        // event.preventDefault();
-          //console.log(e.target.files[0]);
           let file ;
           let message ;
           file = event.target.files[0];
@@ -99,11 +99,30 @@ export default function Chat(props) {
             .then(result => {
               file["base64"] = result;
               message = result;
-              console.log("File Is", message);  
               socket.emit('sendMessage', {message,name,IDTicket,connecte,role,type:'image'}, () =>{console.log('image uploade')});
             })
             .catch(err => {
-              //console.log(err);
+              console.log(err);
+            });
+          }
+        scrollmsag()
+      }
+      const sendFile = (event) => {
+        event.preventDefault();
+          let file ;
+          let message ;
+          file = event.target.files[0];
+          var idxDot = file.name.lastIndexOf(".") + 1;
+          var extFile = file.name.substr(idxDot, file.name.length).toLowerCase();
+          if (extFile=="" || extFile=="doc" || extFile=="pdf"){
+          getBase64(file)
+            .then(result => {
+              file["base64"] = result;
+              message = result;
+              socket.emit('sendMessage', {message,name,IDTicket,connecte,role,type:'fichier'}, () =>{ document.getElementById(`${IDTicket}`).focus();});
+            })
+            .catch(err => {
+              console.log(err);
             });
           }
         scrollmsag()
@@ -133,11 +152,13 @@ export default function Chat(props) {
                         </IconButton>
                       </Tooltip>
                     </label>
-                    <Tooltip title='Choisir un fichier'  arrow>
-                      <IconButton >
+                    <label htmlFor="file">
+                      <Tooltip title='Choisir un fichier'  arrow>
+                        <IconButton variant="contained" component="span">
                           <AttachFile/>
-                      </IconButton>
-                    </Tooltip>  
+                        </IconButton>
+                      </Tooltip>  
+                    </label>
                     <IconButton>
                         <MoreVert/>
                     </IconButton>
@@ -154,7 +175,12 @@ export default function Chat(props) {
                 </p>
                 : msg.type === 'image' ?
                 <ImageMsg msg={msg} name={name}/>
-                :msg.type === 'fichier' && <><p>fichier</p></>
+                :msg.type === 'fichier' && 
+                <p  key={index}  className={msg.user===name ?"chat__message":"chat__message chat__reciever "}>
+                  <span className="chat__name">{msg.user}</span>
+                  <span  className="chat__timestampImage" >{new Date(msg.date).toUTCString().substr(0,22)}</span>   
+                  <a href={`${msg.contenu}`} download={true}><DescriptionIcon/>Cliquez pour télécharger</a>
+                </p>
             ))}
             </div> 
             
@@ -168,6 +194,7 @@ export default function Chat(props) {
                 </IconButton>
                 </Tooltip>
                 <form>
+                    <input type="file"  id="file" hidden accept="application/pdf,.doc" onChange={event => sendFile(event)} />
                     <input type="file"  id="imageTiket" hidden accept="image/*" onChange={event => sendImage(event)} />
                     <input id={IDTicket} placeholder="type a message" value={message}   onKeyPress={event => event.key === 'Enter' ? sendMessage(event) : null} onChange={(event)=>{setMessage(event.target.value)}} type="text"/>    
                 </form>

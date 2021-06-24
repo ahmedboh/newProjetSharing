@@ -9,6 +9,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import TableauStatClient from './tableauStatClient';
 import TableauStatInter from './tableauStatInter';
+import TableauStatAnnee from './tableauStatAnnee';
 
 export default function Stat() {
   
@@ -28,7 +29,7 @@ export default function Stat() {
           ?<MenuVer  dataLabels={[" Tandence mode ","Tablaux mode "]} data={[<ChartClient/>,<TableauStatClient/>]} />   
           :valueStat===1
           ?<MenuVer  dataLabels={[" Tandence mode ","Tablaux mode "]} data={[<ChartIntervenant/>,<TableauStatInter/>]} />   
-          :<MenuVer  dataLabels={[" Tandence mode ","Tablaux mode "]} data={[<ChartAnnee/>,<div>table</div>]} />   
+          :<MenuVer  dataLabels={[" Tandence mode ","Tablaux mode "]} data={[<ChartAnnee/>,<TableauStatAnnee/>]} />   
 
           }
          </Col> 
@@ -55,6 +56,7 @@ export default function Stat() {
         </nav>
          </Col>  
          </Row> 
+         
         </div>
     )
 }

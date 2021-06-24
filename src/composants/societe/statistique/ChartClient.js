@@ -160,10 +160,24 @@ export default function ChartClient() {
     const titre=<h6 align='center' >  Nombre de tickets  des clients {Filters.year==0?'par Année':`à l'année ${Filters.year} par mois`}   : </h6>
     const titre2=<h6 align='center' > {swtichStatePourc?'Pourcentage':'Nombre'} des tickets par client {Filters.year==0?'':`à l'année ${Filters.year} `} : </h6>
 
+    const printIframe = (id) => {
+      const iframe = document.frames
+        ? document.frames[id]
+        : document.getElementById(id);
+      const iframeWindow = iframe.contentWindow || iframe;
+      iframe.focus();
+      iframeWindow.print();
+      return false;
+    };
     
     return (
-        
-        <div> 
+      <div> 
+        <iframe
+        id="receipt"
+        style={{ display: 'none' }}
+        title="Receipt"
+        />
+          <button onClick={() => window.print()}>PRINT</button>
         <Row >
            <Col sm={9} > 
            
@@ -202,8 +216,9 @@ export default function ChartClient() {
           
           
         </Row>
-        
-        </div>
-        
+        <button onClick={() => printIframe('receipt')}>
+        {'Print Receipt'}
+        </button>
+      </div>
     )
 }

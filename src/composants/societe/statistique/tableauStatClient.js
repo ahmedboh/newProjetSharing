@@ -194,7 +194,6 @@ export default function TableauStatClient() {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [age, setAge] = React.useState('');
 
   const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
@@ -264,7 +263,6 @@ export default function TableauStatClient() {
                 <Select
                   labelId="demo-dialog-select-label"
                   id="demo-dialog-select"
-                  value={age}
                   onChange={(event)=>{handleFilters(event.target.value,'IDintervenant')}}
                   input={<Input />}
                 >
@@ -293,7 +291,6 @@ export default function TableauStatClient() {
   };
   
   const handleFilters = async (filters, category) => {
-    console.log(filters,category);
     const newFilters = { ...Filters }
     newFilters[category] = filters;
     setFilters(newFilters);
@@ -308,7 +305,6 @@ export default function TableauStatClient() {
 
   const getIntervenants =async ()=>{
     const res= await Axios.get(`membSociete/getMembSocietesRole/${"In"}`)
-    console.log(res.data.data)
     setListeIntervenants(res.data.data)
   }
   const getStatClient = async(filt)=>{
@@ -321,7 +317,6 @@ export default function TableauStatClient() {
   const getStat = async(idclient,nomclient,filter)=>{
     const newFilters = { ...filter }
     newFilters["IDclient"] = idclient;
-    console.log(newFilters)
     const res=await Axios.post('statistique',newFilters)
     const newData = { ...dataclient }
     listeAnnees.length===0&&setListeAnnees(res.data.data.labels)
@@ -346,7 +341,6 @@ export default function TableauStatClient() {
       headCells.push ({ id: 'a'+val, numeric: true, disablePadding: false, label: val }) 
       }else{
       headCells.push ({ id: val, numeric: true, disablePadding: false, label: val }) 
-      console.log(headCells)
       }
       })
       

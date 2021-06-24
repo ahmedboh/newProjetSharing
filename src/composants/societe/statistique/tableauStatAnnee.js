@@ -1,4 +1,4 @@
-import React, { useState,useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -30,15 +30,8 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import Input from "@material-ui/core/Input";
 import MenuItem from "@material-ui/core/MenuItem";
 
-function createDataAnnée(nomIntervenant,ob) {
-   var obj={nomIntervenant}
-   ob.labels.map((lab,index)=>{
-    obj[`a${lab}`]=ob.values[index]
-   })   
-   return obj;
-}
-function createDatamoin(nomIntervenant, Jan, Fev, Mar, Avr, Mai, Juin, Juil, Aôu, Sep, Oct, Nov, Dec) {
-  return { nomIntervenant, Jan, Fev, Mar, Avr, Mai, Juin, Juil, Aôu, Sep, Oct, Nov, Dec };
+function createDatamoin(nomClient, Jan, Fev, Mar, Avr, Mai, Juin, Juil, Aôu, Sep, Oct, Nov, Dec) {
+  return { nomClient, Jan, Fev, Mar, Avr, Mai, Juin, Juil, Aôu, Sep, Oct, Nov, Dec };
 }
 
 const rows = [];
@@ -181,10 +174,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TableauStatInter() {
-  const [dataintervenant,setDataintervenant]=useState({nomIntervenant:"",labels:[],datasets:[],totale:0})
+export default function TableauStatAnnee() {
+  const [dataannée,setDataannée]=useState({année:"",labels:[],datasets:[],totale:0})
   const [Filters,setFilters]=useState({year:0,IDclient:"",IDintervenant:""})
   const [listeAnnees,setListeAnnees]=useState([])
+  const [listeIntervenants,setListeIntervenants]=useState([])
   const [listeClients,setListeClients]=useState([])
   const [labels]=useState([])
   const classes = useStyles();
@@ -209,7 +203,7 @@ export default function TableauStatInter() {
       setOpen(false);
     };
   
-    const menuItemAnnees= listeAnnees.map((Annee)=>{return <MenuItem value={Annee} key={Annee}>{Annee}</MenuItem>});
+    const menuItemIntervenants= listeIntervenants.map((inter)=>{return <MenuItem value={inter._id} key={inter._id}>{inter.nom+' '+inter.prenom}</MenuItem>});
     const menuItemClients= listeClients.map((client)=>{return <MenuItem value={client._id} key={client._id}>{client.raisonSociale}</MenuItem>});
     return (
       <Toolbar
@@ -245,20 +239,6 @@ export default function TableauStatInter() {
           <DialogContent>
             <form className={classes1.container}>
             <FormControl className={classes1.formControl}>
-                <InputLabel id="demo-dialog-select-label">Année</InputLabel>
-                <Select
-                  labelId="demo-dialog-select-label"
-                  id="demo-dialog-select"
-                  onChange={(event)=>{handleFilters(event.target.value,'year')}}
-                  input={<Input />}
-                >
-                  <MenuItem value="0">
-                    <em>None</em>
-                  </MenuItem>
-                  {menuItemAnnees.reverse()}
-                </Select>
-              </FormControl>
-              <FormControl className={classes1.formControl}>
                 <InputLabel id="demo-dialog-select-label">Client</InputLabel>
                 <Select
                   labelId="demo-dialog-select-label"
@@ -266,10 +246,24 @@ export default function TableauStatInter() {
                   onChange={(event)=>{handleFilters(event.target.value,'IDclient')}}
                   input={<Input />}
                 >
-                  <MenuItem value="">
+                  <MenuItem value="0">
                     <em>None</em>
                   </MenuItem>
                   {menuItemClients}
+                </Select>
+              </FormControl>
+              <FormControl className={classes1.formControl}>
+                <InputLabel id="demo-dialog-select-label">Intervenant</InputLabel>
+                <Select
+                  labelId="demo-dialog-select-label"
+                  id="demo-dialog-select"
+                  onChange={(event)=>{handleFilters(event.target.value,'IDintervenant')}}
+                  input={<Input />}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {menuItemIntervenants}
                 </Select>
               </FormControl>
             </form>
@@ -291,59 +285,54 @@ export default function TableauStatInter() {
   };
   
   const handleFilters = async (filters, category) => {
+    console.log(filters,category);
     const newFilters = { ...Filters }
     newFilters[category] = filters;
     setFilters(newFilters);
-    getStatIntervenants(newFilters);
+    getStatAnnées(newFilters);
   }
   
-
   useEffect(() => {
-    getStatIntervenants(Filters);
+    getStatAnnées(Filters);
     getClients();
+    getIntervenants();
   }, [])
 
   const getClients =async ()=>{
     const res= await Axios.get(`client`)
     setListeClients(res.data.data)
   }
-  const getStatIntervenants = async(filt)=>{
+  const getIntervenants =async ()=>{
     const res= await Axios.get(`membSociete/getMembSocietesRole/${"In"}`)
+    setListeIntervenants(res.data.data)
+  }
+  const getStatAnnées = async(filt)=>{
+    const res=await Axios.post('statistique',{"year":0})
     rows.splice(0, rows.length);
-    res.data.data.map((val)=>{
-    getStat(val._id,val.nom,val.prenom,filt) 
+    res.data.data.labels.map((val)=>{
+    getStat(val,filt) 
     })   
   }
-  const getStat = async(idIntervenant,nomIntervenant, prenomIntervenant,filter)=>{
+  const getStat = async(année,filter)=>{
     const newFilters = { ...filter }
-    newFilters["IDintervenant"] = idIntervenant;
+    newFilters["year"] = année;
     const res=await Axios.post('statistique',newFilters)
-    const newData = { ...dataintervenant }
-    listeAnnees.length===0&&setListeAnnees(res.data.data.labels)
-    newData['nomIntervenant']=nomIntervenant+' '+prenomIntervenant
+    const newData = { ...dataannée }
+    newData['année']=année
     newData['datasets']=res.data.data.values
     newData['totale']=res.data.data.somme
     labels.splice(0, labels.length);
     labels.push(res.data.data.labels)
-    if(newFilters["year"] === 0){
-    rows.push(createDataAnnée(nomIntervenant+' '+prenomIntervenant,res.data.data))
-    }else{
-    rows.push(createDatamoin(nomIntervenant+' '+prenomIntervenant,res.data.data.values[0],res.data.data.values[1],res.data.data.values[2],res.data.data.values[3],res.data.data.values[4],res.data.data.values[5],res.data.data.values[6],res.data.data.values[7],res.data.data.values[8],res.data.data.values[9],res.data.data.values[10],res.data.data.values[11]))
-    }
-    setDataintervenant(newData) 
-    getheadCells(newFilters);    
+    rows.push(createDatamoin(année,res.data.data.values[0],res.data.data.values[1],res.data.data.values[2],res.data.data.values[3],res.data.data.values[4],res.data.data.values[5],res.data.data.values[6],res.data.data.values[7],res.data.data.values[8],res.data.data.values[9],res.data.data.values[10],res.data.data.values[11]))
+    setDataannée(newData) 
+    getheadCells();    
   }
-  const getheadCells =(filter)=>{
+  const getheadCells =()=>{
     headCells.splice(0, headCells.length);
-    headCells.push ({ id: 'nomIntervenant', numeric: false, disablePadding: true, label: 'Intervenant' })
+    headCells.push ({ id: 'année', numeric: false, disablePadding: true, label: 'Année' })
     labels[0].map((val)=>{ 
-      if(filter["year"] === 0){
-      headCells.push ({ id: 'a'+val, numeric: true, disablePadding: false, label: val }) 
-      }else{
       headCells.push ({ id: val, numeric: true, disablePadding: false, label: val }) 
-      }
-      })
-      
+    }) 
   }
 
   const handleRequestSort = (event, property) => {
@@ -400,7 +389,7 @@ export default function TableauStatInter() {
 const contenu = (row) => {
   var tab=[];
   for (let key in row) {
-   if (key !== 'nomIntervenant')
+   if (key !== 'nomClient')
     tab.push(row[key]);
 }
 return tab;}
@@ -435,7 +424,7 @@ return tab;}
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.nomIntervenant)}
+                      onClick={(event) => handleClick(event, row.nomClient)}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
@@ -449,7 +438,7 @@ return tab;}
                         />
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none">
-                        {row.nomIntervenant}
+                        {row.nomClient}
                       </TableCell>
                       {
                       Filters["year"] === 0 ?

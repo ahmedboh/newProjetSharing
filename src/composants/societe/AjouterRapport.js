@@ -43,34 +43,24 @@ const AjouterRapport=(props)=>{
      const [messageInfo, setMessageInfo] = useState(<div></div>)
     
     const enregistrer=async()=>{
+        console.log(dateDebut, heureDebut)
         const formData = new FormData();
             formData.append('IDTicket',id);
             formData.append('IDintervenant',user._id);
-            formData.append('dateCreation',new Date().toLocaleDateString());
-            formData.append('heureCreation',new Date().toLocaleTimeString());
+            formData.append('dateCreation',new Date());
             formData.append('dateDebut',dateDebut);
             formData.append('heureDebut',heureDebut);
             formData.append('dateFin',dateFin);
             formData.append('heureFin',heureFin);
             formData.append('attachement',attachement);
-        
-       let ob={
-                IDTicket:id,
-                IDintervenant:user._id,
-                dateCreation:new Date().toLocaleDateString(),
-                heureCreation:new Date().toLocaleTimeString(),
-                dateDebut,
-                heureDebut,
-                dateFin,
-                heureFin,
-                attachement
-             }
         const res = await Axios.get(`rapportInter/getRapportIntersTicket/${id}`)
         if (res.data.data.length === 0) {
             const res2=await Axios.get(`affectation/getAffectationsIntervenantTicket/${id}/${user._id}`)
-            if(res2.data.data.length !== 0){
-                if(res2.data.data[0].annule === false){
+            if(res2.data.data !== null){
+                if(res2.data.data.annule === false){
+                    
                 const res3=await  Axios.post(`rapportInter`,formData )
+                console.log(res3)
                 setMessageInfo(<MessageInfo >L'ajout d'un nouvel rapport est passeé avec seccess </MessageInfo>)
                 }
               }
