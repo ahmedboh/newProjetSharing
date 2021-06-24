@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -8,11 +8,12 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { Alert, AlertTitle } from '@material-ui/lab';
 import MessageInfo from '../MessageInfo';
 import { useHistory } from "react-router-dom";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { Formik, Form} from 'formik';
+import * as Yup from 'yup';
 
 const useStyles = makeStyles((theme) => ({
     appBar: {
@@ -48,79 +49,79 @@ const useStyles = makeStyles((theme) => ({
   
 
 const ModifierClient=()=> {
-    const [raisonSociale,setRaisonSociale]=useState("");
-    const [adresse,setAdresse]=useState("");
-    const [tel,setTel]=useState("");
-    const [fax,setFax]=useState("");
-    const [email,setEmail]=useState("");
-    const [nRegistreCommerce,setNRegistreCommerce]=useState("");
-    const [codeTVA,setCodeTVA]=useState("");
-    const [login,setLogin]=useState("");
-    const [motDePasse,setMotDePasse]=useState("");
-    const [erreur,setErreur]=useState(false);
-    const [messageInfo, setMessageInfo] = useState(<div></div>);
-    const [idCl,setIdCl]=useState("");
+    var history = useHistory();
+    const [raisonSociale,setRaisonSociale]=useState(history.location.state.client.raisonSociale);
+    const [messageInfo, setMessageInfo] = useState();
     const [showLabelMp,setShowLabelMp]=useState(true);
-
-    let history = useHistory();
     
-    const classes = useStyles();
-    const getClient=async()=>{
-     const res =await Axios.get(`client/${history.location.state.idClient}`)
-     setRaisonSociale(res.data.data.raisonSociale)
-     setAdresse(res.data.data.adresse)
-     setTel(res.data.data.tel)
-     setFax(res.data.data.fax)
-     setEmail(res.data.data.email)
-     setNRegistreCommerce(res.data.data.nRegistreCommerce)
-     setCodeTVA(res.data.data.codeTVA)
-     setLogin(res.data.data.login)
-     setIdCl(res.data.data._id)
-    }
-    useEffect(() => {
-      getClient()
-    }, []);
+     
+    const validate = Yup.object({
+      raisonSociale: Yup.string()
+        .min(3, 'La raison sociale doit être au moins de 3 caractères')
+        .required('La raison sociale est obligatoire'),
+      adresse: Yup.string()
+        .min(4, "L'adresse doit être au moins de 4 caractères")
+        .required("L'adresse est obligatoire"),
+      tel: Yup.string()
+        .required('Tel est obligatoire')
+        .matches(/^[0-9]+$/, "Tel doit être uniquement des chiffres")
+        .test('len', 'Tel doit être exactement de  8 chiffres', val => val&&val.length === 8),
+      fax: Yup.string()
+        .matches(/^[0-9]+$/, "Fax doit être uniquement des chiffres")  
+        .required('Fax est obligatoire')
+        .test('len', 'Fax doit être exactement de  8 chiffres', val => val&&val.length === 8),
+      nRegistreCommerce: Yup.string()
+        .min(4, "N° Registre du commerce doit être au moins de 4 caractères")
+        .required('N° Registre du commerce est obligatoire'),
+      codeTVA: Yup.string()
+        .min(4, "L'adresse doit être au moins de 4 caractères")
+        .required('Code TVA est obligatoire'),        
+      email: Yup.string()
+        .email('Email est invalide')
+        .required('Email est obligatoire'),
+      login: Yup.string()
+        .min(4, "Login doit être au moins de 4 caractères")
+        .required('Login  est obligatoire')  
+    })
+  
+  const validate2= Yup.object({
+    motDePasse: Yup.string()
+        .matches(/^.*[0-9].*$/,"Bessoin d'un chiffre")
+        .min(8, 'Le mot de passe doit être au moins de 8 caractères')    
+        .required('motDePasse est obligatoire')
+  })
 
-    const  afficherErreur=()=>{
-      setErreur(true);
-      setTimeout(()=>{setErreur(false)},4000);
-    }
-    const envoyer=async(event,r)=>{
+    const classes = useStyles();
+
+    const envoyer=async(event,validation,values,r)=>{
       const ob= r==="motdepasse"  
-      ?{
-        motDePasse
-      } 
+      ?values
       : {
-        raisonSociale,
-        adresse,
-        tel,
-        fax,
-        email,
-        nRegistreCommerce,
-        codeTVA,
-        login
+        raisonSociale:values.raisonSociale,
+        adresse:values.adresse,
+        tel:values.tel,
+        fax:values.fax,
+        email:values.email,
+        nRegistreCommerce:values.nRegistreCommerce,
+        codeTVA:values.codeTVA,
+        login:values.login
       }
-        if((raisonSociale!=="" && adresse!=="" && tel!=="" &&
-        email!=="" && nRegistreCommerce!=="" && codeTVA!=="" && 
-        login!=="" &&fax!=="" && r!=="motdepasse") ){
-        const res=await Axios.patch(`client/${idCl}`,ob )
+      console.log(values)
+
+      console.log(validation)
+       if(validation){
+        if( r!=="motdepasse") {
+        const res=await Axios.patch(`client/${history.location.state.client._id}`,ob )
         setMessageInfo(<MessageInfo >le Client <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>);
-        }else if(motDePasse!=="" && r==="motdepasse"){
-        const res=await  Axios.patch(`client/updateMotDePasse/${idCl}`,ob )
+        history.replace(history.location.pathname,{client:values})
+        }else {
+        const res=await  Axios.patch(`client/updateMotDePasse/${history.location.state.client._id}`,ob )
         setMessageInfo(<MessageInfo >le mot de passe de  <b> {raisonSociale} </b>à été modifier avec succès </MessageInfo>);
-        setMotDePasse("");
         setShowLabelMp(true);
-        }else{
-          afficherErreur()
-        }
-        event.preventDefault();
+      }
+      }
     }
    
-
-  
-  const ajoutCon=()=>{
-    history.push("/ajouterContrat/"+idCl)
-  }
   return (
     <>
       <AppBar position="absolute" xs={12} color="default" className={classes.appBar}>
@@ -132,134 +133,168 @@ const ModifierClient=()=> {
       </AppBar>
       <main className={classes.layout}>
       <Paper className={classes.paper}>
-      <form id="form">
+      <Formik
+      initialValues={{...history.location.state.client}}
+      validationSchema={validate}
+    
+      >
+      {formik => (
+      <Form >   
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="raisonSociale"
             name="raisonSociale"
             label="Raison Sociale"
+            onBlur={formik.handleBlur}
             fullWidth
-            value={raisonSociale}
-            onChange={(event)=>{setRaisonSociale(event.target.value)}}
+            error={(formik.touched.raisonSociale&&formik.errors.raisonSociale)}
+            helperText={formik.touched.raisonSociale&&formik.errors.raisonSociale} 
+            onChange={(event)=>{formik.handleChange(event);setRaisonSociale(event.target.value)}}
+            value={formik.values.raisonSociale}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="adresse"
             name="adresse"
             label="Adresse"
             fullWidth
-            value={adresse}
-            onChange={(event)=>{setAdresse(event.target.value)}}
+            onBlur={formik.handleBlur}
+            value={formik.values.adresse}
+            onChange={formik.handleChange}
+            error={(formik.touched.adresse&&formik.errors.adresse)}
+            helperText={formik.touched.adresse&&formik.errors.adresse} 
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="tel"
             name="tel"
             label="Tél"
             type="tel"
+            min={0}
             fullWidth
-            value={tel}
-            onChange={(event)=>{setTel(event.target.value)}}
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            value={formik.values.tel}
+            error={(formik.touched.tel&&formik.errors.tel)}
+            helperText={formik.touched.tel&&formik.errors.tel} 
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="fax"
             name="fax"
             label="Fax"
             type="tel"
             fullWidth
-            value={fax}
-            onChange={(event)=>{setFax(event.target.value)}}
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            value={formik.values.fax}
+            error={(formik.touched.fax&&formik.errors.fax)}
+            helperText={formik.touched.fax&&formik.errors.fax} 
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="nRegistreCommerce"
             name="nRegistreCommerce"
             label="N° Registre du commerce"
             type="number"
             fullWidth
-            value={nRegistreCommerce}
-            onChange={(event)=>{setNRegistreCommerce(event.target.value)}}
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            error={(formik.touched.nRegistreCommerce&&formik.errors.nRegistreCommerce)}
+            helperText={formik.touched.nRegistreCommerce&&formik.errors.nRegistreCommerce} 
+            value={formik.values.nRegistreCommerce}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
-            required
             id="codeTVA"
             name="codeTVA"
             label="Code TVA"
             fullWidth
-            value={codeTVA}
-            onChange={(event)=>{setCodeTVA(event.target.value)}}
-          />
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            error={(formik.touched.codeTVA&&formik.errors.codeTVA)}
+            helperText={formik.touched.codeTVA&&formik.errors.codeTVA} 
+            value={formik.values.codeTVA}
+            />
         </Grid>
         <Grid item xs={12}>
           <TextField
-            required
             id="email"
             name="email"
             label="Adresse email"
             fullWidth
-            value={email}
-            onChange={(event)=>{setEmail(event.target.value)}}
+            onBlur={formik.handleBlur}
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            error={(formik.touched.email&&formik.errors.email)}
+            helperText={formik.touched.email&&formik.errors.email} 
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
-            required
             id="login"
             name="login"
             label="Login"
             fullWidth
-            value={login}
-            onChange={(event)=>{setLogin(event.target.value)}}
-          />
+            onBlur={formik.handleBlur}
+            onChange={(event)=>{formik.handleChange(event);}}
+            value={formik.values.login}
+            error={formik.touched.login&&formik.errors.login}
+            helperText={formik.touched.login&&formik.errors.login } 
+            />
         </Grid>
       </Grid><br/>
-      <Alert severity="error" hidden={!erreur} >
-        <AlertTitle style={{fontSize:"14px",paddingLeft:"10vw"}}>Veuillez remplir tous les champs</AlertTitle>
-      </Alert>
-
+      <Grid item xs={12}>
+        {messageInfo}
+      </Grid>  
       <Button
             type="submit"
             fullWidth
             variant="contained"
             className={classes.button}
-            onClick={envoyer}
+            onClick={(event)=>envoyer(event,formik.isValid,formik.values)}
             >
             Modifier
       </Button>
+      </Form> 
+      )}
+     </Formik>
+    {/* ---------------------------------------------------------------------------------------------------------- */}
+     <Formik
+      initialValues={{motDePasse:''}}
+      validationSchema={validate2}
     
+      >
+      {formik => (
+      <Form >   
           <Row hidden={showLabelMp}>
             <Col style={{paddingLeft:'30px',paddingTop:'20px'}}>
-          <TextField
-            id="motDePasse"
-            name="motDePasse"
-            label="Nouveau mot de passe"
-            fullWidth 
-            value={motDePasse}
-            onChange={(event)=>{setMotDePasse(event.target.value)}}
-          />
-          </Col>
+              <TextField
+              id="motDePasse"
+              name="motDePasse"
+              label="Mot de passe"
+              fullWidth
+              onBlur={formik.handleBlur}
+              onChange={formik.handleChange}
+              value={formik.values.motDePasse}
+              error={(formik.touched.motDePasse&&formik.errors.motDePasse)}
+              helperText={formik.touched.motDePasse&&formik.errors.motDePasse} 
+              />        
+            </Col>
           </Row>
           <Row hidden={!showLabelMp}>
            <Col>  
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             className={classes.button}
-            onClick={event=>{setShowLabelMp(!showLabelMp);event.preventDefault();}}
+            onClick={event=>{setShowLabelMp(!showLabelMp)}}
             >
               
             Changer mot de passe
@@ -270,13 +305,11 @@ const ModifierClient=()=> {
           <Row  hidden={showLabelMp}>
           <Col>  
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             className={classes.button}
-            onClick={event=>{setShowLabelMp(!showLabelMp);event.preventDefault();}}
-            >
-              
+            onClick={event=>{setShowLabelMp(!showLabelMp);}}
+            >   
             Annuler
           </Button>
           </Col>
@@ -286,7 +319,7 @@ const ModifierClient=()=> {
             fullWidth
             variant="contained"
             className={classes.button}
-            onClick={e=>{envoyer(e,'motdepasse')}}
+            onClick={e=>{envoyer(e,formik.isValid,formik.values,'motdepasse')}}
             >
               
             Enregister 
@@ -294,10 +327,10 @@ const ModifierClient=()=> {
           </Col>
           </Row>
       <br/>
-      <Grid item xs={12}>
-        {messageInfo}
-      </Grid>  
-      </form>  
+     
+      </Form> 
+      )}
+     </Formik>
       </Paper>
       </main>
     </>

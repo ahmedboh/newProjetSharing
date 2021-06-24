@@ -95,11 +95,9 @@ const AjouMembSociete=()=> {
       for (let role in obj) obj[role] && tabR.push(role)
      setStateSwitch(obj);
      setRole(tabR)
-     console.log(role)
     }
     
     const envoyer=async(event,validate,values)=>{
-        console.log(event,validate,values)
         const ob={... values,role}
         console.log(ob)
         if(validate&&role.length>0  ){
@@ -234,7 +232,7 @@ const AjouMembSociete=()=> {
             fullWidth
             variant="contained"
             className={classes.button}
-            onClick={(event)=>envoyer(event,formik,formik.values)}
+            onClick={(event)=>envoyer(event,formik.isValid,formik.values)}
             >
             Ajouter
       </Button>

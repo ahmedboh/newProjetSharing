@@ -116,7 +116,7 @@ const  ListeMembSocietes=()=> {
             <TableCell style={{ width: 160 }} align="center">
               <Tooltip title='Modifier ce membre'  arrow>
                 <IconButton color="primary" size='small'style={{color:'orange'}}  component="span" onClick={() => {
-                  history.push("/ModifierMembSociete",{idMembSociete:row._id})
+                  history.push("/ModifierMembSociete",{membSociete:row})
                 }}>
                   <UpdateIcon />
                 </IconButton> 
