@@ -24,6 +24,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import Loader from './../Loader';
+import UpdateIcon from '@material-ui/icons/Update';
 import CheckBoxType from '../filtrage/CheckBoxType'
 import CheckDate from '../filtrage/CheckDate'
 import CheckAutoComplete from '../filtrage/CheckAutoComplete'
@@ -106,7 +107,7 @@ const  ListeRapportsInterventions=(props)=> {
     
     const suprimerRapport = async(id) => {
       const res=await Axios.delete(`rapportInter/${id}`)
-      listeRapports()
+      listeRapports({filters:Filters})
       handleClose();
     }
     const ouvrirDisc = (description) => {
@@ -157,16 +158,23 @@ const  ListeRapportsInterventions=(props)=> {
                 </IconButton> 
               </Tooltip>  
               <Tooltip title='Supprimer ce rapport'  arrow>
-                <IconButton color="secondary" size='small' component="span" onClick={handleClickOpen}>
+                <IconButton color="secondary" size='small'hidden={role==='In'} component="span" onClick={handleClickOpen}>
                     <DeleteIcon  />
                 </IconButton> 
-              </Tooltip>   
+              </Tooltip> 
+              <Tooltip title='Modifier ce rapport'   arrow>
+                <IconButton style={{color:'orange'}} hidden={role!=='In'} size='small' color="primary" component="span" onClick={() => {
+                  history.push("/ModifierRapportInter",{idRapportInter:row._id})
+                }}>
+                  <UpdateIcon />
+              </IconButton>  
+              </Tooltip> 
               <Dialog
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description" >
-                <DialogTitle id="alert-dialog-title">{`Vous voulez supprimer le rapport de l'intervention du client ${row.IDintervenant.nom} ${row.IDintervenant.prenom} et de l'intervenant ${row.IDTicket.IDclient.raisonSociale}?`}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">{`Vous voulez supprimer le rapport de l'intervention du client ${row.IDTicket.IDclient.raisonSociale} et de l'intervenant ${row.IDintervenant.nom} ${row.IDintervenant.prenom} ?`}</DialogTitle>
                 <DialogActions>
                   <Button onClick={handleClose} color="secondary">
                     annuler

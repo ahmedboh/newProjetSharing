@@ -110,7 +110,7 @@ let history = useHistory();
           </Tooltip>
           <Tooltip title='Modifier ce client '  arrow>
             <IconButton size="small"  style={{color:'orange'}} component="span"onClick={() => {
-              history.push("/ModifierClient",{idClient:row._id})
+              history.push("/ModifierClient",{client:row})
             }}>
               <UpdateIcon />
             </IconButton>  
