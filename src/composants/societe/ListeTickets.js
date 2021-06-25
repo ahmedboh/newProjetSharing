@@ -52,7 +52,7 @@ const ListeTickets=(props)=>{
         tab.forEach(dde => { 
             if (dde.etat==='En attente')
                 tabEnAttend.push(dde);
-            else if (dde.etat==='En cour')
+            else if (dde.etat==='En cours')
                 tabEnCours.push(dde);
             else  tabColoture.push(dde);
         });
@@ -155,7 +155,7 @@ const ListeTickets=(props)=>{
             <Grid container item xs={12} spacing={2}>
                 { FormRow.length>0
                   ?FormRow
-                  :<h2>Accun Ticket exist ..............</h2>
+                  :<h2>Il n'existe aucun ticket ..............</h2>
                 }
             </Grid>  
         </Grid>

@@ -22,7 +22,7 @@ function SearchFiltre(props) {
         <div>
 
         <FormControl size="small"  variant="outlined">
-            <InputLabel htmlFor="outlined-adornment-Search">Chercher Ref</InputLabel>
+            <InputLabel htmlFor="outlined-adornment-Search">Chercher Par Réf</InputLabel>
             <OutlinedInput
                 id="outlined-adornment-Search"
                 onChange={onChangeSearch}

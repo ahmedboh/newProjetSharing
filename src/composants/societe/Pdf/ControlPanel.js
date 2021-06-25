@@ -91,9 +91,7 @@ const ControlPanel = (props) => {
           <i className="fas fa-file-download clickable" />
         </a>
       </div>
-      <div className="mx-3">
-        <PDFPrinter file={file} />
-      </div>
+      
     </div>
   );
 };

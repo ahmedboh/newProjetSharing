@@ -85,8 +85,8 @@ const  ListeMembSocietes=()=> {
         <TableHead>
           <TableRow>
             <StyledTableCell align="center">Nom</StyledTableCell>
-            <StyledTableCell align="center">Prenom</StyledTableCell>
-            <StyledTableCell align="center">Role</StyledTableCell>
+            <StyledTableCell align="center">Prénom</StyledTableCell>
+            <StyledTableCell align="center">Rôle</StyledTableCell>
             <StyledTableCell align="center">Email</StyledTableCell>
             <StyledTableCell align="center">Login</StyledTableCell>
             <StyledTableCell align="center">Actions</StyledTableCell>

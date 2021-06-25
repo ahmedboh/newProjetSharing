@@ -93,7 +93,7 @@ function DeposerTicket (props){
         
             <div className="container box">
                 <br/>
-            <h2  className="titre">Deposer un nouveau ticket </h2><br/>
+            <h2  className="titre">Déposer un nouveau ticket </h2><br/>
             <form>
 
             <Row> 
@@ -126,7 +126,7 @@ function DeposerTicket (props){
                 
                     <Form.Group as={Row}>
                     <Form.Label as="legend" column className="labelText" sm={6}>
-                        Priorite du ticket
+                        Priorité du ticket
                     </Form.Label>
                     <Col sm={5}>
                     <Form.Check
@@ -196,13 +196,13 @@ function DeposerTicket (props){
                 <br/><br/>
                 <TextField fullWidth
                     id="outlined-multiline-static"
-                    label="Détaille"
+                    label="Détail"
                     onChange={(event)=>{
                         setDetails(event.target.value)
                     }}
                     multiline
                     rows={6}
-                    placeholder="Plus détailles ... ."
+                    placeholder="Plus détail ... ."
                     value={details}
                     variant="outlined"
                 />

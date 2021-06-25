@@ -62,7 +62,7 @@ const AjouterRapport=(props)=>{
                 if(res2.data.data.annule === false){           
                 const res3=await  Axios.post(`rapportInter`,formData )
                 console.log(res3)
-                setMessageInfo(<MessageInfo >L'ajout d'un nouveau rapport est passeé avec seccess </MessageInfo>)
+                setMessageInfo(<MessageInfo >L'ajout d'un nouveau rapport est passeé avec succès </MessageInfo>)
                 }
               }
             
@@ -122,7 +122,7 @@ const AjouterRapport=(props)=>{
 
             <Form.Group as={Row} controlId="formHorizontaNature">
                 <Form.Label column className='text'>
-                     Heure fin du ticket
+                     Heure de fin du ticket
                 </Form.Label>
                 <Col >
                 <TextField id="time" label="Heure" type="time" value={heureFin} onChange={(event)=>{ setHeureFin(event.target.value) }} 

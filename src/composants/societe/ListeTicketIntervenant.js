@@ -18,7 +18,7 @@ const ListeTicketIntervenant=(props)=>{
     const listeDemande=async()=>{
         console.log(user._id)
         const res =await Axios.get(`affectation/getAffectationsIntervenant/${user._id}`)
-        const data=res.data.data.filter((aff)=>aff.IDTicket.etat==='En cour')
+        const data=res.data.data.filter((aff)=>aff.IDTicket.etat==='En cours')
         setListeDdes(data);
         
     } 
@@ -59,10 +59,10 @@ const ListeTicketIntervenant=(props)=>{
                 <Col>
                   <br/> 
                   <div hidden={intervActuel} className="container text-info" style={{textAlign:'center',fontFamily:'arial'}}>
-                        <h3 >Bienvenu  {user.nom} à votre liste des tickets </h3>
-                        <h3>vous avez {listeDdes.length } demandes</h3>
+                        <h3 >Bienvenue  {user.nom} à votre liste des tickets </h3>
+                        <h3>vous avez {listeDdes.length } demande(s)</h3>
                         <div className='loading'><BlockLoading size={'large'} speed={3}  /></div>;
-                       <h4>choisissez  l'une des tickets  de la liste apparante pour plus de détails </h4>
+                       <h4>choisissez l'un des tickets de la liste apparante pour plus de détail </h4>
 
                   </div>
                   {!intervActuel

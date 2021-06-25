@@ -66,7 +66,7 @@ const  ContratCard=({ color,title, contenu }) =>{
             <Typography className={classes.contenu}>Nombre de visites de maintenance préventive par ans : <span className='text'>{contenu.visitesMainCurative} viste(s)</span></Typography>
             <Typography className={classes.contenu}>Prix unitaire des interventions supplémentaires : <span className='text'>{contenu.prixInterSupp} dt</span> </Typography>
             <Typography className={classes.contenu}>Contat : <span className='text'>{contenu.contact}</span></Typography>
-            <Typography className={classes.contenu}>Telephone: <span className='text'>{contenu.telContact}</span></Typography>
+            <Typography className={classes.contenu}>Téléphone: <span className='text'>{contenu.telContact}</span></Typography>
             <Typography className={classes.contenu}> <span className='text'>{contenu.emailContact}</span> </Typography>
           </CardContent>
         </Card>

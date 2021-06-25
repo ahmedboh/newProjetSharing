@@ -52,11 +52,11 @@ const cloturer =async()=>{
                 </Row><br />
                 
                 <Row>
-                    <Col className="labelText" style={{fontSize:15}} >Date et heure de Creation :</Col>
+                    <Col className="labelText" style={{fontSize:15}} >Date et heure de Création :</Col>
                     <Col className="labelText2" >{new Date(contenu.dateCreation).toLocaleDateString()}||{new Date(contenu.dateCreation).toLocaleTimeString().substr(0,5)}</Col>
                 </Row><br />
                 <Row >
-                    <Col className="labelText" >Reference ticket :</Col>
+                    <Col className="labelText" >Référence ticket :</Col>
                     <Col className="labelText2"> {contenu.ref}</Col>
                 </Row><br />
                 <Row hidden={!traiter}>
@@ -73,7 +73,7 @@ const cloturer =async()=>{
                     <Col className="labelText2">{contenu.objet}</Col>
                 </Row><br />
                 <Row>
-                    <Col className="labelText">Detailles</Col>
+                    <Col className="labelText">Détail</Col>
                 </Row>
                 <Row>
                     <Col >
@@ -91,7 +91,7 @@ const cloturer =async()=>{
                 <br/><br/>
                 <Row hidden={!traiter}>
                     <Col><Button variant="contained" onClick={cloturer} color="secondary" >Clôturer</Button></Col>
-                    <Col><Link to={'/ajouterRapport/'+ contenu._id} disabled={!rapportExiste} ><Button disabled={rapportExiste} variant="contained"  color="primary">Ajouter un rapport </Button></Link></Col>
+                    <Col><Link to={'/ajouterRapport/'+ contenu._id} disabled={!rapportExiste} ><Button disabled={rapportExiste} variant="contained"  color="primary">Ajouter un nouveau rapport </Button></Link></Col>
                 </Row>
                 <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                     <Alert onClose={handleClose} severity="success">

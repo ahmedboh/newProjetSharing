@@ -23,19 +23,20 @@ export default function Stat() {
     return (
        
         <div> 
+        <button onClick={() => window.print()}>PRINT</button>
         <Row>  
          <Col sm={10}>  
           {valueStat===0
-          ?<MenuVer  dataLabels={[" Tandence mode ","Tablaux mode "]} data={[<ChartClient/>,<TableauStatClient/>]} />   
+          ?<MenuVer  dataLabels={[" Tendance mode ","Tableaux mode "]} data={[<ChartClient/>,<TableauStatClient/>]} />   
           :valueStat===1
-          ?<MenuVer  dataLabels={[" Tandence mode ","Tablaux mode "]} data={[<ChartIntervenant/>,<TableauStatInter/>]} />   
-          :<MenuVer  dataLabels={[" Tandence mode ","Tablaux mode "]} data={[<ChartAnnee/>,<TableauStatAnnee/>]} />   
+          ?<MenuVer  dataLabels={[" Tendance mode ","Tableaux mode "]} data={[<ChartIntervenant/>,<TableauStatInter/>]} />   
+          :<MenuVer  dataLabels={[" Tendance mode ","Tableaux mode "]} data={[<ChartAnnee/>,<TableauStatAnnee/>]} />   
 
           }
          </Col> 
          <Col>
          <br/><br/><br/>
-         <h5 style={{color:'gray',textAlign:'center'}}>STATISTIQUE</h5>
+         <h5 style={{color:'gray',textAlign:'center'}}>STATISTIQUES</h5>
          <br/>
 
          <nav  aria-label="mailbox folders">

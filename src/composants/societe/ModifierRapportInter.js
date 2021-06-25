@@ -19,16 +19,17 @@ const ModifierRapportInter=()=>{
     const [heureFin,setHeureFin]=useState("")
     const [dateFin,setDateFin]=useState("")
     const [attachement,setAttachement]=useState()
+    const [description,setDescription]=useState("")  
     const [messageInfo, setMessageInfo] = useState(<div></div>)
     let history = useHistory();
     
     const getRapport = async()=>{
        const res=await Axios.get(`rapportInter/${history.location.state.idRapportInter}`)
+       console.log(res.data.data)
        setDateDebut(res.data.data.dateDebut)
-       setHeureDebut(res.data.data.heureDebut)
        setDateFin(res.data.data.dateFin)
-       setHeureFin(res.data.data.heureFin)
-       setAttachement(res.data.data.nomAttachement)     
+       setDescription(res.data.data.detailinter)
+       setAttachement(res.data.data.nomAttachement)   
        const res2=await Axios.get(`membSociete/${res.data.data.IDintervenant}`)
        setIntervenantLabel(res2.data.data.nom+" "+res2.data.data.prenom)               
     }
@@ -44,11 +45,11 @@ const ModifierRapportInter=()=>{
         </IconButton>
     const enregistrer=async()=>{
         const formData = new FormData();
-            formData.append('dateDebut',dateDebut);
-            formData.append('heureDebut',heureDebut);
-            formData.append('dateFin',dateFin);
-            formData.append('heureFin',heureFin);
-            formData.append('attachement',attachement);
+        formData.append('dateCreation',new Date());
+        formData.append('dateDebut',new Date(dateDebut.substr(0,4),dateDebut.substr(5,2),dateDebut.substr(8,2),heureDebut.substr(0,2),heureDebut.substr(3,2),0));
+        formData.append('dateFin',new Date(dateFin.substr(0,4)  ,dateFin.substr(5,2),dateFin.substr(8,2),heureFin.substr(0,2),heureFin.substr(3,2),0));
+        formData.append('detailinter',description); 
+        formData.append('attachement',attachement); 
             const res =await Axios.patch(`rapportInter/${history.location.state.idRapportInter}`,formData )
             setMessageInfo(<MessageInfo >Le rapport est modifié avec seccess</MessageInfo>)
     }
@@ -112,8 +113,25 @@ const ModifierRapportInter=()=>{
                     InputLabelProps={{shrink: true,}}   inputProps={{step: 300}}/>
                 </Col>
             </Form.Group>
-
-
+            <Form.Group as={Row} controlId="formHorizontaNature">
+                   <Form.Label column  >
+                            Description
+                   </Form.Label>
+                   <Col >
+                    <TextField fullWidth
+                            id="outlined-multiline-static"
+                            label="Description"
+                            onChange={(event)=>{
+                                setDescription(event.target.value)
+                            }}
+                            multiline
+                            rows={6}
+                            placeholder="Descriptions ... ."
+                            value={description}
+                            variant="outlined"
+                        />
+                    </Col>
+            </Form.Group>
             <Form.Group as={Row} controlId="formHorizontaNature">
                 <Form.Label column >
                      PV d'intervention

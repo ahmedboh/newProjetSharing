@@ -138,13 +138,6 @@ const SignInClient=(props)=> {
           >
             Connecter
           </Button>
-          <Grid container>
-            <Grid item>
-              <Link href="#" variant="body2">
-                {"Mot de passe oublié?"}
-              </Link>
-            </Grid>
-          </Grid>
         </form>
       </div>
       

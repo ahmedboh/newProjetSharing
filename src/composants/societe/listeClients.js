@@ -159,7 +159,7 @@ let history = useHistory();
           <TableRow>
             <StyledTableCell align="center">Raison Sociale</StyledTableCell>
             <StyledTableCell align="center">Adresse</StyledTableCell>
-            <StyledTableCell align="center">Télèphone</StyledTableCell>
+            <StyledTableCell align="center">Téléphone</StyledTableCell>
             <StyledTableCell align="center">Fax</StyledTableCell>
             <StyledTableCell align="center">Email</StyledTableCell>
             <StyledTableCell align="center">n° Registre</StyledTableCell>

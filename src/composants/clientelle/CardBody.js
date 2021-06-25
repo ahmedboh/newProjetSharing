@@ -81,10 +81,10 @@ const  CardBody=({showDetailContrat,showDetailTicket,contenu,contrat})=>{
                 <Col sm="5"><b>Etat  :</b></Col><Col  className="text2">{contenu.etat}</Col> 
                 </Row>
                 <Row>
-                <Col sm="5"><b>objet  :</b></Col><Col  className="text2">{contenu.objet}</Col> 
+                <Col sm="5"><b>Objet  :</b></Col><Col  className="text2">{contenu.objet}</Col> 
                 </Row>   
                 <Row>
-                <Col sm="5"><b>capture  :</b></Col>
+                <Col sm="5"><b>Capture  :</b></Col>
                 <Col  style={{position:'relative',top:'-10px'}}  className="text2">
                 {(contenu.image && image!="dW5kZWZpbmVk")?'img.jpg':'Accune'}  
                 <Tooltip title='Ouvrir image '  arrow>
@@ -114,7 +114,7 @@ const  CardBody=({showDetailContrat,showDetailTicket,contenu,contrat})=>{
                 </Col> 
                 </Row> 
                 </Card.Text>
-                <center><Button onClick={(event)=>{showDetailTicket(event,contenu)}} startIcon={<InfoIcon/>} endIcon={<InfoIcon/>} variant="contained" size='small' color='primary' style={{backgroundColor:'rgb(0, 153, 204)'}}>Voir detailles ticket</Button></center>
+                <center><Button onClick={(event)=>{showDetailTicket(event,contenu)}} startIcon={<InfoIcon/>} endIcon={<InfoIcon/>} variant="contained" size='small' color='primary' style={{backgroundColor:'rgb(0, 153, 204)'}}>Voir détail ticket</Button></center>
             
          </>
     )

@@ -45,7 +45,7 @@ export default function Intervs({user}) {
         tab.forEach(dde => { 
             if (dde.etat==='En attente')
                 tabEnAttend.push(dde);
-            else if (dde.etat==='En cour')
+            else if (dde.etat==='En cours')
                 tabEnCours.push(dde);
             else  tabColoture.push(dde);
         });
@@ -122,7 +122,7 @@ export default function Intervs({user}) {
 
           <Drawer   anchor='bottom' open={showDetail} onClose={()=>{setShowDetail(false)}}   classes={{ paper: styles2.paper }} >
              <div  >
-                 <h4 className="titreC"> Détaille Du Ticket :</h4> 
+                 <h4 className="titreC"> Détail Du Ticket :</h4> 
                  <hr/>
                  <TextField fullWidth
                     multiline

@@ -103,7 +103,7 @@ const AjouMembSociete=()=> {
         if(validate&&role.length>0  ){
           const res=await Axios.post('auth/signupMembS',ob )
           if(res.status===200){
-          setMessageInfo(<MessageInfo>le nouveau membre de la société <b> {ob.nom} {ob.prenom} </b>à ajouter avec succes !</MessageInfo> )
+          setMessageInfo(<MessageInfo>le nouveau membre de la société <b> {ob.nom} {ob.prenom} </b>à été ajouter avec succès !</MessageInfo> )
            }else{
             setLoginErreur(res.data.errors.login)
             }
@@ -212,7 +212,7 @@ const AjouMembSociete=()=> {
             <FormGroup onChange={ajouterRole}  >
                 <FormControlLabel value="Ad"  control={<Switch name='role' color="primary" checked={stateSwitch.Ad}    />} label="Administrateur" />
                 <FormControlLabel value="Rc" control={<Switch name='role' color="primary"    checked={stateSwitch.Rc}   />} label="Responsable de création des fiches clients" />
-                <FormControlLabel value="Ri" control={<Switch  name='role' color="primary" checked={stateSwitch.Ri}  />} label="Responsable affectation des demandes interventions" />
+                <FormControlLabel value="Ri" control={<Switch  name='role' color="primary" checked={stateSwitch.Ri}  />} label="Responsable d'affectation des demandes d'interventions" />
                 <FormControlLabel value="Ins" control={<Switch name='role' color="primary"   checked={stateSwitch.Ins}    />} label="Intervenant Supérieur" />
                 <FormControlLabel value="In" control={<Switch name='role' color="primary"  checked={stateSwitch.In||stateSwitch.Ins}   />} label="Intervenant Simple" />
             </FormGroup>

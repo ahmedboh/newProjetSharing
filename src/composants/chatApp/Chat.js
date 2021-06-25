@@ -142,7 +142,7 @@ export default function Chat(props) {
                 </StyledBadge>   
                 <div className="chat__headerInfo">
                     <h3>{nameCo}</h3>
-                    <p>{connecte?'Connecte..':'Deconnecte..'}</p>
+                    <p>{connecte?'Connecté..':'Déconnecté..'}</p>
                 </div>
                 <div className="chat__headerRight">
                     <label htmlFor="imageTiket">
@@ -196,7 +196,7 @@ export default function Chat(props) {
                 <form>
                     <input type="file"  id="file" hidden accept="application/pdf,.doc" onChange={event => sendFile(event)} />
                     <input type="file"  id="imageTiket" hidden accept="image/*" onChange={event => sendImage(event)} />
-                    <input id={IDTicket} placeholder="type a message" value={message}   onKeyPress={event => event.key === 'Enter' ? sendMessage(event) : null} onChange={(event)=>{setMessage(event.target.value)}} type="text"/>    
+                    <input id={IDTicket} placeholder="écrire un message" value={message}   onKeyPress={event => event.key === 'Enter' ? sendMessage(event) : null} onChange={(event)=>{setMessage(event.target.value)}} type="text"/>    
                 </form>
             </div>
 

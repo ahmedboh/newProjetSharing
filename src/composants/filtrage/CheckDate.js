@@ -13,7 +13,7 @@ const CheckDate=(props)=>{
      
    
        
-        <TextField id="date"  type="date" label={props.type===undefined?"Date de Création":'Date de depose'} size={props.type!==undefined?'medium':'small'}
+        <TextField id="date"  type="date" label={props.type===undefined?"Date de Création":'Date de dépôt'} size={props.type!==undefined?'medium':'small'}
           onChange={(event)=>{ props.handleFilters(new Date(event.target.value),'dateCreation');setBtnState(false)  }}
            InputLabelProps={{shrink: true,}}/> 
        

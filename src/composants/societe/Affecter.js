@@ -83,15 +83,15 @@ const Affecter=(props)=>{
             }
             const ob2=listeContrats.length>0
             ?{
-                etat:"En cour",contrat:contrat===-1?'':contrat,priorite
+                etat:"En cours",contrat:contrat===-1?'':contrat,priorite
              }
             :{
-                etat:"En cour",contratS,priorite
+                etat:"En cours",contratS,priorite
              }
             if((intervenant!==""||role==='In')&&(action==="aff")){
                 const res1 = await Axios.post(`affectation`,ob)
                 misAjourTicket(ob2);
-                setEtatActuel("En cour");
+                setEtatActuel("En cours");
                 const res2=await  Axios.post('mailing',ob1 )
             }else if((intervenant!=="")&&(action==="reaff")){
                    const res = await Axios.get(`affectation/getAffectationsTicket/${interv._id}`)
@@ -112,35 +112,35 @@ const Affecter=(props)=>{
         }
         const composant=etatActuel==="Clôturée"
         ?intervenantLabel
-            ?<MessageInfo >Cette demande a été affectuer a l'intervenant <b> {intervenantLabel}</b>  </MessageInfo>
-            :<MessageInfo >Cette demande a été cloturée sans traitment  </MessageInfo>
+            ?<MessageInfo >Cette demande a été affectée à l'intervenant <b> {intervenantLabel}</b>  </MessageInfo>
+            :<MessageInfo >Cette demande a été clôturée sans traitment  </MessageInfo>
         :etatActuel==="En attente"
             ?<Button variant="contained"color="primary"style={{backgroundColor:'rgb(0, 153, 204)'}}startIcon={<SaveIcon />}onClick={()=>{Affecter('Ri','aff')}}>Affecter</Button> 
-            :<Button variant="contained"color="primary"style={{backgroundColor:'#ffc107'}}startIcon={<SaveIcon />}onClick={()=>{Affecter('Ri','reaff')}}>Reaffecter</Button>          
+            :<Button variant="contained"color="primary"style={{backgroundColor:'#ffc107'}}startIcon={<SaveIcon />}onClick={()=>{Affecter('Ri','reaff')}}>Réaffecter</Button>          
         
         return (<div className="container box">
                 <Row >
                 <Col sm={user.role&&user.role.indexOf('Ri')===-1?12:6} >
-                    <h2  className="titre" >detailles du ticket </h2><br/><br/>
+                    <h2  className="titre" >detail du ticket </h2><br/><br/>
                     <Interv contenu={interv} user={user} contrat={history.location.state.contrat} traiter={false} />
                     <Form hidden={etatActuel!=="En attentee" ||user.role.indexOf('Ins')===-1 }>
                         <Form.Group as={Row} controlId="formHorizontaNature">
                                 <Form.Label  column sm={5} >
-                                    Priorite de la demande
+                                    Priorité de la demande
                                 </Form.Label>
                                 <Col sm={7}>
                                     <Form.Control as="select" value={priorite} disabled={etatActuel==="Clôturée"}  onChange={(event)=>{
                                         setPriorite(event.target.value)
                                     }}>
-                                        <option>Normal</option>
-                                        <option>Urgent</option>
+                                        <option>Normale</option>
+                                        <option>Urgente</option>
                                         <option>Critique</option>
                                     </Form.Control>
                                 </Col>
                         </Form.Group>
                         <Form.Group as={Row} controlId="formHorizontaNature">
                                 <Form.Label  column sm={5} >
-                                    contrat 
+                                    Contrat 
                                 </Form.Label>
                                 <Col sm={7}>
                                     <Form.Control as="select" value={contrat} disabled={etatActuel==="Clôturée"} controlid='contrat' onChange={(event)=>{
@@ -161,7 +161,7 @@ const Affecter=(props)=>{
                     <Form>
                         <Form.Group as={Row}  controlId="formHorizontalEmail">
                             <Form.Label column sm={5} className="labelText" >
-                                l'intervenant : 
+                                L'intervenant : 
                             </Form.Label>
                             <br/>
                             <Col sm={7}>
@@ -182,14 +182,14 @@ const Affecter=(props)=>{
                         
                         <Form.Group  as={Row} controlId="formHorizontaNature">
                             <Form.Label className="labelText"  column sm={5} >
-                                Priorite du ticket :
+                                Priorité du ticket :
                             </Form.Label>
                             <Col sm={7}>
                                 <Form.Control as="select" value={priorite} disabled={etatActuel==="Clôturée"}  onChange={(event)=>{
                                     setPriorite(event.target.value)
                                 }}>
-                                    <option>Normal</option>
-                                    <option>Urgent</option>
+                                    <option>Normale</option>
+                                    <option>Urgente</option>
                                     <option>Critique</option>
                                 </Form.Control>
                             </Col>
@@ -215,7 +215,7 @@ const Affecter=(props)=>{
 
                         <Form.Group  as={Row} controlId="formHorizontaNature">
                             <Form.Label className="labelText"   column sm={5} >
-                                contrat :
+                                Contrat :
                             </Form.Label>
                             <Col sm={7}>
                                 <Form.Control as="select" value={contrat} disabled={etatActuel==="Clôturée"} controlid='contrat' onChange={(event)=>{
@@ -230,7 +230,7 @@ const Affecter=(props)=>{
                         <Form.Group>
                                 <TextField fullWidth
                                     id="outlined-multiline-static"
-                                    label="suplèment contrat"
+                                    label="supplément contrat"
                                     onChange={(event)=>{
                                         setContratS(event.target.value);
                                     }}

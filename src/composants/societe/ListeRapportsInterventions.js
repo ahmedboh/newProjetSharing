@@ -152,7 +152,7 @@ const  ListeRapportsInterventions=(props)=> {
               </Tooltip> 
             </TableCell>
             <TableCell  align="center">
-            <Tooltip title='Consulter la description'  arrow>
+            <Tooltip title='Consulter la déscription'  arrow>
                 <IconButton color="primary" size='small'disabled={!row.detailinter} component="span" onClick={()=>{ouvrirDisc(row.detailinter)}}>
                     <DescriptionIcon />
                 </IconButton> 
@@ -230,7 +230,7 @@ const  ListeRapportsInterventions=(props)=> {
             <StyledTableCell align="center">Date Création</StyledTableCell>
             <StyledTableCell align="center">Date Debut</StyledTableCell>
             <StyledTableCell align="center">Date Fin</StyledTableCell>
-            <StyledTableCell align="center">Fichier attacher</StyledTableCell>
+            <StyledTableCell align="center">Fichier attaché</StyledTableCell>
             <StyledTableCell align="center">Actions</StyledTableCell>
           </TableRow>
         </TableHead>
@@ -271,7 +271,7 @@ const  ListeRapportsInterventions=(props)=> {
     </TableContainer>
     <Drawer   anchor='right' open={showDesc} onClose={()=>{setShowDesc(false)}}   classes={{ paper: stylesDrawer.paper }} >
              <div  >
-                 <h4 className="titreC"> Description  :</h4> 
+                 <h4 className="titreC"> Déscription  :</h4> 
                  <hr/>
                  <TextField fullWidth
                     multiline

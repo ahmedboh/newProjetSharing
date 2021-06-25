@@ -9,7 +9,7 @@ import * as CgIcons from 'react-icons/cg';
 
 export const SidebarData = [
     {
-        title: 'ListeDemande',
+        title: 'ListeDemandes',
         path: '#',
         icon: <FaIcons.FaListAlt color="primary" />,
         iconClosed: <RiIcons.RiArrowDownSFill />,
@@ -17,7 +17,7 @@ export const SidebarData = [
         acces:['Ad','Ri','In'],
         subNav: [
             {
-                title: 'ToutesLesDemande',
+                title: 'ToutesLesDemandes',
                 path: '/liste',
                 acces:['Ad','Ri','In'],
                 icon: <FaIcons.FaList />,
@@ -35,7 +35,7 @@ export const SidebarData = [
                 icon: <BSIcons.BsBookmarks/>,
             },
             {
-                title: 'MeslisteRapports',
+                title: 'MalisteRapports',
                 path: '/ListeRapportsIntervenant',
                 acces:['In','Ad'],
                 icon: <BSIcons.BsBookmarkCheck/>,
@@ -57,7 +57,7 @@ export const SidebarData = [
                 icon: <AiIcons.AiOutlineUserAdd/>,
             },
             {
-                title: 'ToutesLesMembres',
+                title: 'TousLesMembres',
                 path: '/ListeMembSocietes',
                 acces:['Ad'],
                 icon: <CgIcons.CgUserList/>,
@@ -79,7 +79,7 @@ export const SidebarData = [
                 icon: <AiIcons.AiOutlineUserAdd/>,
             },
             {
-                title: 'ToutesLesClient',
+                title: 'TousLesClient',
                 path: '/ListeClients',
                 acces:['Ad','Rc'],
                 icon: <CgIcons.CgUserList/>,

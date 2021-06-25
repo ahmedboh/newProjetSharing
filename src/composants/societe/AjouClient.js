@@ -68,7 +68,7 @@ const AjouClient=()=> {
   
       const res= await Axios.post('auth/signupClient',values )  
       if(res.status===200){
-        setMessageInfo(<MessageInfo >le nouveau membre de la société <b> {values.raisonSociale} </b>à ajouter avec succès </MessageInfo>);
+        setMessageInfo(<MessageInfo >le nouveau membre de la société <b> {values.raisonSociale} </b>à été ajouter avec succès </MessageInfo>);
         setAjoutAutre(false)
         setIdCl(res.data.client)
         const res2=await Axios.post('mailing',ob1 )

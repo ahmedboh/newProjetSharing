@@ -124,14 +124,15 @@ const ListeTicketTable=(props) =>{
     <div className='boxLIteTicketTable'>
       <Paper className={classes.paper}>
       <span  style={{margin:'5px'}}>
-          <ReactToExcel  className='btn btn-outline-success btn-sm' table="table" filename="ListeTicketTable" sheet="sheet 1" buttonText="Exporter"/>
-      </span>   
+          <ReactToExcel  className='btn btn-outline-success' table="table" filename="listeDesTickets" sheet="sheet 1" buttonText="Exporter"/>
+      </span>  
         <TableContainer>
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
             size='small'
             aria-label="enhanced table"
+            id="table"
           >
             <EnhancedTableHead
               order={order}

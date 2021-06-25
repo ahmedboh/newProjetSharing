@@ -65,7 +65,7 @@ const AjoutContrat=()=>{
         console.log(ob)
         if(form.isValid ){
         const res= await Axios.post('contrat',ob )
-        setMessageInfo(<MessageInfo >le nouveau contrat à ajouter avec succès </MessageInfo>);
+        setMessageInfo(<MessageInfo >le nouveau contrat à été ajouter avec succès </MessageInfo>);
         setNbrContrat(nbrContrat+1)
         setTimeout(()=>{setMessageInfo();document.getElementById('form').reset()},4000);
 

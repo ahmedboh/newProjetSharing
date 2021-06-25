@@ -13,7 +13,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 function CircularProgressWithLabel(props) {
  const circulaire= props.etat==='En attente'
   ? <CircularProgress color="secondary"  />
-  :props.etat==='En cour'
+  :props.etat==='En cours'
   ? <CircularProgress variant="determinate" style={{color:'#00a152'}} {...props} />
   : <CircularProgress variant="determinate" style={{color:'#00a152'}} {...props} />
  return (
@@ -41,7 +41,7 @@ function CircularStatic(props){
     const [progress, setProgress] = useState(100);
     
      useEffect(() => {
-       if (status==="En cour"){  
+       if (status==="En cours"){  
        const timer = setInterval(() => {
          setProgress((prevProgress) => (prevProgress >= 90 ? 10 : prevProgress + 10));
        }, 800);
