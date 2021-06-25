@@ -106,9 +106,6 @@ const ModifierClient=()=> {
         codeTVA:values.codeTVA,
         login:values.login
       }
-      console.log(values)
-
-      console.log(validation)
        if(validation){
         if( r!=="motdepasse") {
         const res=await Axios.patch(`client/${history.location.state.client._id}`,ob )

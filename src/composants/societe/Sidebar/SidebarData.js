@@ -9,6 +9,14 @@ import * as CgIcons from 'react-icons/cg';
 
 export const SidebarData = [
     {
+        title: 'Statistiques',
+        path: '/demo',
+        icon: <FaIcons.FaChartBar color="primary" />,
+        iconClosed: <RiIcons.RiArrowDownSFill />,
+        iconOpened: <RiIcons.RiArrowUpSFill />,
+        acces:['Ad'],
+    },
+    {
         title: 'ListeDemandes',
         path: '#',
         icon: <FaIcons.FaListAlt color="primary" />,
@@ -28,16 +36,26 @@ export const SidebarData = [
                 acces:['In'],
                 icon: <RiIcons.RiPlayList2Line/>,
             },
+        ]
+    },
+    {
+        title: 'ListeRapports',
+        path: '#',
+        icon: <FaIcons.FaListAlt color="primary" />,
+        iconClosed: <RiIcons.RiArrowDownSFill />,
+        iconOpened: <RiIcons.RiArrowUpSFill />,
+        acces:['Ad','Ri','In'],
+        subNav: [
             {
                 title: 'listeRapports',
                 path: '/ListeRapportsInterventions',
-                acces:['In','Ad'],
+                acces:['Ad','Ri'],
                 icon: <BSIcons.BsBookmarks/>,
             },
             {
                 title: 'MalisteRapports',
                 path: '/ListeRapportsIntervenant',
-                acces:['In','Ad'],
+                acces:['In'],
                 icon: <BSIcons.BsBookmarkCheck/>,
             },
         ]
@@ -75,7 +93,7 @@ export const SidebarData = [
             {
                 title: 'AjouterNouveau',
                 path: '/AjouterClient',
-                acces:['Rc'],
+                acces:['Ad','Rc'],
                 icon: <AiIcons.AiOutlineUserAdd/>,
             },
             {

@@ -101,7 +101,7 @@ const addlisnter=()=>{
                   <Route path="/li"><ListeContratCl/></Route>
 
                   {connectMb&&
-                  <><Route  path="/accueil"  ><Accueil  /></Route>
+                  <>
                   <Route  path="/LirePDF"  >
                     <div className="App">
                       <LirePDF/>
@@ -120,13 +120,14 @@ const addlisnter=()=>{
                   <Route path="/ModifierClient"><ModifierClient/></Route>
                   <Route path="/ModifierMembSociete"><ModifierMembSociete/></Route>
                   <Route path="/ListeRapportsIntervenant"><ListeRapportsInterventions role='In' user={membreS}/></Route>
-                  <Route path="/ModifierRapportInter"><ModifierRapportInter/></Route>
+                  <Route path="/ModifierRapportInter"><ModifierRapportInter user={membreS} /></Route>
                   <Route path="/ListeRapportsInterventions"><ListeRapportsInterventions role='Rsp' user={membreS}/></Route>
                   <Route path="/listeContrat"><ListeContrart   /></Route>
                   </>
                   
                   }
                   {connectCl&&<>
+                    <Route  path="/accueil"  ><Accueil  /></Route>
                       <Route path="/deposer"  ><DeposerTicket    user={client} /></Route>
                       <Route path="/listeContrat"><ListeContratCl  user={client}/></Route>
                       <Route path="/historique"><Intervs user={client}/></Route>

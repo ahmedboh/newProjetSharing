@@ -47,7 +47,7 @@ const Navbar=(props)=> {
           </div>
           <ul className={click ? 'nav-menu active' : 'nav-menu'}>
             <li className='nav-item'>
-              <Link to='#' className='nav-links' onClick={closeMobileMenu}>
+              <Link to='accueil' className='nav-links' onClick={closeMobileMenu}>
                 Accueil
               </Link>
             </li>

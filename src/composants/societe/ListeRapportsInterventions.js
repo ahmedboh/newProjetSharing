@@ -164,7 +164,7 @@ const  ListeRapportsInterventions=(props)=> {
               </Tooltip> 
               <Tooltip title='Modifier ce rapport'   arrow>
                 <IconButton style={{color:'orange'}} hidden={role!=='In'} size='small' color="primary" component="span" onClick={() => {
-                  history.push("/ModifierRapportInter",{idRapportInter:row._id})
+                  history.push("/ModifierRapportInter",{rapportInter:row})
                 }}>
                   <UpdateIcon />
               </IconButton>  

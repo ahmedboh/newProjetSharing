@@ -11,36 +11,33 @@ import { useState ,useEffect} from 'react';
 import MessageInfo from '../MessageInfo'
 import { useHistory } from "react-router-dom";
 import Comment from '../chatApp/Comment'
+import MessageEreur from '../MessageEreur';
 
 
 
 const Affecter=(props)=>{
         const{user}=props
         let history = useHistory();
+        const [messageErreur, setMessageErreur] = useState()
+        const [messageInfo, setMessageInfo] = useState()
         const [interv,setInterv]=useState(history.location.state.interv)
         const [intervenants,setIntervenants]=useState([])
         const [intervenant,setIntervenant]=useState('')
         const [periode,setPeriode]=useState(24)
         const [etatActuel,setEtatActuel]=useState('')
         const [intervenantLabel,setIntervenantLabel]=useState('')
-        const [client,setClient]=useState()
         const [priorite,setPriorite]=useState(24)
         const [contrat,setContrat]=useState(-1)
         const [contratS,setContratS]=useState()
-        const [listeContrats,setListeContrats]=useState([]) 
+        const [listeContrats,setListeContrats]=useState([0,1]) 
         
         const intialiserDonnees=async ()=>{
           const res =await  Axios.get(`membSociete/getMembSocietesRole/${"In"}`)
           setIntervenants(res.data.data)
-
-          const res2 =await  Axios.get("client/"+interv.IDclient._id)
-          setClient(res2.data.data)  
           const res3=await  Axios.get(`affectation/getAffectationsTicket/${interv._id}`)
-          console.log(res3)
-          if(res3.data.data){
-                const res4 = await Axios.get(`membSociete/${res3.data.data.IDintervenant}`)       
-                setIntervenantLabel(res4.data.data.nom+" "+res4.data.data.prenom)
-                setIntervenant(res3.data.data.IDintervenant)
+          if(res3.data.data){    
+                setIntervenantLabel(res3.data.data.IDintervenant.nom+" "+res3.data.data.IDintervenant.prenom)
+                setIntervenant(res3.data.data.IDintervenant._id)
                 setPeriode(res3.data.data.dureeTraitement) 
                 setPriorite(interv.priorite) 
           }
@@ -48,7 +45,9 @@ const Affecter=(props)=>{
         
         const misAjourTicket=async(object)=>{
             const res = await Axios.patch(`ticket/${interv._id}`,object )
-            console.log(res)
+            console.log(res.data.data)
+            // setInterv(res.data.data)
+            // history.replace(history.location.pathname,{interv:res.data.data})
         }
         const getlisteContrats=async(client)=>{
             const res = await Axios.get(`http://localhost:3001/api/v1/contrat/getContratsClient/${client}`)
@@ -56,14 +55,13 @@ const Affecter=(props)=>{
         }
 
         useEffect(() => {
-            console.log(interv)
             setEtatActuel(interv.etat)
             setPriorite(interv.priorite)
             interv.contrat!==''&&setContrat(interv.contrat)
             interv.contrat!==undefined&&setContrat(interv.contrat)
             getlisteContrats(interv.IDclient._id)
             intialiserDonnees()
-        
+           
          },[user])
 
          const options=listeContrats.length>0 && listeContrats.map((contrat,index)=>{return <option value={contrat._id} key={contrat._id}>Contrat n°{index+1}</option>});
@@ -77,33 +75,37 @@ const Affecter=(props)=>{
             }
             ob['IDintervenant']=role==='Ri'?intervenant:user._id;
             const ob1={
-                to:client.email,
+                to:interv.IDclient.email,
                 subject:"Votre ticket est affecté",
                 text:`Bonjour,\nVotre ticket déposé le ${interv.dateCreation} à ${interv.heureCreation} est affecter à l'intervenant ${intervenantLabel} avec une durée de traitment ${periode}\nVeuillez consulter votre ticket sur la plateforme SharingTicket: http://localhost:3000/ `
             }
             const ob2=listeContrats.length>0
             ?{
-                etat:"En cours",contrat:contrat===-1?'':contrat,priorite
+                etat:"En cours",contrat,priorite
              }
             :{
                 etat:"En cours",contratS,priorite
              }
-            if((intervenant!==""||role==='In')&&(action==="aff")){
-                const res1 = await Axios.post(`affectation`,ob)
-                misAjourTicket(ob2);
-                setEtatActuel("En cours");
-                const res2=await  Axios.post('mailing',ob1 )
-            }else if((intervenant!=="")&&(action==="reaff")){
-                   const res = await Axios.get(`affectation/getAffectationsTicket/${interv._id}`)
-                   const res2 = await Axios.patch(`affectation/${res.data.data._id}`,{annule:true})    
-                   const res3 = await Axios.get(`affectation/getAffectationsIntervenantTicket/${interv._id}/${intervenant}`)
-                   res3.data.data
-                   ?await Axios.patch(`affectation/${res3.data.data._id}`,{dateAffectation:new Date().toLocaleDateString(),heureAffectation:new Date().toLocaleTimeString(),dureeTraitement:periode,annule:false})
-                   :await Axios.post(`affectation`,ob) 
-                   misAjourTicket(ob2);                          
+            if(listeContrats.length>0 && contrat!=-1){
+                    if((intervenant!==""||role==='In')&&(action==="aff")){
+                        const res1 = await Axios.post(`affectation`,ob)
+                        misAjourTicket(ob2);
+                        setEtatActuel("En cours");
+                        const res2=await  Axios.post('mailing',ob1 )
+                        setMessageInfo(<MessageInfo >L'affectaion est passé avec succès </MessageInfo>)
+                    }else if((intervenant!=="")&&(action==="reaff")){
+                        const res = await Axios.get(`affectation/getAffectationsTicket/${interv._id}`)
+                        const res2 = await Axios.patch(`affectation/${res.data.data._id}`,{annule:true})    
+                        await Axios.post(`affectation`,ob) 
+                        misAjourTicket(ob2); 
+                        setMessageInfo(<MessageInfo >la Réaffectation est passé avec succès </MessageInfo>)
+                    }else{
+                     console.log("error"); 
+                    } 
+                    setTimeout(()=>{setMessageInfo();},4000);
             }else{
-              console.log("error"); 
-            } 
+                setMessageErreur(<MessageEreur>Choisissez un contrat pour terminer {etatActuel==="En attente"?"l'affectation":'la Réaffectation'}  </MessageEreur>)
+             }
         }    
         
         const onCloture=async()=>{
@@ -144,7 +146,7 @@ const Affecter=(props)=>{
                                 </Form.Label>
                                 <Col sm={7}>
                                     <Form.Control as="select" value={contrat} disabled={etatActuel==="Clôturée"} controlid='contrat' onChange={(event)=>{
-                                        setContrat(event.target.value);
+                                        setContrat(event.target.value);setMessageErreur();console.log(event.target.value)
                                     }}>
                                         <option value={-1}>-------------</option>
                                         {options}
@@ -157,7 +159,7 @@ const Affecter=(props)=>{
                 </Col>  
                 
                 <Col sm={6} style={{paddingLeft:'0px'}} hidden={user.role&&user.role.indexOf('Ri')===-1}>
-                    <h2  className="titre">Zone D'affectation </h2><br/><br/>
+                    <h2  className="titre">Zone {etatActuel==="En attente"?"d'affectation":'de la réaffectation'}</h2><br/><br/>
                     <Form>
                         <Form.Group as={Row}  controlId="formHorizontalEmail">
                             <Form.Label column sm={5} className="labelText" >
@@ -219,11 +221,12 @@ const Affecter=(props)=>{
                             </Form.Label>
                             <Col sm={7}>
                                 <Form.Control as="select" value={contrat} disabled={etatActuel==="Clôturée"} controlid='contrat' onChange={(event)=>{
-                                    setContrat(event.target.value);
+                                    setContrat(event.target.value);setMessageErreur();console.log(event.target.value)
                                 }}>
                                     <option value={-1}>-------------</option>
                                     {options}
                                 </Form.Control>
+                                {messageErreur}
                             </Col>
                               
                         </Form.Group> 
@@ -254,7 +257,7 @@ const Affecter=(props)=>{
                                 <Button variant="contained"  onClick={onCloture}   color="secondary" >Clôturer</Button>
                             </Col>
                         </Form.Group>
-
+                        {messageInfo}
                         
                     </Form>
                     <span hidden={etatActuel==="En attente"||!intervenant} >

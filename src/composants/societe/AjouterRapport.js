@@ -80,7 +80,7 @@ const AjouterRapport=(props)=>{
         <Row > 
            <Col sm={6}>
             <Form.Group as={Row}  controlId="formHorizontalEmail">
-                <Form.Label column className='text' >
+                <Form.Label column className='labelText' >
                 L'intervenant 
                 </Form.Label>
                 <Col sm={12}>
@@ -89,7 +89,7 @@ const AjouterRapport=(props)=>{
             </Form.Group>
 
             <Form.Group as={Row} controlId="formHorizontalContrat">
-                <Form.Label column  className='text'>
+                <Form.Label column  className='labelText'>
                     Date de début du ticket
                 </Form.Label>
                 
@@ -100,7 +100,7 @@ const AjouterRapport=(props)=>{
             </Form.Group>
 
             <Form.Group as={Row} controlId="formHorizontaNature">
-                <Form.Label column className='text' >
+                <Form.Label column className='labelText' >
                      Heure de début du ticket
                 </Form.Label>
                 <Col >
@@ -110,7 +110,7 @@ const AjouterRapport=(props)=>{
             </Form.Group>
             
             <Form.Group as={Row} controlId="formHorizontalContrat">
-                <Form.Label column className='text'>
+                <Form.Label column className='labelText'>
                     Date de fin du ticket
                 </Form.Label>
                 
@@ -121,7 +121,7 @@ const AjouterRapport=(props)=>{
             </Form.Group>
 
             <Form.Group as={Row} controlId="formHorizontaNature">
-                <Form.Label column className='text'>
+                <Form.Label column className='labelText'>
                      Heure de fin du ticket
                 </Form.Label>
                 <Col >
@@ -129,12 +129,10 @@ const AjouterRapport=(props)=>{
                     InputLabelProps={{shrink: true,}}   inputProps={{step: 300}}/>
                 </Col>
             </Form.Group>
-
-
-            
-            </Col>
-            <Col><br/><br/>
-                   <Form.Label column  className='text' >
+            </Col>  
+             
+            <Col>
+                   <Form.Label column  className='labelText' >
                             Description
                    </Form.Label>
                     <TextField fullWidth
@@ -150,8 +148,11 @@ const AjouterRapport=(props)=>{
                             variant="outlined"
                         /><br/><br/><br/>
                     <Form.Group as={Row} controlId="formHorizontaNature">
-                        <Form.Label column sm={8} className='text' >
-                            PV du ticket
+                        <Form.Label column sm={3} className='labelText' >
+                            PV du ticket   
+                        </Form.Label>
+                        <Form.Label column sm={5} className='text' >
+                             {attachement && (attachement.name.length>25?attachement.name.substr(0,20)+'... .'+attachement.name.substr(attachement.name.lastIndexOf(".") ):attachement.name)}  
                         </Form.Label>
                         <input type="file" id='filera' hidden
                         accept="application/pdf"   
@@ -161,7 +162,7 @@ const AjouterRapport=(props)=>{
                                 <Button
                                     variant="contained"
                                     color="primary"  component="span"
-                                    style={{backgroundColor:'rgb(0, 153, 204)'}}
+                                    style={attachement?{backgroundColor:'rgb(0, 153, 204)'}:{backgroundColor:'gray'}}
                                     startIcon={<CloudUploadIcon />}
                                 >
                                     Upload

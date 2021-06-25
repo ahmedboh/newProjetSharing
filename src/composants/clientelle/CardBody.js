@@ -54,7 +54,7 @@ const DialogContent = withStyles((theme) => ({
 
 const  CardBody=({showDetailContrat,showDetailTicket,contenu,contrat})=>{
   const [image , setImage]=useState();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const getImage= async()=>{
       const res =await Axios.get(`ticket/image/${contenu._id}`)
       setImage(res.data.data);

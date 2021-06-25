@@ -76,7 +76,7 @@ const SignInClient=(props)=> {
   useEffect(() => {
     if(type==='c'){
       localStorage.getItem('connectMb')!==null&& localStorage.clear();
-      localStorage.getItem('connectCl')!==null&& history.push('/deposer');
+      localStorage.getItem('connectCl')!==null&& history.push('/accueil');
     }else{
       localStorage.getItem('connectCl')!==null&& localStorage.clear();
       localStorage.getItem('connectMb')!==null&& history.push('/accueil');

@@ -11,38 +11,50 @@ import { useHistory } from "react-router-dom";
 import IconButton from '@material-ui/core/IconButton';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import CancelIcon from '@material-ui/icons/Cancel';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
-const ModifierRapportInter=()=>{
-    const [intervenantLabel,setIntervenantLabel]=useState('')
-    const [heureDebut,setHeureDebut]=useState("")
-    const [dateDebut,setDateDebut]=useState("")
-    const [heureFin,setHeureFin]=useState("")
-    const [dateFin,setDateFin]=useState("")
-    const [attachement,setAttachement]=useState()
-    const [description,setDescription]=useState("")  
-    const [messageInfo, setMessageInfo] = useState(<div></div>)
-    let history = useHistory();
+const ModifierRapportInter=(props)=>{
     
-    const getRapport = async()=>{
-       const res=await Axios.get(`rapportInter/${history.location.state.idRapportInter}`)
-       console.log(res.data.data)
-       setDateDebut(res.data.data.dateDebut)
-       setDateFin(res.data.data.dateFin)
-       setDescription(res.data.data.detailinter)
-       setAttachement(res.data.data.nomAttachement)   
-       const res2=await Axios.get(`membSociete/${res.data.data.IDintervenant}`)
-       setIntervenantLabel(res2.data.data.nom+" "+res2.data.data.prenom)               
+    const {user}=props
+    let history = useHistory();
+    const [intervenantLabel,setIntervenantLabel]=useState()
+    const [heureDebut,setHeureDebut]=useState(formatheure(history.location.state.rapportInter.dateDebut))
+    const [dateDebut,setDateDebut]=useState(formatDate(history.location.state.rapportInter.dateDebut))
+    const [heureFin,setHeureFin]=useState(formatheure(history.location.state.rapportInter.dateFin))
+    const [dateFin,setDateFin]=useState(formatDate(history.location.state.rapportInter.dateFin))
+    const [attachement,setAttachement]=useState(history.location.state.rapportInter.attachement?{name:history.location.state.rapportInter.nomAttachement}:undefined)
+    const [description,setDescription]=useState(history.location.state.rapportInter.detailinter)  
+    const [messageInfo, setMessageInfo] = useState(<div></div>)
+    
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+    
+        if (month.length < 2) 
+            month = '0' + month;
+        if (day.length < 2) 
+            day = '0' + day;
+    
+        return [year, month, day].join('-');
     }
-    useEffect(() => { 
-        getRapport()
-    },[])
-    const fileAttacher=attachement===undefined
-        ?<CancelIcon />
-        :<IconButton color="primary" component="span" onClick={() => {
-          history.push("/LirePDF",{idRapport:history.location.state.idRapportInter})
-        }}>
-          <AttachFileIcon />
-        </IconButton>
+
+    function formatheure(date) {
+        var d = new Date(date),
+            heure = '' + d.getHours() ,
+            minute = '' + d.getMinutes();
+        if (heure.length < 2) 
+            heure = '0' + heure;
+        if (minute.length < 2) 
+            minute = '0' + minute;
+        return [heure, minute].join(':');
+    }
+
+    useEffect(() => {     
+        user.nom!==undefined&&setIntervenantLabel(user.nom+" "+user.prenom) 
+      },[user])
+
     const enregistrer=async()=>{
         const formData = new FormData();
         formData.append('dateCreation',new Date());
@@ -50,22 +62,21 @@ const ModifierRapportInter=()=>{
         formData.append('dateFin',new Date(dateFin.substr(0,4)  ,dateFin.substr(5,2),dateFin.substr(8,2),heureFin.substr(0,2),heureFin.substr(3,2),0));
         formData.append('detailinter',description); 
         formData.append('attachement',attachement); 
-            const res =await Axios.patch(`rapportInter/${history.location.state.idRapportInter}`,formData )
+            const res =await Axios.patch(`rapportInter/${history.location.state.rapportInter._id}`,formData )
             setMessageInfo(<MessageInfo >Le rapport est modifié avec seccess</MessageInfo>)
+          history.replace(history.location.pathname,{rapportInter:res.data.data});
     }
 
      return(
          
-        <div className="container" style={{border:'2px rgb(0, 153, 204) solid',borderRadius:'50px',marginTop:'20px',padding:'20px'}}>
-            <br/>
-        <h2  className="text-info" style={{textAlign:'center'}}>Modifier rapport d'intervention</h2><br/><br/>
+        <div className="container box" >
+        <h2  className="titre" >Modifier rapport d'intervention</h2><br/><br/>
         <form>
-        <Row style={{marginLeft:'15%'}}> 
-
-           <Col sm={8}>
+        <Row > 
+           <Col sm={6}>
             <Form.Group as={Row}  controlId="formHorizontalEmail">
-                <Form.Label column >
-                l'intervenant 
+                <Form.Label column  className='labelText'>
+                    L'intervenant 
                 </Form.Label>
                 <Col sm={12}>
                 <Form.Control type="text" placeholder={intervenantLabel} disabled />
@@ -73,8 +84,8 @@ const ModifierRapportInter=()=>{
             </Form.Group>
 
             <Form.Group as={Row} controlId="formHorizontalContrat">
-                <Form.Label column >
-                    Date de debut de l'itervention
+                <Form.Label column  className='labelText'>
+                    Date de début du ticket
                 </Form.Label>
                 
                 <Col >
@@ -84,8 +95,8 @@ const ModifierRapportInter=()=>{
             </Form.Group>
 
             <Form.Group as={Row} controlId="formHorizontaNature">
-                <Form.Label column >
-                     Heure Début de l'intervention
+                <Form.Label column className='labelText' >
+                    Heure de début du ticket
                 </Form.Label>
                 <Col >
                 <TextField id="time" label=" Heure" type="time" value={heureDebut} onChange={(event)=>{ setHeureDebut(event.target.value) }} 
@@ -94,8 +105,8 @@ const ModifierRapportInter=()=>{
             </Form.Group>
             
             <Form.Group as={Row} controlId="formHorizontalContrat">
-                <Form.Label column >
-                    Date de fin de l'itervention
+                <Form.Label column className='labelText'>
+                        Date de fin du ticket
                 </Form.Label>
                 
                 <Col >
@@ -105,19 +116,20 @@ const ModifierRapportInter=()=>{
             </Form.Group>
 
             <Form.Group as={Row} controlId="formHorizontaNature">
-                <Form.Label column >
-                     Heure fin de l'intervention
+                <Form.Label column className='labelText'>
+                     Heure de fin du ticket
                 </Form.Label>
                 <Col >
                 <TextField id="time" label="Heure" type="time" value={heureFin} onChange={(event)=>{ setHeureFin(event.target.value) }} 
                     InputLabelProps={{shrink: true,}}   inputProps={{step: 300}}/>
                 </Col>
             </Form.Group>
+            </Col>
+            <Col>
             <Form.Group as={Row} controlId="formHorizontaNature">
-                   <Form.Label column  >
+                   <Form.Label column  className='labelText'>
                             Description
                    </Form.Label>
-                   <Col >
                     <TextField fullWidth
                             id="outlined-multiline-static"
                             label="Description"
@@ -129,17 +141,28 @@ const ModifierRapportInter=()=>{
                             placeholder="Descriptions ... ."
                             value={description}
                             variant="outlined"
-                        />
-                    </Col>
-            </Form.Group>
-            <Form.Group as={Row} controlId="formHorizontaNature">
-                <Form.Label column >
-                     PV d'intervention
+                        />                                 
+            </Form.Group><br/><br/><br/>
+            <Form.Group as={Row}  controlId="formHorizontaNature">
+                <Form.Label column sm={3} className='labelText'>
+                    PV du ticket 
+                </Form.Label>
+                <Form.Label column sm={5} className='text' >
+                             {attachement && (attachement.name.length>25?attachement.name.substr(0,20)+'... .'+attachement.name.substr(attachement.name.lastIndexOf(".") ):attachement.name)}  
                 </Form.Label>
                 <Col >
-                <input type="file"
-                onChange={event => { setAttachement( event.target.files[0] ); }}/>
-                {fileAttacher}
+                    <input type="file" hidden id='filera'
+                    onChange={event => { setAttachement( event.target.files[0] ); }}/>
+                    <label htmlFor="filera">
+                                <Button
+                                    variant="contained"
+                                    color="primary"  component="span"
+                                    style={attachement?{backgroundColor:'rgb(0, 153, 204)'}:{backgroundColor:'gray'}}
+                                    startIcon={<CloudUploadIcon />}
+                                >
+                                    Upload
+                                </Button>
+                    </label> 
                 </Col>
             </Form.Group>
             </Col>
@@ -154,7 +177,7 @@ const ModifierRapportInter=()=>{
                 <Button
                             variant="contained"
                             color="primary"
-                            style={{backgroundColor:'rgb(0, 153, 204)'}}
+                            style={{backgroundColor:'orange'}}
                             onClick={enregistrer}
                             endIcon={<SaveIcon />}
                         >

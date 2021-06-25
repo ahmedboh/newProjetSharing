@@ -218,7 +218,7 @@ function DeposerTicket (props){
                             <label htmlFor="imageTiket">
                                 <Button variant="contained" color={image?'primary':'inherit'} component="span">
                                     <PhotoCamera />
-                                </Button><span className="labelText"> {image && (image.name.length>15?image.name.substr(0,10)+'... .jpg':image.name)}</span>
+                                </Button><span className="labelText"> {image && (image.name.length>15?image.name.substr(0,10)+'... '+image.name.substr(image.name.lastIndexOf(".") ):image.name)}</span>
                             </label>
                         </Col>     
                 </Row>
